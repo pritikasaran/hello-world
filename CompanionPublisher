@@ -1,0 +1,7 @@
+@WebListener
+public class CompanionPublisher implements ServletContextListener {
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        Endpoint.publish("/companionWS", new CompanionWSImpl());
+    }
+}
