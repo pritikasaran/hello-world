@@ -1,3 +1,8 @@
-InitialContext ctx = new InitialContext();
-IBerufsinfoService delegate = (IBerufsinfoService)
-    ctx.lookup("BerufsinfoServiceDelegate");
+public IBerufsinfoService getDelegate() {
+    try {
+        InitialContext ctx = new InitialContext();
+        return (IBerufsinfoService) ctx.lookup("java:global/pdb-ear/pdb-berufsinfo/BerufsinfoServiceDelegateEJBImpl!com.pdb.IBerufsinfoService");
+    } catch (NamingException e) {
+        throw new RuntimeException("Failed to lookup delegate", e);
+    }
+}
