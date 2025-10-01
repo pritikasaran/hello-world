@@ -1,8 +1,15 @@
-Field serviceField = clazz.getDeclaredField("service");
-serviceField.setAccessible(true);
+    try {
+        Object instance = delegateInterface.getDeclaredConstructor().newInstance();
 
-InitialContext ctx = new InitialContext();
-IBerufsinfoserviceRemote service = (IBerufsinfoserviceRemote)
-    ctx.lookup("java:global/beruf-ear/beruf-ejb/IBerufsinfoserviceRemote");
+        // Optional: Inject remote service manually if needed
+        Field serviceField = delegateInterface.getDeclaredField("service");
+        serviceField.setAccessible(true);
+        InitialContext ctx = new InitialContext();
+        IBerufsinfoServiceRemote service = (IBerufsinfoServiceRemote)
+            ctx.lookup("java:global/beruf-ear/beruf-ejb/IBerufsinfoserviceRemote");
+        serviceField.set(instance, service);
 
-serviceField.set(instance, service);
+        return (IBerufsinfoService) instance;
+    } catch (ReflectiveOperationException | NamingException e) {
+        throw new RuntimeException("Failed to instantiate and wire delegate", e);
+    }
