@@ -1,7 +1,8 @@
-@WebListener
-public class CompanionPublisher implements ServletContextListener {
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        Endpoint.publish("/companionWS", new CompanionWSImpl());
-    }
-}
+Field serviceField = clazz.getDeclaredField("service");
+serviceField.setAccessible(true);
+
+InitialContext ctx = new InitialContext();
+IBerufsinfoserviceRemote service = (IBerufsinfoserviceRemote)
+    ctx.lookup("java:global/beruf-ear/beruf-ejb/IBerufsinfoserviceRemote");
+
+serviceField.set(instance, service);
