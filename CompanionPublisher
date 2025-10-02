@@ -6,3 +6,5 @@ public IBerufsinfoService getDelegate() {
         throw new RuntimeException("Failed to lookup delegate", e);
     }
 }
+
+--add-opens java.base/sun.util.calendar=ALL-UNNAMED
