@@ -1,10 +1,30 @@
-public IBerufsinfoService getDelegate() {
-    try {
-        InitialContext ctx = new InitialContext();
-        return (IBerufsinfoService) ctx.lookup("java:global/pdb-ear/pdb-berufsinfo/BerufsinfoServiceDelegateEJBImpl!com.pdb.IBerufsinfoService");
-    } catch (NamingException e) {
-        throw new RuntimeException("Failed to lookup delegate", e);
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.Converter;
+import jakarta.faces.convert.FacesConverter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
+@FacesConverter(value = "localDateConverter", managed = true)
+public class LocalDateConverter implements Converter<LocalDate> {
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+    @Override
+    public LocalDate getAsObject(FacesContext context, UIComponent component, String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(value, FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid date format. Expected dd-MM-yyyy");
+        }
+    }
+
+    @Override
+    public String getAsString(FacesContext context, UIComponent component, LocalDate value) {
+        return (value == null) ? "" : value.format(FORMATTER);
     }
 }
-
---add-opens java.base/sun.util.calendar=ALL-UNNAMED
