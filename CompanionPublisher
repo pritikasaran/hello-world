@@ -1,30 +1,20 @@
-import jakarta.faces.component.UIComponent;
-import jakarta.faces.context.FacesContext;
-import jakarta.faces.convert.Converter;
-import jakarta.faces.convert.FacesConverter;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-
-@FacesConverter(value = "localDateConverter", managed = true)
-public class LocalDateConverter implements Converter<LocalDate> {
+@FacesConverter(value = "dateToLocalDateConverter", managed = true)
+public class DateToLocalDateConverter implements Converter<Date> {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final ZoneId ZONE = ZoneId.systemDefault();
 
     @Override
-    public LocalDate getAsObject(FacesContext context, UIComponent component, String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return null;
-        }
-        try {
-            return LocalDate.parse(value, FORMATTER);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid date format. Expected dd-MM-yyyy");
-        }
+    public Date getAsObject(FacesContext context, UIComponent component, String value) {
+        if (value == null || value.trim().isEmpty()) return null;
+        LocalDate localDate = LocalDate.parse(value, FORMATTER);
+        return Date.from(localDate.atStartOfDay(ZONE).toInstant());
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, LocalDate value) {
-        return (value == null) ? "" : value.format(FORMATTER);
+    public String getAsString(FacesContext context, UIComponent component, Date value) {
+        if (value == null) return "";
+        LocalDate localDate = value.toInstant().atZone(ZONE).toLocalDate();
+        return localDate.format(FORMATTER);
     }
 }
