@@ -1,0 +1,26 @@
+[Unit]
+Description=Companion Embedded Tomcat Service
+After=network.target
+
+[Service]
+User=athora
+WorkingDirectory=/home/athora/ex20708
+
+# Override port externally (change 9090 if needed)
+Environment=SERVER_PORT=9090
+
+ExecStart=/usr/bin/java \
+  -Dserver.port=${SERVER_PORT} \
+  -Dspring.config.location=classpath:/application.properties,/home/athora/ex20708/.genre/conf/settings.properties \
+  -cp "./lib/*:companion.war" \
+  org.springframework.boot.loader.WarLauncher
+
+SuccessExitStatus=143
+Restart=always
+RestartSec=5
+
+StandardOutput=append:/home/athora/ex20708/logs/companion.out
+StandardError=append:/home/athora/ex20708/logs/companion.err
+
+[Install]
+WantedBy=multi-user.target
