@@ -1,0 +1,7 @@
+nohup java \
+ -Dcompanion.home="/home/athora/ex20708/companion" \
+ -Dspring.config.location=classpath:/application.properties,/home/athora/ex20708/companion/.genre/conf/settings.properties \
+ -Dserver.port=9090 \
+ -cp "./lib/*:companion.war" \
+ org.springframework.boot.loader.WarLauncher \
+ > /home/athora/ex20708/companion/logs/companion.out 2>&1 &
