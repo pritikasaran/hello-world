@@ -1,0 +1,8 @@
+mvn deploy:deploy-file \
+  -DgroupId=com.yourorg.gre \
+  -DartifactId=gre \
+  -Dversion=1.0.0 \
+  -Dpackaging=jar \
+  -Dfile=gre.jar \
+  -DrepositoryId=nexus \
+  -Durl=http://your-nexus-server/repository/your-repo/
