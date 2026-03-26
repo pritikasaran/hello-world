@@ -1,1 +1,64 @@
--Dmicroprofile.config.location=file:/opt/payara/config/myconfig.properties
+<ui:composition template="/templates/mainTemplateWithoutForm.xhtml">
+		<ui:define name="title">
+			<div style="padding:0px 5px 0 5px">
+			<h3>#{loginVC.windowTitle}</h3>
+			</div>
+		</ui:define>
+	    <ui:define name="content">
+	    	<f:event type="jakarta.faces.event.PreRenderViewEvent" listener="#{loginVC.preRenderView}"/> 
+			<af:form id="loginForm" defaultCommand="cmdAnmelden">
+			
+				<af:resource type="javascript">
+					try {	
+						window.addEventListener('load', waitClickButton);
+					} catch (e) {
+							alert("Fehler: " + e.number + " - " + e.description);
+					}
+					
+					function waitClickButton() {
+						setTimeout(clickButton, 100)
+					}
+					
+					
+					function clickButton() {
+						try {
+							var buttonAnmelden = document.getElementById('cmdAnmelden');
+							if (buttonAnmelden) {
+								buttonAnmelden.click();
+							}
+							
+						} catch (e) {
+								alert("Fehler: " + e.number + " - " + e.description);
+						}
+					}
+				</af:resource>
+				
+					<trh:tableLayout cellSpacing="7">
+						<trh:rowLayout>
+							<af:outputLabel value="User-ID:" />
+							<af:inputText id="userid" value="#{loginVC.imsModell.benutzerID}" clientComponent="true" />
+						</trh:rowLayout>
+
+						<trh:rowLayout>
+							<af:spacer width="20" />
+						</trh:rowLayout>
+
+						<trh:rowLayout>
+							<trh:cellFormat columnSpan="2">
+								<af:commandButton text="Weiter" id="cmdAnmelden" partialSubmit="false"
+									action="#{loginVC.anmelden}" accessKey="m">
+										<af:clientListener method="registerWindowAttrs" type="action" />
+										<af:serverListener type="registerWindowAttrs"
+												method="#{akteVC.akteModell.imsModell.setWindowAttrsFromJs}" />
+								</af:commandButton>
+								<af:spacer width="10" />
+								<af:commandButton text="Schliessen" id="cmdCancel" accessKey="e">
+									<af:clientListener method="closeIMS" type="action" />
+								</af:commandButton>
+							</trh:cellFormat>
+						</trh:rowLayout>						
+					</trh:tableLayout>
+					
+			</af:form>
+	    </ui:define>
+	</ui:composition>
