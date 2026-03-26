@@ -1,5 +1,59 @@
-native2ascii -reverse -encoding UTF-8 old.properties new.properties
+package com.example;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.event.ComponentSystemEvent;
+import jakarta.inject.Named;
+import java.io.Serializable;
 
-<%@ page contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" %>
-struts.i18n.encoding=ISO-8859-1
+@Named("loginVC")
+@SessionScoped
+public class LoginVC implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private String windowTitle;
+    private ImsModell imsModell;
+
+    @PostConstruct
+    public void init() {
+        windowTitle = "Login";
+        imsModell = new ImsModell();
+    }
+
+    // Called before rendering the view
+    public void preRenderView(ComponentSystemEvent event) {
+        // Any initialization logic before rendering
+        System.out.println("PreRenderView triggered");
+    }
+
+    // Action method for login
+    public String anmelden() {
+        // Example: validate user ID
+        if (imsModell.getBenutzerID() != null && !imsModell.getBenutzerID().isEmpty()) {
+            // Perform authentication logic here
+            System.out.println("User logged in: " + imsModell.getBenutzerID());
+            return "home.xhtml?faces-redirect=true";
+        } else {
+            // Stay on login page
+            return null;
+        }
+    }
+
+    // Getters and setters
+    public String getWindowTitle() {
+        return windowTitle;
+    }
+
+    public void setWindowTitle(String windowTitle) {
+        this.windowTitle = windowTitle;
+    }
+
+    public ImsModell getImsModell() {
+        return imsModell;
+    }
+
+    public void setImsModell(ImsModell imsModell) {
+        this.imsModell = imsModell;
+    }
+}
