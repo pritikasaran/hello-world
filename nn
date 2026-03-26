@@ -1,29 +1,39 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<f:view xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
-	xmlns:tr="http://myfaces.apache.org/trinidad">        
-<af:document title="#{akteVC.windowTitle}">
-     <f:facet name="metaContainer">
-    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    </f:facet>
-    <af:resource type="javascript" source="../../resources/js/batman.js" />
-    <af:resource type="css" source="../../resources/css/ims.css" />
-    <af:clientListener method="rewriteAdfSetFocusOnEditableElementInNode" type="load"/>
-	<af:panelStretchLayout  bottomHeight="5" >
-		<f:facet name="top">
-    		<ui:insert name="title"></ui:insert>
-		</f:facet>
-		<f:facet name="center">
-    		<ui:insert name="content"/>
-		</f:facet>
-		<f:facet name="bottom">
-			<af:messages globalOnly="true" />
-		</f:facet>
-	</af:panelStretchLayout>
-</af:document>
-</f:view>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>#{akteVC.windowTitle}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- JS and CSS resources -->
+    <h:outputScript library="js" name="batman.js" />
+    <h:outputStylesheet library="css" name="ims.css" />
+</h:head>
+
+<h:body>
+    <p:layout fullPage="true">
+
+        <!-- Top region -->
+        <p:layoutUnit position="north" size="60" resizable="false">
+            <!-- Insert your title content here -->
+            <h:outputText value="#{akteVC.windowTitle}" style="font-weight:bold;" />
+        </p:layoutUnit>
+
+        <!-- Center region -->
+        <p:layoutUnit position="center">
+            <!-- Insert your main content here -->
+            <ui:insert name="content" />
+        </p:layoutUnit>
+
+        <!-- Bottom region -->
+        <p:layoutUnit position="south" size="40" resizable="false">
+            <p:messages id="globalMessages" globalOnly="true" closable="true" />
+        </p:layoutUnit>
+
+    </p:layout>
+</h:body>
+</html>
