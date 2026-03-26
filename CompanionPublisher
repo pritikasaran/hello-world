@@ -1,4 +1,15 @@
-<ui:composition template="/templates/mainTemplateWithoutForm.xhtml">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+      xmlns:tr="http://myfaces.apache.org/trinidad"
+      xmlns:trh="http://myfaces.apache.org/trinidad/html">
+<body>
+	<ui:composition template="/templates/mainTemplateWithoutForm.xhtml">
 		<ui:define name="title">
 			<div style="padding:0px 5px 0 5px">
 			<h3>#{loginVC.windowTitle}</h3>
@@ -62,3 +73,5 @@
 			</af:form>
 	    </ui:define>
 	</ui:composition>
+</body>
+</html>
