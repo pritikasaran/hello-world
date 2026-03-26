@@ -1,59 +1,29 @@
-package com.example;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.event.ComponentSystemEvent;
-import jakarta.inject.Named;
-import java.io.Serializable;
-
-@Named("loginVC")
-@SessionScoped
-public class LoginVC implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    private String windowTitle;
-    private ImsModell imsModell;
-
-    @PostConstruct
-    public void init() {
-        windowTitle = "Login";
-        imsModell = new ImsModell();
-    }
-
-    // Called before rendering the view
-    public void preRenderView(ComponentSystemEvent event) {
-        // Any initialization logic before rendering
-        System.out.println("PreRenderView triggered");
-    }
-
-    // Action method for login
-    public String anmelden() {
-        // Example: validate user ID
-        if (imsModell.getBenutzerID() != null && !imsModell.getBenutzerID().isEmpty()) {
-            // Perform authentication logic here
-            System.out.println("User logged in: " + imsModell.getBenutzerID());
-            return "home.xhtml?faces-redirect=true";
-        } else {
-            // Stay on login page
-            return null;
-        }
-    }
-
-    // Getters and setters
-    public String getWindowTitle() {
-        return windowTitle;
-    }
-
-    public void setWindowTitle(String windowTitle) {
-        this.windowTitle = windowTitle;
-    }
-
-    public ImsModell getImsModell() {
-        return imsModell;
-    }
-
-    public void setImsModell(ImsModell imsModell) {
-        this.imsModell = imsModell;
-    }
-}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+	xmlns:tr="http://myfaces.apache.org/trinidad">        
+<af:document title="#{akteVC.windowTitle}">
+     <f:facet name="metaContainer">
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    </f:facet>
+    <af:resource type="javascript" source="../../resources/js/batman.js" />
+    <af:resource type="css" source="../../resources/css/ims.css" />
+    <af:clientListener method="rewriteAdfSetFocusOnEditableElementInNode" type="load"/>
+	<af:panelStretchLayout  bottomHeight="5" >
+		<f:facet name="top">
+    		<ui:insert name="title"></ui:insert>
+		</f:facet>
+		<f:facet name="center">
+    		<ui:insert name="content"/>
+		</f:facet>
+		<f:facet name="bottom">
+			<af:messages globalOnly="true" />
+		</f:facet>
+	</af:panelStretchLayout>
+</af:document>
+</f:view>
