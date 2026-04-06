@@ -1,82 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:f="jakarta.faces.core"
-      xmlns:h="jakarta.faces.html"
-      xmlns:ui="jakarta.faces.facelets"
-      xmlns:p="http://primefaces.org/ui">
+@Named("loginVC")
+@ViewScoped
+public class LoginVC implements Serializable {
 
-<h:body>
-    <ui:composition template="/templates/mainTemplateWithoutForm.xhtml">
-        <ui:define name="title">
-            <div style="padding:0px 5px 0 5px">
-                <h3>#{loginVC.windowTitle}</h3>
-            </div>
-        </ui:define>
-
-        <ui:define name="content">
-            <f:event type="preRenderView" listener="#{loginVC.preRenderView}" />
-
-            <h:form id="loginForm">
-                <!-- Inline JS resource -->
-                <h:outputScript>
-                    try {
-                        window.addEventListener('load', waitClickButton);
-                    } catch (e) {
-                        alert("Fehler: " + e.message);
-                    }
-
-                    function waitClickButton() {
-                        setTimeout(clickButton, 100);
-                    }
-
-                    function clickButton() {
-                        try {
-                            var buttonAnmelden = document.getElementById('loginForm:cmdAnmelden');
-                            if (buttonAnmelden) {
-                                buttonAnmelden.click();
-                            }
-                        } catch (e) {
-                            alert("Fehler: " + e.message);
-                        }
-                    }
-                </h:outputScript>
-
-                <!-- Layout -->
-                <p:panelGrid columns="2" cellpadding="7">
-
-                    <!-- User-ID row -->
-                    <h:outputLabel for="userid" value="User-ID:" />
-                    <p:inputText id="userid"
-                                 value="#{loginVC.imsModell.benutzerID}"
-                                 widgetVar="useridWidget" />
-
-                    <!-- Spacer row -->
-                    <p:spacer width="20" />
-
-                    <!-- Buttons row -->
-                    <p:row>
-                        <p:column colspan="2">
-                            <p:commandButton id="cmdAnmelden"
-                                             value="Weiter"
-                                             action="#{loginVC.anmelden}"
-                                             ajax="false"
-                                             accesskey="m"
-                                             icon="pi pi-check" />
-
-                            <p:spacer width="10" />
-
-                            <p:commandButton id="cmdCancel"
-                                             value="Schliessen"
-                                             onclick="closeIMS(); return false;"
-                                             accesskey="e"
-                                             icon="pi pi-times" />
-                        </p:column>
-                    </p:row>
-
-                </p:panelGrid>
-            </h:form>
-        </ui:define>
-    </ui:composition>
-</h:body>
-</html>
+    public String getCurrentUser() {
+        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance()
+                .getExternalContext().getRequest();
+        return req.getUserPrincipal() != null ? req.getUserPrincipal().getName() : "Anonymous";
+    }
+}
