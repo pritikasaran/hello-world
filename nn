@@ -1,39 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:f="jakarta.faces.core"
-      xmlns:h="jakarta.faces.html"
-      xmlns:p="http://primefaces.org/ui">
-
-<h:head>
-    <title>#{akteVC.windowTitle}</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-
-    <!-- JS and CSS resources -->
-    <h:outputScript library="js" name="batman.js" />
-    <h:outputStylesheet library="css" name="ims.css" />
-</h:head>
-
-<h:body>
-    <p:layout fullPage="true">
-
-        <!-- Top region -->
-        <p:layoutUnit position="north" size="60" resizable="false">
-            <!-- Insert your title content here -->
-            <h:outputText value="#{akteVC.windowTitle}" style="font-weight:bold;" />
-        </p:layoutUnit>
-
-        <!-- Center region -->
-        <p:layoutUnit position="center">
-            <!-- Insert your main content here -->
-            <ui:insert name="content" />
-        </p:layoutUnit>
-
-        <!-- Bottom region -->
-        <p:layoutUnit position="south" size="40" resizable="false">
-            <p:messages id="globalMessages" globalOnly="true" closable="true" />
-        </p:layoutUnit>
-
-    </p:layout>
-</h:body>
-</html>
+<h:form>
+    <p:panel header="Welcome">
+        <h:outputText value="Logged in as: #{loginVC.currentUser}" />
+    </p:panel>
+</h:form>
