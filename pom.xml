@@ -1,24 +1,5 @@
-<h:form id="loginForm">
-    <p:panel header="Kerberos Login">
-        <h:panelGrid columns="2" cellpadding="5">
-
-            <h:outputLabel for="userid" value="User-ID:" />
-            <!-- Bind directly to imsModell.benutzerID -->
-            <p:inputText id="userid" value="#{loginVC.imsModell.benutzerID}" readonly="true" />
-
-            <h:outputLabel />
-            <p:commandButton id="cmdAnmelden"
-                             value="Weiter"
-                             action="#{loginVC.anmelden}"
-                             update="@form"
-                             onclick="registerWindowAttrs();">
-                <p:ajax listener="#{akteVC.akteModell.imsModell.setWindowAttrsFromJs}" />
-            </p:commandButton>
-
-            <h:outputLabel />
-            <p:commandButton id="cmdCancel"
-                             value="Schliessen"
-                             onclick="closeIMS(); return false;" />
-        </h:panelGrid>
-    </p:panel>
-</h:form>
+<script>
+    window.onload = function() {
+        PF('kkePopupDlg').show();
+    };
+</script>
