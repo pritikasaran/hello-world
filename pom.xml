@@ -1,2 +1,7 @@
-<p:remoteCommand name="showPopup"
-                 oncomplete="PF('kkePopupDlg').show()" />
+<h:outputScript>
+    //<![CDATA[
+    $(function() {
+        PF('kkePopupDlg').show();
+    });
+    //]]>
+</h:outputScript>
