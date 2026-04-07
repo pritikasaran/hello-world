@@ -1,5 +1,2 @@
-<script>
-    window.onload = function() {
-        PF('kkePopupDlg').show();
-    };
-</script>
+<p:remoteCommand name="showPopup"
+                 oncomplete="PF('kkePopupDlg').show()" />
