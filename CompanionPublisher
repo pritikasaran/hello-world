@@ -2,9 +2,27 @@
 @ViewScoped
 public class LoginVC implements Serializable {
 
-    public String getCurrentUser() {
+    @Inject
+    private ImsModell imsModell;   // CDI will inject this bean
+
+    private String windowTitle = "Login";
+
+    public void preRenderView() {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance()
                 .getExternalContext().getRequest();
-        return req.getUserPrincipal() != null ? req.getUserPrincipal().getName() : "Anonymous";
+
+        if (req.getUserPrincipal() != null) {
+            // Populate the injected model with Kerberos principal
+            imsModell.setBenutzerID(req.getUserPrincipal().getName());
+        }
     }
+
+    public String anmelden() {
+        // Navigate forward, Kerberos already authenticated
+        return "home.xhtml?faces-redirect=true";
+    }
+
+    // getter for EL
+    public ImsModell getImsModell() { return imsModell; }
+    public String getWindowTitle() { return windowTitle; }
 }
