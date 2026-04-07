@@ -1,77 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
-      xmlns:tr="http://myfaces.apache.org/trinidad"
-      xmlns:trh="http://myfaces.apache.org/trinidad/html">
-<body>
-	<ui:composition template="/templates/mainTemplateWithoutForm.xhtml">
-		<ui:define name="title">
-			<div style="padding:0px 5px 0 5px">
-			<h3>#{loginVC.windowTitle}</h3>
-			</div>
-		</ui:define>
-	    <ui:define name="content">
-	    	<f:event type="javax.faces.event.PreRenderViewEvent" listener="#{loginVC.preRenderView}"/> 
-			<af:form id="loginForm" defaultCommand="cmdAnmelden">
-			
-				<af:resource type="javascript">
-					try {	
-						window.addEventListener('load', waitClickButton);
-					} catch (e) {
-							alert("Fehler: " + e.number + " - " + e.description);
-					}
-					
-					function waitClickButton() {
-						setTimeout(clickButton, 100)
-					}
-					
-					
-					function clickButton() {
-						try {
-							var buttonAnmelden = document.getElementById('cmdAnmelden');
-							if (buttonAnmelden) {
-								buttonAnmelden.click();
-							}
-							
-						} catch (e) {
-								alert("Fehler: " + e.number + " - " + e.description);
-						}
-					}
-				</af:resource>
-				
-					<trh:tableLayout cellSpacing="7">
-						<trh:rowLayout>
-							<af:outputLabel value="User-ID:" />
-							<af:inputText id="userid" value="#{loginVC.imsModell.benutzerID}" clientComponent="true" />
-						</trh:rowLayout>
+<h:form id="loginForm">
+    <p:panel header="Kerberos Login">
+        <h:panelGrid columns="2" cellpadding="5">
 
-						<trh:rowLayout>
-							<af:spacer width="20" />
-						</trh:rowLayout>
+            <h:outputLabel for="userid" value="User-ID:" />
+            <!-- Bind directly to imsModell.benutzerID -->
+            <p:inputText id="userid" value="#{loginVC.imsModell.benutzerID}" readonly="true" />
 
-						<trh:rowLayout>
-							<trh:cellFormat columnSpan="2">
-								<af:commandButton text="Weiter" id="cmdAnmelden" partialSubmit="false"
-									action="#{loginVC.anmelden}" accessKey="m">
-										<af:clientListener method="registerWindowAttrs" type="action" />
-										<af:serverListener type="registerWindowAttrs"
-												method="#{akteVC.akteModell.imsModell.setWindowAttrsFromJs}" />
-								</af:commandButton>
-								<af:spacer width="10" />
-								<af:commandButton text="Schliessen" id="cmdCancel" accessKey="e">
-									<af:clientListener method="closeIMS" type="action" />
-								</af:commandButton>
-							</trh:cellFormat>
-						</trh:rowLayout>						
-					</trh:tableLayout>
-					
-			</af:form>
-	    </ui:define>
-	</ui:composition>
-</body>
-</html>
+            <h:outputLabel />
+            <p:commandButton id="cmdAnmelden"
+                             value="Weiter"
+                             action="#{loginVC.anmelden}"
+                             update="@form"
+                             onclick="registerWindowAttrs();">
+                <p:ajax listener="#{akteVC.akteModell.imsModell.setWindowAttrsFromJs}" />
+            </p:commandButton>
+
+            <h:outputLabel />
+            <p:commandButton id="cmdCancel"
+                             value="Schliessen"
+                             onclick="closeIMS(); return false;" />
+        </h:panelGrid>
+    </p:panel>
+</h:form>
