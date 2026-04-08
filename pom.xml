@@ -1,7 +1,33 @@
-<h:outputScript>
-    //<![CDATA[
-    $(function() {
-        PF('kkePopupDlg').show();
-    });
-    //]]>
-</h:outputScript>
+<h:form id="dokuanzeigeDrei">
+    <!-- PreRenderViewEvent equivalent -->
+    <f:event type="preRenderView" listener="#{dokuDreiVC.preRenderView}" />
+
+    <p:panel id="appletAnzeige">
+        <h:outputText id="viewer" value="#{dokuDreiVC.appletBinding}" escape="false" />
+
+        <p:panelGrid columns="3" style="text-align:center;">
+            <!-- Deaktivieren button -->
+            <p:commandButton id="deaktivieren"
+                             value="Deaktivieren"
+                             action="#{dokuDreiVC.deaktivierenEintrag}"
+                             title="Schockzettel deaktivieren" />
+
+            <!-- Input text -->
+            <p:inputText id="vonBis"
+                         value="#{dokuDreiVC.anzeigeText}"
+                         style="width:400px;color:black;" />
+
+            <!-- Spacer -->
+            <h:panelGroup style="width:20px;display:inline-block;" />
+
+            <!-- Abbrechen button -->
+            <p:commandButton id="abbrechen"
+                             value="Abbrechen"
+                             action="#{dokuDreiVC.cancel}"
+                             title="Anzeige schließen"
+                             ajax="true"
+                             oncomplete="closeViewerValidator()" />
+        </p:panelGrid>
+    </p:panel>
+</h:form>
+
