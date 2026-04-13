@@ -1,24 +1,23 @@
- <!-- Hinweistext (above the field, spanning both columns) -->
-    <h:outputText value="#{kKEControllerMasch.kkeModel.hinweisText}"
-                  styleClass="imsAnzeigeRotKlein"
-                  colspan="2" />
+    <!-- Bearbeitung -->
+    <h:outputLabel for="selBearb" value="Bearbeitung:" />
+    <p:selectOneMenu id="selBearb"
+                     value="#{kKEControllerMasch.kkeModel.bearbeitung}"
+                     style="width:300px">
+        <f:selectItems value="#{kKEControllerMasch.kkeModel.bearbItems}" />
+    </p:selectOneMenu>
 
-    <!-- Anzahl Arbeitstage -->
-    <h:outputLabel for="inpTage" value="Anzahl Arbeitstage:" />
-    <p:inputText id="inpTage"
-                 value="#{kKEControllerMasch.kkeModel.arbeitstage}"
-                 required="true"
+    <!-- Anzahl Einzelverträge (conditional rendering) -->
+    <h:outputLabel for="selAnzalVtr" value="Anzahl Einzelverträge:"
+                   rendered="#{kKEControllerMasch.kkeModel.kollOrbArt}" />
+    <p:inputText id="selAnzalVtr"
+                 value="#{kKEControllerMasch.kkeModel.kollvtrAnzahl}"
+                 rendered="#{kKEControllerMasch.kkeModel.kollOrbArt}"
                  size="10" maxlength="10"
-                 onfocus="selectContent(this)">
-        <f:convertNumber locale="de" />
-        <f:validator validatorId="KkeArbeitstagValidator" />
-        <!-- Server-side listener equivalent -->
-        <p:ajax event="change"
-                listener="#{postkorbVC.aktualisierenListener}"
-                update="@form" />
-    </p:inputText>
+                 onfocus="selectContent(this)" />
+</p:panelGrid>
 
-    <!-- Hinweis Arbeitstage (spanning both columns) -->
-    <h:outputText value="#{kKEControllerMasch.kkeModel.hinweisArbeitstage}"
-                  styleClass="imsAnzeigeRotKlein"
-                  colspan="2" />
+<!-- Action button -->
+<p:commandButton id="kkeAusfuehren"
+                 value="Ausführen"
+                 actionListener="#{akteVC.kkeAusfuehrenListener}"
+                 update="@form" />
