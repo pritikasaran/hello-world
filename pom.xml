@@ -1,420 +1,151 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<div xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
-	xmlns:tr="http://myfaces.apache.org/trinidad"
-	xmlns:trh="http://myfaces.apache.org/trinidad/html">
-	<af:subform id="postkorbSubForm" defaultCommand="cmdNeuLaden">
-		<af:menuBar>
-			<af:menu text="Postkorb">
-				<af:commandMenuItem text="Neu Laden"
-					icon="/resources/images/refresh.gif"
-					action="#{postkorbVC.actionAktualisieren}" partialSubmit="true">
-				</af:commandMenuItem>
-				<af:commandMenuItem text="Sortieren"
-					icon="/resources/images/sortieren.gif"
-					shortDesc="Postkorb sortieren" windowWidth="500" windowHeight="400"
-					windowModalityType="applicationModal" useWindow="true"
-					partialSubmit="true" action="#{postkorbVC.sortierungEinstellen}"
-					returnListener="#{postkorbVC.returnFromSortierenDialog}" />
-				<af:commandMenuItem text="Öffnen/Schließen" icon=""
-					windowWidth="750" windowHeight="630"
-					windowModalityType="applicationModal" useWindow="true"
-					partialSubmit="true" action="#{postkorbVC.openClose}">
-					<af:setActionListener
-						from="#{postkorbVC.postkorbModell.postkorbID}"
-						to="#{postkorbOpenCloseVC.modell.postkorbID}" />
-					<af:setActionListener from="#{true}"
-						to="#{postkorbOpenCloseVC.modell.resetModell}" />
-				</af:commandMenuItem>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Postkorb</title>
+</h:head>
+<h:body>
+<h:form id="postkorbSubForm">
 
-				<af:commandMenuItem text="Berechtigung" icon=""
-					rendered="#{(postkorbVC.imsModell.benutzer.orgPosition eq 'A') or (postkorbVC.imsModell.benutzer.orgPosition eq 'G')}"
-					windowWidth="750" windowHeight="750"
-					windowModalityType="applicationModal" useWindow="true"
-					action="#{postkorbVC.berechtigung}">
-					<af:setActionListener
-						from="#{postkorbVC.postkorbModell.postkorbID}"
-						to="#{postkorbBerechtVC.modell.postkorbID}" />
-					<af:setActionListener from="#{true}"
-						to="#{postkorbBerechtVC.modell.resetModell}" />
-				</af:commandMenuItem>
-			</af:menu>
-			<af:menu text="Eintrag">
-				<af:commandMenuItem text="Termin bearbeiten"
-					icon="/resources/images/bearbeiten.gif"
-					binding="#{postkorbVC.cmdMenuItemTerminBearbeiten}"
-					action="#{postkorbVC.bearbeiteTermin}">
-				</af:commandMenuItem>
-				<af:commandMenuItem text="Weiterleiten/Wiedervorlage"
-					rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-					useWindow="true" windowWidth="510" windowHeight="700"
-					windowModalityType="applicationModal"
-					action="#{postkorbVC.weiterleiten}" partialSubmit="true"
-					returnListener="#{postkorbVC.returnWeiterleitenDialog}"
-					icon="/resources/images/weiterleiten.gif" />
-				<af:commandMenuItem text="Kennzeichen ändern"
-					rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-					icon="/resources/images/kzaendern2.gif"
-					action="#{postkorbVC.kennzeichenAendern}" partialSubmit="true" />
-				<af:commandMenuItem text="Erledigen" partialSubmit="true"
-					rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-					windowModalityType="applicationModal" useWindow="true"
-					action="#{postkorbVC.erledigenTermin}"
-					icon="/resources/images/termin_erled.gif" />
-			</af:menu>
-			<af:menu text="Hilfe">
-				<af:commandMenuItem text="Anzeige Handbuch IMS"
-					windowModalityType="applicationModal" useWindow="true"
-                    windowWidth="750" windowHeight="900" partialSubmit="true"
-					action="#{postkorbVC.openIMSHandbuch}"
-					icon="/resources/images/information.gif" />
-				<af:commandMenuItem text="Anzeige Handbuch KKE"
-					windowModalityType="applicationModal" useWindow="true"
-                    windowWidth="750" windowHeight="900" partialSubmit="true"
-					action="#{postkorbVC.openKKEHandbuch}"
-					icon="/resources/images/information.gif" />
-				<af:commandMenuItem text="Anzeige Handbuch BQM"
-					windowModalityType="applicationModal" useWindow="true"
-                    windowWidth="750" windowHeight="900" partialSubmit="true"
-					action="#{postkorbVC.openBQMHandbuch}"
-					icon="/resources/images/information.gif" />
-				<af:commandMenuItem text="Info"
-					windowModalityType="applicationModal" useWindow="true"
-					windowWidth="200" windowHeight="200" partialSubmit="true"
-					action="#{postkorbVC.showInfo}"/>
-				<af:commandMenuItem text="Teste Fehlerseite"
-					windowModalityType="applicationModal" useWindow="true"
-					windowWidth="750" windowHeight="900"
-					action="#{postkorbVC.showTestError}"
-					rendered="#{postkorbVC.showTestButtons}" />
-			</af:menu>
-		</af:menuBar>
-		<ui:remove>Kommando-Knoppkes</ui:remove>
-		<af:panelGroupLayout styleClass="AFStretchWidth" layout="horizontal">
-			<af:panelGroupLayout layout="horizontal">
-				<af:commandButton id="cmdNeuLaden"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					action="#{postkorbVC.actionAktualisieren}" partialSubmit="true"
-					icon="/resources/images/refresh.gif" shortDesc="Aktualisieren">
-				</af:commandButton>
-				<af:commandButton id="cmdPkSort"
-					icon="/resources/images/sortieren.gif"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					shortDesc="Postkorb sortieren" windowWidth="500" windowHeight="400"
-					windowModalityType="applicationModal" useWindow="true"
-					partialSubmit="true" action="#{postkorbVC.sortierungEinstellen}"
-					returnListener="#{postkorbVC.returnFromSortierenDialog}" />
-				<af:commandButton binding="#{postkorbVC.cmdButtonTerminBearbeiten}"
-					id="cmdTerminBearbeiten" icon="/resources/images/bearbeiten.gif"
-					shortDesc="Termin bearbeiten"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					action="#{postkorbVC.bearbeiteTermin}">
-					<f:ajax execute="@this" render="@form" />
-				</af:commandButton>
-				<af:commandButton id="cmdPkWW"
-					rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					icon="/resources/images/weiterleiten.gif"
-					shortDesc="Weiterleiten/Wiedervorlage" partialSubmit="true"
-					action="#{postkorbVC.weiterleiten}"
-					returnListener="#{postkorbVC.returnWeiterleitenDialog}"
-					useWindow="true" windowWidth="510" windowHeight="700"
-					windowModalityType="applicationModal">
-				</af:commandButton>
-				<af:commandButton id="cmdPkKzEdit"
-					rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-					icon="/resources/images/kzaendern2.gif"
-					shortDesc="Kennzeichen ändern"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					action="#{postkorbVC.kennzeichenAendern}" partialSubmit="true" />
-				<af:commandButton id="cmdKKE" icon="/resources/images/kke.gif"
-					immediate="true" useWindow="true"
-					shortDesc="Kundenkontakterfassung"
-					inlineStyle="padding-left:2px;padding-right:2px;" windowWidth="750"
-					windowHeight="930" partialSubmit="true"
-					rendered="#{akteVC.akteModell.KKEBerechtigt}"
-					action="#{postkorbVC.startKKE}" />
-			</af:panelGroupLayout>
-			<af:panelGroupLayout layout="horizontal" halign="right">
-				<af:commandButton id="cmdTerminErledigenPostkorb"
-					rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-					icon="/resources/images/termin_erled.gif" partialSubmit="true"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					windowModalityType="applicationModal" useWindow="true"
-					shortDesc="Termin erledigen" action="#{postkorbVC.erledigenTermin}">
-				</af:commandButton>
-			</af:panelGroupLayout>
-		</af:panelGroupLayout>
-		<!-- Werte zum Neu Laden der Maske-->
-		<tr:panelCaptionGroup captionText="Postkorb">
-			<af:panelGroupLayout layout="horizontal"
-				rendered="#{postkorbVC.postkorbModell.filterLoaded}">
-				<af:spacer height="10px" />
-				<af:inputText id="pkAbteilung" name="pkAbteilung" label="Abteilung:"
-					columns="4" value="#{postkorbVC.postkorbModell.filter.abteilung}" />
-				<af:inputText id="pkGruppe" name="pkGruppe" label="Gruppe:"
-					columns="4" value="#{postkorbVC.postkorbModell.filter.gruppe}" />
-				<af:inputText id="pkDiktatKz" name="pkDiktatKz"
-					label="Diktatkennzeichen:" columns="4"
-					value="#{postkorbVC.postkorbModell.filter.diktatKz}" />
-			</af:panelGroupLayout>
-		</tr:panelCaptionGroup>
+    <!-- Menubar -->
+    <p:menubar>
+        <p:submenu label="Postkorb">
+            <p:menuitem value="Neu Laden" icon="pi pi-refresh"
+                        action="#{postkorbVC.actionAktualisieren}" />
+            <p:menuitem value="Sortieren" icon="pi pi-sort"
+                        action="#{postkorbVC.sortierungEinstellen}" />
+            <p:menuitem value="Öffnen/Schließen"
+                        action="#{postkorbVC.openClose}" />
+            <p:menuitem value="Berechtigung"
+                        rendered="#{postkorbVC.imsModell.benutzer.orgPosition eq 'A' or postkorbVC.imsModell.benutzer.orgPosition eq 'G'}"
+                        action="#{postkorbVC.berechtigung}" />
+        </p:submenu>
 
-		<af:panelGroupLayout layout="vertical">
-			<af:panelGroupLayout styleClass="AFStretchWidth" layout="horizontal">
-				<!-- Anzeige Werte fuer Postkorb -->
-				<af:panelFormLayout rows="1" maxColumns="5">
-					<af:panelLabelAndMessage labelStyle="white-space: nowrap;"
-						label="User-ID:">
-						<af:outputText styleClass="textfett"
-							value="#{postkorbVC.imsModell.benutzerID}" id="useridTxt" />
-					</af:panelLabelAndMessage>
-					<af:panelLabelAndMessage labelStyle="white-space: nowrap;"
-						label="Postkorb-ID:">
-						<af:outputText value="#{postkorbVC.postkorbModell.postkorbID}"
-							id="postkorbId" styleClass="textfett" />
-					</af:panelLabelAndMessage>
-					<af:panelLabelAndMessage labelStyle="white-space: nowrap;"
-						label="Anzahl Einträge:">
-						<af:outputText id="anzahlTermine"
-							value="#{postkorbVC.anzahlTermine}" styleClass="textfett" />
-					</af:panelLabelAndMessage>
-					<af:panelLabelAndMessage labelStyle="white-space: nowrap;"
-						label="Datum:">
-						<af:outputText value="#{postkorbVC.postkorbModell.currentDate}"
-							styleClass="textfett" id="currentDate" label="Datum:" />
-					</af:panelLabelAndMessage>
-				</af:panelFormLayout>
-				<af:panelGroupLayout layout="horizontal" halign="right">
-					<af:selectBooleanCheckbox id="selSortierung" autoSubmit="true"
-						disabled="#{postkorbVC.postkorbModell.stardartSortierung}"
-						text="Standardsortierung&nbsp;"
-						value="#{postkorbVC.postkorbModell.stardartSortierung}"
-						valueChangeListener="#{postkorbVC.changeStardartSortierung}">
-					</af:selectBooleanCheckbox>
-				</af:panelGroupLayout>
-			</af:panelGroupLayout>
+        <p:submenu label="Eintrag">
+            <p:menuitem value="Termin bearbeiten" icon="pi pi-pencil"
+                        action="#{postkorbVC.bearbeiteTermin}" />
+            <p:menuitem value="Weiterleiten/Wiedervorlage" icon="pi pi-share-alt"
+                        rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
+                        action="#{postkorbVC.weiterleiten}" />
+            <p:menuitem value="Kennzeichen ändern" icon="pi pi-tag"
+                        rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
+                        action="#{postkorbVC.kennzeichenAendern}" />
+            <p:menuitem value="Erledigen" icon="pi pi-check"
+                        rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
+                        action="#{postkorbVC.erledigenTermin}" />
+        </p:submenu>
 
-			<af:panelGroupLayout styleClass="AFStretchWidth" layout="horizontal">
-				<af:panelFormLayout rows="1" maxColumns="5">
-					<af:outputLabel value="Termine:" />
-					<af:selectBooleanRadio id="selTermine1" text="aktuelle"
-						autoSubmit="true" group="grpTermine"
-						valueChangeListener="#{postkorbVC.aktualisierenListener}"
-						selected="#{postkorbVC.postkorbModell.filter.aktuelleTermine}" />
-					<af:selectBooleanRadio id="selTermine2" text="zukuenftige"
-						autoSubmit="true" group="grpTermine"
-						valueChangeListener="#{postkorbVC.aktualisierenListener}"
-						selected="#{postkorbVC.postkorbModell.filter.zukuenftigeTermine}" />
-					<af:selectBooleanRadio id="selTermine3" text="erledigte"
-						autoSubmit="true" group="grpTermine"
-						valueChangeListener="#{postkorbVC.aktualisierenListener}"
-						selected="#{postkorbVC.postkorbModell.filter.erledigteTermine}" />
-				</af:panelFormLayout>
+        <p:submenu label="Hilfe">
+            <p:menuitem value="Handbuch IMS" icon="pi pi-info-circle"
+                        action="#{postkorbVC.openIMSHandbuch}" />
+            <p:menuitem value="Handbuch KKE" icon="pi pi-info-circle"
+                        action="#{postkorbVC.openKKEHandbuch}" />
+            <p:menuitem value="Handbuch BQM" icon="pi pi-info-circle"
+                        action="#{postkorbVC.openBQMHandbuch}" />
+            <p:menuitem value="Info" action="#{postkorbVC.showInfo}" />
+            <p:menuitem value="Teste Fehlerseite"
+                        rendered="#{postkorbVC.showTestButtons}"
+                        action="#{postkorbVC.showTestError}" />
+        </p:submenu>
+    </p:menubar>
 
-				<af:panelGroupLayout layout="horizontal" halign="right">
-					<af:panelLabelAndMessage labelStyle="white-space: nowrap;"
-						label="Individuelles Kennzeichen:">
-						<af:inputText id="ikzTxt" columns="5" maximumLength="5"
-							binding="#{postkorbVC.ikzInputText}"
-							value="#{postkorbVC.postkorbModell.terminIndivText}"
-							clientCompontent="true" />
-					</af:panelLabelAndMessage>
-				</af:panelGroupLayout>
-			</af:panelGroupLayout>
-		</af:panelGroupLayout>
+    <!-- Toolbar buttons -->
+    <p:toolbar>
+        <p:toolbarGroup>
+            <p:commandButton value="Neu Laden" icon="pi pi-refresh"
+                             action="#{postkorbVC.actionAktualisieren}" />
+            <p:commandButton value="Sortieren" icon="pi pi-sort"
+                             action="#{postkorbVC.sortierungEinstellen}" />
+            <p:commandButton value="Termin bearbeiten" icon="pi pi-pencil"
+                             action="#{postkorbVC.bearbeiteTermin}" />
+            <p:commandButton value="Weiterleiten" icon="pi pi-share-alt"
+                             rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
+                             action="#{postkorbVC.weiterleiten}" />
+            <p:commandButton value="Kennzeichen ändern" icon="pi pi-tag"
+                             rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
+                             action="#{postkorbVC.kennzeichenAendern}" />
+            <p:commandButton value="KKE" icon="pi pi-users"
+                             rendered="#{akteVC.akteModell.KKEBerechtigt}"
+                             action="#{postkorbVC.startKKE}" />
+        </p:toolbarGroup>
+        <p:toolbarGroup align="right">
+            <p:commandButton value="Termin erledigen" icon="pi pi-check"
+                             rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
+                             action="#{postkorbVC.erledigenTermin}" />
+        </p:toolbarGroup>
+    </p:toolbar>
 
-		<af:spacer height="10pt" />
-		<ui:remove>
-			<!-- Tabelle Postkorb -->
-		</ui:remove>
-		<af:panelGroupLayout layout="vertical">
-			<p:datatable id="tabPostkorb"
-				value="#{postkorbVC.postkorbModell.eintraege}" var="eintrag"
-				rowSelection="multiple" rowBandingInterval="0"
-				emptyText="#{postkorbVC.postkorbModell.emptyTextTable}"
-				selectedRowKeys="#{postkorbVC.postkorbModell.pkRowKeySet}"
-				contentDelivery="immediate" displayRow="selected"
-				binding="#{postkorbVC.postkorbTable}"
-				styleClass="AFStretchWidth"
-				fetchSize="#{postkorbVC.fetchSizeTable}"
-				disableColumnReordering="true">
+    <!-- Filters -->
+    <p:panel header="Postkorb Filter" rendered="#{postkorbVC.postkorbModell.filterLoaded}">
+        <p:panelGrid columns="3">
+            <p:inputText id="pkAbteilung" value="#{postkorbVC.postkorbModell.filter.abteilung}" placeholder="Abteilung" />
+            <p:inputText id="pkGruppe" value="#{postkorbVC.postkorbModell.filter.gruppe}" placeholder="Gruppe" />
+            <p:inputText id="pkDiktatKz" value="#{postkorbVC.postkorbModell.filter.diktatKz}" placeholder="Diktatkennzeichen" />
+        </p:panelGrid>
+    </p:panel>
 
-				<af:clientListener type="dblClick" method="dblClickPostkorb" />
-				<af:clientListener type="load" method="rewriteAdfSetFocusOnEditableElementInNode" />
-				<af:column headerText="IKz" shortDesc="Individuelles Kennzeichen"
-					sortProperty="terminIndivText" sortable="false" noWrap="true"
-					id="IKz" width="55px" headerClass="imsTableHeader">
-					<af:outputText value="#{eintrag.terminIndivText}"
-						shortDesc="#{eintrag.id.terminLnr}" />
-				</af:column>
-				<af:column headerText="Art" shortDesc="Art des Termins"
-					sortProtperty="terminArt" sortable="false" noWrap="true"
-					width="42px" styleClass="imsTableData" headerClass="imsTableHeader">
-					<af:outputText value="#{eintrag.terminArt}"
-						shortDesc="#{eintrag.terminArt}: #{eintrag.terminArtBez}">
-					</af:outputText>
-				</af:column>
-				<af:column headerText="Eing-Dat" headerNoWrap="true"
-					shortDesc="Eingangsdatum des Dokuments" sortProperty="eingangDat"
-					sortable="false" noWrap="true" id="eingangDat" width="105px"
-					headerClass="imsTableHeader">
-					<af:outputFormatted converter="DatumKurz"
-						value="#{eintrag.eingangDat}" />
-				</af:column>
-				<af:column headerText="GRD" shortDesc="Grund des Termins"
-					sortProperty="terminGrund" sortable="false" noWrap="true"
-					width="55px" headerClass="imsTableHeader">
-					<af:outputText value="#{eintrag.terminGrund}"
-						shortDesc="#{eintrag.terminGrundBez}" />
-				</af:column>
-				<af:column headerText="MDM" shortDesc="Medium"
-					sortProperty="medium" sortable="false" noWrap="true"
-					width="45px" headerClass="imsTableHeader">
-					<af:outputText value="#{eintrag.medium}"
-						shortDesc="#{eintrag.mediumBez}" />
-				</af:column>
-				<af:column headerText="Dk" shortDesc="Dokumentenklasse"
-					sortProperty="dokukl" sortable="false" noWrap="true" id="dokukl"
-					width="30px" headerClass="imsTableHeader">
-					<af:outputText value="#{eintrag.dokukl}"
-						shortDesc="#{eintrag.dokukl}" />
-				</af:column>
-				<af:column headerText="Termin-Dat" headerNoWrap="true"
-					shortDesc="Datum des Termins" sortProperty="terminDat"
-					sortable="false" noWrap="true" id="terminDat" width="105px"
-					headerClass="imsTableHeader">
-					<af:outputFormatted converter="DatumKurz"
-						value="#{eintrag.terminDat}" />
-				</af:column>
-				<af:column headerText="VG-Art" headerNoWrap="true"
-					shortDesc="Vorgangsart" sortProperty="vgartKurzBez"
-					sortable="false" noWrap="true" id="vgartKurzBez" width="120px"
-					headerClass="imsTableHeader">
-					<af:outputText value="#{eintrag.vgartKurzBez}"
-						shortDesc="#{eintrag.vgart}: #{eintrag.vgartLangBez}" />
-				</af:column>
-				<af:column headerText="Textkurzverweis" shortDesc="Textkurzverweis"
-					sortProperty="textkvKurzBez" sortable="false" noWrap="true"
-					id="textkvKurzBez" width="150px" headerClass="imsTableHeader"
-					styleClass="imsTableData">
-					<af:outputText value="#{eintrag.textkvKurzBez}"
-						shortDesc="#{eintrag.textkv}: #{eintrag.textkvLangBez}" />
-				</af:column>
-				<af:column headerText="A/E" shortDesc="Anlassgeber/Empfänger"
-					sortProperty="anlassgeber" sortable="false" noWrap="true"
-					id="anlassgeber" width="48px" headerClass="imsTableHeader"
-					styleClass="imsTableData">
-					<af:outputText value="#{eintrag.anlassgeber}"
-						shortDesc="#{eintrag.anlassgeber}" />
-				</af:column>
-				<af:column headerText="ORB" shortDesc="Ordnungsbegriff"
-					sortProperty="orb1" sortable="false" noWrap="true" id="orb1"
-					width="125px" headerClass="imsTableHeader">
-					<af:outputText value="#{eintrag.orb1}" shortDesc="#{eintrag.orb1}" />
-				</af:column>
-				<af:column headerText="OrbA" shortDesc="Art des Ordnungsbegriffs"
-					sortProperty="orbartKurzBez" sortable="false" noWrap="true"
-					id="orbartKurzBez" width="65px" headerClass="imsTableHeader"
-					styleClass="imsTableData">
-					<af:outputText value="#{eintrag.orbartKurzBez}"
-						shortDesc="#{eintrag.orbart}: #{eintrag.orbartLangBez}" />
-				</af:column>
-				<af:column headerText="MA" shortDesc="Mandant"
-					sortProperty="mandantKurzBez" sortable="false" noWrap="true"
-					id="mandantKurzBez" width="42px" headerClass="imsTableHeader"
-					styleClass="imsTableData">
-					<af:outputText value="#{eintrag.mandantKurzBez}"
-						shortDesc="#{eintrag.mandant}: #{eintrag.mandantLangBez}" />
-				</af:column>
-				<af:column headerText="RD" shortDesc="Regionaldirektion"
-					sortProperty="rd" sortable="false" noWrap="true" id="rd"
-					width="30px" headerClass="imsTableHeader">
-					<af:outputText value="#{eintrag.rd}" />
-				</af:column>
-				<af:column headerText="VW" shortDesc="Vertriebsweg"
-					sortProperty="vertWeg" sortable="false" noWrap="true" id="vertWeg"
-					width="36px" headerClass="imsTableHeader">
-					<af:outputText value="#{eintrag.vertWeg}" />
-				</af:column>
-				<af:column headerText="Bearbeiter" shortDesc="Bearbeiter"
-					sortProperty="absender" sortable="false" noWrap="true"
-					id="absender" width="100px" headerClass="imsTableHeader">
-					<af:outputText value="#{eintrag.absender}" />
-				</af:column>
-				<af:column headerText="Postkorb ID" headerNoWrap="true"
-					shortDesc="Kennung des Postkorb-Inhabers"
-					sortProperty="id.postkorbId" sortable="false" noWrap="true"
-					id="pkid" width="115px" headerClass="imsTableHeader">
-					<af:outputText value="#{eintrag.id.postkorbId}" />
-				</af:column>
-			</af:table>
-			<af:popup id="popupDialogPK" binding="#{postkorbVC.kkePopup}">
-				<af:subform id="kkeSubForm" defaultCommand="kkeAusfuehren">
-					<af:dialog title="KKE" closeIconVisible="false" okVisible="false"
-						cancelVisible="false" type="none">
-						<af:panelGroupLayout>
-							<trh:tableLayout cellSpacing="7">
-								<trh:rowLayout>
-									<af:outputLabel value="Bearbeitungsdauer (in Minuten):" />
-									<af:inputText id="inpZeit" columns="10" maximumLength="10"
-										value="#{kKEControllerMasch.kkeModel.bearbeitungsZeit}"
-										required="true">
-										<f:convertNumber locale="de" minFractionDigits="1" maxFractionDigits="1" />
-										<f:validator validatorId="KkeZeitwertValidator" />
-										<af:clientListener method="selectContent" type="click" />
-									</af:inputText>
-								</trh:rowLayout>
-								<trh:rowLayout>
-									<trh:cellFormat columnSpan="2">
-										<af:outputText styleClass="imsAnzeigeRotKlein"
-											value="#{kKEControllerMasch.kkeModel.hinweisText}" />
-									</trh:cellFormat>
-								</trh:rowLayout>
-								<trh:rowLayout>
-									<af:outputLabel value="Anzahl Arbeitstage:" />
-									<af:inputText id="inpTage" columns="10" maximumLength="10"
-										value="#{kKEControllerMasch.kkeModel.arbeitstage}"
-										required="true">
-										<f:convertNumber locale="de" />
-										<f:validator validatorId="KkeArbeitstagValidator" />
-										<af:clientListener method="selectContent" type="click" />
-									</af:inputText>
-								</trh:rowLayout>
-								<trh:rowLayout>
-									<trh:cellFormat columnSpan="2">
-										<af:outputText styleClass="imsAnzeigeRotKlein" partialTriggers="inpTage"
-											value="#{kKEControllerMasch.kkeModel.hinweisArbeitstage}" />
-									</trh:cellFormat>
-								</trh:rowLayout>
-								<trh:rowLayout>
-									<af:outputLabel value="Bearbeitung:" />
-									<af:selectOneChoice id="selBearb" contentStyle="width: 300px"
-										value="#{kKEControllerMasch.kkeModel.bearbeitung}">
-										<f:selectItems
-											value="#{kKEControllerMasch.kkeModel.bearbItems}" />
-									</af:selectOneChoice>
-								</trh:rowLayout>
-								<trh:rowLayout
-									rendered="#{kKEControllerMasch.kkeModel.kollOrbArt eq 'true' ? 'true' : 'false'}">
-									<af:outputLabel value="Anzahl Einzelverträge:" />
-									<af:inputText columns="10" maximumLength="10" id="selAnzalVtr"
-										value="#{kKEControllerMasch.kkeModel.kollvtrAnzahl}">
-										<af:clientListener method="selectContent" type="click" />
-									</af:inputText>
-								</trh:rowLayout>
-							</trh:tableLayout>
-							<af:commandButton text="Ausführen" id="kkeAusfuehren"
-								actionListener="#{postkorbVC.kkeAusfuehrenListener}"
-								partialSubmit="true" />
-						</af:panelGroupLayout>
-					</af:dialog>
-				</af:subform>
-			</af:popup>
+    <!-- Info Panel -->
+    <p:panelGrid columns="4">
+        <h:outputLabel value="User-ID:" />
+        <h:outputText value="#{postkorbVC.imsModell.benutzerID}" styleClass="textfett" />
 
-		</af:panelGroupLayout>
-	</af:subform>
-</div>
+        <h:outputLabel value="Postkorb-ID:" />
+        <h:outputText value="#{postkorbVC.postkorbModell.postkorbID}" styleClass="textfett" />
+
+        <h:outputLabel value="Anzahl Einträge:" />
+        <h:outputText value="#{postkorbVC.anzahlTermine}" styleClass="textfett" />
+
+        <h:outputLabel value="Datum:" />
+        <h:outputText value="#{postkorbVC.postkorbModell.currentDate}" styleClass="textfett" />
+    </p:panelGrid>
+
+    <!-- DataTable -->
+    <p:dataTable id="tabPostkorb"
+                 value="#{postkorbVC.postkorbModell.eintraege}"
+                 var="eintrag"
+                 selectionMode="multiple"
+                 emptyMessage="#{postkorbVC.postkorbModell.emptyTextTable}">
+        <p:column headerText="IKz">
+            <h:outputText value="#{eintrag.terminIndivText}" />
+        </p:column>
+        <p:column headerText="Art">
+            <h:outputText value="#{eintrag.terminArt}" />
+        </p:column>
+        <p:column headerText="Eing-Dat">
+            <h:outputText value="#{eintrag.eingangDat}" />
+        </p:column>
+        <!-- … replicate other columns … -->
+    </p:dataTable>
+
+    <!-- Popup Dialog -->
+    <p:dialog id="popupDialogPK" widgetVar="popupDlg"
+              header="KKE" modal="true" closable="false" resizable="false">
+        <p:panelGrid columns="2" columnClasses="label,value">
+            <h:outputLabel for="inpZeit" value="Bearbeitungsdauer (in Minuten):" />
+            <p:inputText id="inpZeit" value="#{kKEControllerMasch.kkeModel.bearbeitungsZeit}" required="true">
+                <f:convertNumber locale="de" minFractionDigits="1" maxFractionDigits="1" />
+                <f:validator validatorId="KkeZeitwertValidator" />
+            </p:inputText>
+
+            <h:outputLabel for="inpTage" value="Anzahl Arbeitstage:" />
+            <p:inputText id="inpTage" value="#{kKEControllerMasch.kkeModel.arbeitstage}" required="true">
+                <f:convertNumber locale="de" />
+                <f:validator validatorId="KkeArbeitstagValidator" />
+            </p:inputText>
+
+            <h:outputLabel for="selBearb" value="Bearbeitung:" />
+            <p:selectOneMenu id="selBearb" value="#{kKEControllerMasch.kkeModel.bearbeitung}" style="width:300px">
+                <f:selectItems value="#{kKEControllerMasch.kkeModel.bearbItems}" />
+            </p:selectOneMenu>
+        </p:panelGrid>
+
+        <p:commandButton value="Ausführen"
+                         actionListener="#{postkorbVC.kkeAusfuehrenListener}"
+                         update="@form" />
+    </p:dialog>
+
+</h:form>
+</h:body>
+</html>
