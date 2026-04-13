@@ -1,16 +1,24 @@
-<p:dialog id="popupDialogAkte" widgetVar="popupDlg"
-          header="KKE" modal="true" closable="false" resizable="false">
+ <!-- Hinweistext (above the field, spanning both columns) -->
+    <h:outputText value="#{kKEControllerMasch.kkeModel.hinweisText}"
+                  styleClass="imsAnzeigeRotKlein"
+                  colspan="2" />
 
-    <h:form id="kkeSubForm">
-        <p:panelGrid columns="2" columnClasses="label,value" style="width:100%">
+    <!-- Anzahl Arbeitstage -->
+    <h:outputLabel for="inpTage" value="Anzahl Arbeitstage:" />
+    <p:inputText id="inpTage"
+                 value="#{kKEControllerMasch.kkeModel.arbeitstage}"
+                 required="true"
+                 size="10" maxlength="10"
+                 onfocus="selectContent(this)">
+        <f:convertNumber locale="de" />
+        <f:validator validatorId="KkeArbeitstagValidator" />
+        <!-- Server-side listener equivalent -->
+        <p:ajax event="change"
+                listener="#{postkorbVC.aktualisierenListener}"
+                update="@form" />
+    </p:inputText>
 
-            <!-- Bearbeitungsdauer -->
-            <h:outputLabel for="inpZeit" value="Bearbeitungsdauer (in Minuten):" />
-            <p:inputText id="inpZeit"
-                         value="#{kKEControllerMasch.kkeModel.bearbeitungsZeit}"
-                         required="true"
-                         size="10" maxlength="10"
-                         onfocus="selectContent(this)">
-                <f:convertNumber locale="de" minFractionDigits="1" maxFractionDigits="1" />
-                <f:validator validatorId="KkeZeitwertValidator" />
-            </p:inputText>
+    <!-- Hinweis Arbeitstage (spanning both columns) -->
+    <h:outputText value="#{kKEControllerMasch.kkeModel.hinweisArbeitstage}"
+                  styleClass="imsAnzeigeRotKlein"
+                  colspan="2" />
