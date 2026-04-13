@@ -1,151 +1,16 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
-<h:head>
-    <title>Postkorb</title>
-</h:head>
-<h:body>
-<h:form id="postkorbSubForm">
+<p:dialog id="popupDialogAkte" widgetVar="popupDlg"
+          header="KKE" modal="true" closable="false" resizable="false">
 
-    <!-- Menubar -->
-    <p:menubar>
-        <p:submenu label="Postkorb">
-            <p:menuitem value="Neu Laden" icon="pi pi-refresh"
-                        action="#{postkorbVC.actionAktualisieren}" />
-            <p:menuitem value="Sortieren" icon="pi pi-sort"
-                        action="#{postkorbVC.sortierungEinstellen}" />
-            <p:menuitem value="Öffnen/Schließen"
-                        action="#{postkorbVC.openClose}" />
-            <p:menuitem value="Berechtigung"
-                        rendered="#{postkorbVC.imsModell.benutzer.orgPosition eq 'A' or postkorbVC.imsModell.benutzer.orgPosition eq 'G'}"
-                        action="#{postkorbVC.berechtigung}" />
-        </p:submenu>
+    <h:form id="kkeSubForm">
+        <p:panelGrid columns="2" columnClasses="label,value" style="width:100%">
 
-        <p:submenu label="Eintrag">
-            <p:menuitem value="Termin bearbeiten" icon="pi pi-pencil"
-                        action="#{postkorbVC.bearbeiteTermin}" />
-            <p:menuitem value="Weiterleiten/Wiedervorlage" icon="pi pi-share-alt"
-                        rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-                        action="#{postkorbVC.weiterleiten}" />
-            <p:menuitem value="Kennzeichen ändern" icon="pi pi-tag"
-                        rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-                        action="#{postkorbVC.kennzeichenAendern}" />
-            <p:menuitem value="Erledigen" icon="pi pi-check"
-                        rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-                        action="#{postkorbVC.erledigenTermin}" />
-        </p:submenu>
-
-        <p:submenu label="Hilfe">
-            <p:menuitem value="Handbuch IMS" icon="pi pi-info-circle"
-                        action="#{postkorbVC.openIMSHandbuch}" />
-            <p:menuitem value="Handbuch KKE" icon="pi pi-info-circle"
-                        action="#{postkorbVC.openKKEHandbuch}" />
-            <p:menuitem value="Handbuch BQM" icon="pi pi-info-circle"
-                        action="#{postkorbVC.openBQMHandbuch}" />
-            <p:menuitem value="Info" action="#{postkorbVC.showInfo}" />
-            <p:menuitem value="Teste Fehlerseite"
-                        rendered="#{postkorbVC.showTestButtons}"
-                        action="#{postkorbVC.showTestError}" />
-        </p:submenu>
-    </p:menubar>
-
-    <!-- Toolbar buttons -->
-    <p:toolbar>
-        <p:toolbarGroup>
-            <p:commandButton value="Neu Laden" icon="pi pi-refresh"
-                             action="#{postkorbVC.actionAktualisieren}" />
-            <p:commandButton value="Sortieren" icon="pi pi-sort"
-                             action="#{postkorbVC.sortierungEinstellen}" />
-            <p:commandButton value="Termin bearbeiten" icon="pi pi-pencil"
-                             action="#{postkorbVC.bearbeiteTermin}" />
-            <p:commandButton value="Weiterleiten" icon="pi pi-share-alt"
-                             rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-                             action="#{postkorbVC.weiterleiten}" />
-            <p:commandButton value="Kennzeichen ändern" icon="pi pi-tag"
-                             rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-                             action="#{postkorbVC.kennzeichenAendern}" />
-            <p:commandButton value="KKE" icon="pi pi-users"
-                             rendered="#{akteVC.akteModell.KKEBerechtigt}"
-                             action="#{postkorbVC.startKKE}" />
-        </p:toolbarGroup>
-        <p:toolbarGroup align="right">
-            <p:commandButton value="Termin erledigen" icon="pi pi-check"
-                             rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-                             action="#{postkorbVC.erledigenTermin}" />
-        </p:toolbarGroup>
-    </p:toolbar>
-
-    <!-- Filters -->
-    <p:panel header="Postkorb Filter" rendered="#{postkorbVC.postkorbModell.filterLoaded}">
-        <p:panelGrid columns="3">
-            <p:inputText id="pkAbteilung" value="#{postkorbVC.postkorbModell.filter.abteilung}" placeholder="Abteilung" />
-            <p:inputText id="pkGruppe" value="#{postkorbVC.postkorbModell.filter.gruppe}" placeholder="Gruppe" />
-            <p:inputText id="pkDiktatKz" value="#{postkorbVC.postkorbModell.filter.diktatKz}" placeholder="Diktatkennzeichen" />
-        </p:panelGrid>
-    </p:panel>
-
-    <!-- Info Panel -->
-    <p:panelGrid columns="4">
-        <h:outputLabel value="User-ID:" />
-        <h:outputText value="#{postkorbVC.imsModell.benutzerID}" styleClass="textfett" />
-
-        <h:outputLabel value="Postkorb-ID:" />
-        <h:outputText value="#{postkorbVC.postkorbModell.postkorbID}" styleClass="textfett" />
-
-        <h:outputLabel value="Anzahl Einträge:" />
-        <h:outputText value="#{postkorbVC.anzahlTermine}" styleClass="textfett" />
-
-        <h:outputLabel value="Datum:" />
-        <h:outputText value="#{postkorbVC.postkorbModell.currentDate}" styleClass="textfett" />
-    </p:panelGrid>
-
-    <!-- DataTable -->
-    <p:dataTable id="tabPostkorb"
-                 value="#{postkorbVC.postkorbModell.eintraege}"
-                 var="eintrag"
-                 selectionMode="multiple"
-                 emptyMessage="#{postkorbVC.postkorbModell.emptyTextTable}">
-        <p:column headerText="IKz">
-            <h:outputText value="#{eintrag.terminIndivText}" />
-        </p:column>
-        <p:column headerText="Art">
-            <h:outputText value="#{eintrag.terminArt}" />
-        </p:column>
-        <p:column headerText="Eing-Dat">
-            <h:outputText value="#{eintrag.eingangDat}" />
-        </p:column>
-        <!-- … replicate other columns … -->
-    </p:dataTable>
-
-    <!-- Popup Dialog -->
-    <p:dialog id="popupDialogPK" widgetVar="popupDlg"
-              header="KKE" modal="true" closable="false" resizable="false">
-        <p:panelGrid columns="2" columnClasses="label,value">
+            <!-- Bearbeitungsdauer -->
             <h:outputLabel for="inpZeit" value="Bearbeitungsdauer (in Minuten):" />
-            <p:inputText id="inpZeit" value="#{kKEControllerMasch.kkeModel.bearbeitungsZeit}" required="true">
+            <p:inputText id="inpZeit"
+                         value="#{kKEControllerMasch.kkeModel.bearbeitungsZeit}"
+                         required="true"
+                         size="10" maxlength="10"
+                         onfocus="selectContent(this)">
                 <f:convertNumber locale="de" minFractionDigits="1" maxFractionDigits="1" />
                 <f:validator validatorId="KkeZeitwertValidator" />
             </p:inputText>
-
-            <h:outputLabel for="inpTage" value="Anzahl Arbeitstage:" />
-            <p:inputText id="inpTage" value="#{kKEControllerMasch.kkeModel.arbeitstage}" required="true">
-                <f:convertNumber locale="de" />
-                <f:validator validatorId="KkeArbeitstagValidator" />
-            </p:inputText>
-
-            <h:outputLabel for="selBearb" value="Bearbeitung:" />
-            <p:selectOneMenu id="selBearb" value="#{kKEControllerMasch.kkeModel.bearbeitung}" style="width:300px">
-                <f:selectItems value="#{kKEControllerMasch.kkeModel.bearbItems}" />
-            </p:selectOneMenu>
-        </p:panelGrid>
-
-        <p:commandButton value="Ausführen"
-                         actionListener="#{postkorbVC.kkeAusfuehrenListener}"
-                         update="@form" />
-    </p:dialog>
-
-</h:form>
-</h:body>
-</html>
