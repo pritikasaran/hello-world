@@ -17,14 +17,20 @@
 <p:commandButton value="Öffnen/Schließen"
     action="#{postkorbVC.openClose}"
     ajax="true"
-    onclick="PF('openCloseDialog').show();">
+    <p:setPropertyActionListener value="#{postkorbVC.postkorbModell.postkorbID}"
+        target="#{postkorbOpenCloseVC.modell.postkorbID}" />
+    <p:setPropertyActionListener value="true"
+        target="#{postkorbOpenCloseVC.modell.resetModell}" />
 </p:commandButton>
 
-<p:dialog widgetVar="openCloseDialog" modal="true" width="750" height="630">
-    <!-- Dialog content -->
-</p:dialog>
+<p:commandButton value="Berechtigung"
+    action="#{postkorbVC.berechtigung}"
+    ajax="true"
+    rendered="#{postkorbVC.imsModell.benutzer.orgPosition eq 'A' or postkorbVC.imsModell.benutzer.orgPosition eq 'G'}">
+    <p:setPropertyActionListener value="#{postkorbVC.postkorbModell.postkorbID}"
+        target="#{postkorbBerechtVC.modell.postkorbID}" />
+    <p:setPropertyActionListener value="true"
+        target="#{postkorbBerechtVC.modell.resetModell}" />
+</p:commandButton>
 
-<p:setPropertyActionListener value="#{postkorbVC.postkorbModell.postkorbID}"
-    target="#{postkorbOpenCloseVC.modell.postkorbID}" />
-<p:setPropertyActionListener value="true"
-    target="#{postkorbOpenCloseVC.modell.resetModell}" />
+
