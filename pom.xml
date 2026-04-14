@@ -1,23 +1,30 @@
-    <!-- Bearbeitung -->
-    <h:outputLabel for="selBearb" value="Bearbeitung:" />
-    <p:selectOneMenu id="selBearb"
-                     value="#{kKEControllerMasch.kkeModel.bearbeitung}"
-                     style="width:300px">
-        <f:selectItems value="#{kKEControllerMasch.kkeModel.bearbItems}" />
-    </p:selectOneMenu>
+<p:commandButton value="Neu Laden"
+    action="#{postkorbVC.actionAktualisieren}"
+    ajax="true"
+    styleClass="refreshButton">
+    <h:graphicImage library="images" name="refresh.gif" alt="Neu Laden" />
+</p:commandButton>
+<p:commandButton value="Sortieren"
+    action="#{postkorbVC.sortierungEinstellen}"
+    ajax="true"
+    title="Postkorb sortieren"
+    onclick="PF('sortDialog').show();">
+    <h:graphicImage library="images" name="sortieren.gif" alt="Sortieren" />
+</p:commandButton>
 
-    <!-- Anzahl Einzelverträge (conditional rendering) -->
-    <h:outputLabel for="selAnzalVtr" value="Anzahl Einzelverträge:"
-                   rendered="#{kKEControllerMasch.kkeModel.kollOrbArt}" />
-    <p:inputText id="selAnzalVtr"
-                 value="#{kKEControllerMasch.kkeModel.kollvtrAnzahl}"
-                 rendered="#{kKEControllerMasch.kkeModel.kollOrbArt}"
-                 size="10" maxlength="10"
-                 onfocus="selectContent(this)" />
-</p:panelGrid>
+<p:dialog widgetVar="sortDialog" modal="true" width="500" height="400"
+    onHide="#{postkorbVC.returnFromSortierenDialog}" />
+<p:commandButton value="Öffnen/Schließen"
+    action="#{postkorbVC.openClose}"
+    ajax="true"
+    onclick="PF('openCloseDialog').show();">
+</p:commandButton>
 
-<!-- Action button -->
-<p:commandButton id="kkeAusfuehren"
-                 value="Ausführen"
-                 actionListener="#{akteVC.kkeAusfuehrenListener}"
-                 update="@form" />
+<p:dialog widgetVar="openCloseDialog" modal="true" width="750" height="630">
+    <!-- Dialog content -->
+</p:dialog>
+
+<p:setPropertyActionListener value="#{postkorbVC.postkorbModell.postkorbID}"
+    target="#{postkorbOpenCloseVC.modell.postkorbID}" />
+<p:setPropertyActionListener value="true"
+    target="#{postkorbOpenCloseVC.modell.resetModell}" />
