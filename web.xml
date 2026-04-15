@@ -1,55 +1,59 @@
-<af:panelGroupLayout styleClass="AFStretchWidth" layout="horizontal">
-			<af:panelGroupLayout layout="horizontal">
-				<af:commandButton id="cmdNeuLaden"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					action="#{postkorbVC.actionAktualisieren}" partialSubmit="true"
-					icon="/resources/images/refresh.gif" shortDesc="Aktualisieren">
-				</af:commandButton>
-				<af:commandButton id="cmdPkSort"
-					icon="/resources/images/sortieren.gif"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					shortDesc="Postkorb sortieren" windowWidth="500" windowHeight="400"
-					windowModalityType="applicationModal" useWindow="true"
-					partialSubmit="true" action="#{postkorbVC.sortierungEinstellen}"
-					returnListener="#{postkorbVC.returnFromSortierenDialog}" />
-				<af:commandButton binding="#{postkorbVC.cmdButtonTerminBearbeiten}"
-					id="cmdTerminBearbeiten" icon="/resources/images/bearbeiten.gif"
-					shortDesc="Termin bearbeiten"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					action="#{postkorbVC.bearbeiteTermin}">
-					<f:ajax execute="@this" render="@form" />
-				</af:commandButton>
-				<af:commandButton id="cmdPkWW"
-					rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					icon="/resources/images/weiterleiten.gif"
-					shortDesc="Weiterleiten/Wiedervorlage" partialSubmit="true"
-					action="#{postkorbVC.weiterleiten}"
-					returnListener="#{postkorbVC.returnWeiterleitenDialog}"
-					useWindow="true" windowWidth="510" windowHeight="700"
-					windowModalityType="applicationModal">
-				</af:commandButton>
-				<af:commandButton id="cmdPkKzEdit"
-					rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-					icon="/resources/images/kzaendern2.gif"
-					shortDesc="Kennzeichen ändern"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					action="#{postkorbVC.kennzeichenAendern}" partialSubmit="true" />
-				<af:commandButton id="cmdKKE" icon="/resources/images/kke.gif"
-					immediate="true" useWindow="true"
-					shortDesc="Kundenkontakterfassung"
-					inlineStyle="padding-left:2px;padding-right:2px;" windowWidth="750"
-					windowHeight="930" partialSubmit="true"
-					rendered="#{akteVC.akteModell.KKEBerechtigt}"
-					action="#{postkorbVC.startKKE}" />
-			</af:panelGroupLayout>
-			<af:panelGroupLayout layout="horizontal" halign="right">
-				<af:commandButton id="cmdTerminErledigenPostkorb"
-					rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}"
-					icon="/resources/images/termin_erled.gif" partialSubmit="true"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					windowModalityType="applicationModal" useWindow="true"
-					shortDesc="Termin erledigen" action="#{postkorbVC.erledigenTermin}">
-				</af:commandButton>
-			</af:panelGroupLayout>
-		</af:panelGroupLayout>
+<p:toolbar styleClass="AFStretchWidth">
+    <p:toolbarGroup>
+        <!-- Neu Laden -->
+        <p:commandButton id="cmdNeuLaden" value="Aktualisieren"
+            action="#{postkorbVC.actionAktualisieren}" ajax="true"
+            style="padding-left:2px;padding-right:2px;">
+            <h:graphicImage library="images" name="refresh.gif" alt="Aktualisieren"/>
+        </p:commandButton>
+
+        <!-- Sortieren -->
+        <p:commandButton id="cmdPkSort" value="Postkorb sortieren"
+            action="#{postkorbVC.sortierungEinstellen}" ajax="true"
+            style="padding-left:2px;padding-right:2px;">
+            <h:graphicImage library="images" name="sortieren.gif" alt="Sortieren"/>
+        </p:commandButton>
+
+        <!-- Termin bearbeiten -->
+        <p:commandButton id="cmdTerminBearbeiten" value="Termin bearbeiten"
+            action="#{postkorbVC.bearbeiteTermin}" ajax="true"
+            style="padding-left:2px;padding-right:2px;">
+            <h:graphicImage library="images" name="bearbeiten.gif" alt="Bearbeiten"/>
+            <f:ajax execute="@this" render="@form" />
+        </p:commandButton>
+
+        <!-- Weiterleiten/Wiedervorlage -->
+        <p:commandButton id="cmdPkWW" value="Weiterleiten/Wiedervorlage"
+            action="#{postkorbVC.weiterleiten}" ajax="true"
+            style="padding-left:2px;padding-right:2px;"
+            rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}">
+            <h:graphicImage library="images" name="weiterleiten.gif" alt="Weiterleiten"/>
+        </p:commandButton>
+
+        <!-- Kennzeichen ändern -->
+        <p:commandButton id="cmdPkKzEdit" value="Kennzeichen ändern"
+            action="#{postkorbVC.kennzeichenAendern}" ajax="true"
+            style="padding-left:2px;padding-right:2px;"
+            rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}">
+            <h:graphicImage library="images" name="kzaendern2.gif" alt="Kennzeichen ändern"/>
+        </p:commandButton>
+
+        <!-- Kundenkontakterfassung -->
+        <p:commandButton id="cmdKKE" value="Kundenkontakterfassung"
+            action="#{postkorbVC.startKKE}" ajax="true"
+            style="padding-left:2px;padding-right:2px;"
+            rendered="#{akteVC.akteModell.KKEBerechtigt}" immediate="true">
+            <h:graphicImage library="images" name="kke.gif" alt="KKE"/>
+        </p:commandButton>
+    </p:toolbarGroup>
+
+    <!-- Right-aligned group -->
+    <p:toolbarGroup align="right">
+        <p:commandButton id="cmdTerminErledigenPostkorb" value="Termin erledigen"
+            action="#{postkorbVC.erledigenTermin}" ajax="true"
+            style="padding-left:2px;padding-right:2px;"
+            rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}">
+            <h:graphicImage library="images" name="termin_erled.gif" alt="Termin erledigen"/>
+        </p:commandButton>
+    </p:toolbarGroup>
+</p:toolbar>
