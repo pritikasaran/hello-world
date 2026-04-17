@@ -149,6 +149,15 @@
             </p:toolbarGroup>
         </p:toolbar>
 
+          <p:selectBooleanCheckbox id="selSortierung"
+                         value="#{postkorbVC.postkorbModell.stardartSortierung}"
+                         disabled="#{postkorbVC.postkorbModell.stardartSortierung}"
+                         itemLabel="Standardsortierung">
+    <p:ajax event="change"
+            listener="#{postkorbVC.changeStardartSortierung}"
+            update="@form" />
+</p:selectBooleanCheckbox>
+
     </h:form>
 </h:body>
 </html>
