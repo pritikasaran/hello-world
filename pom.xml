@@ -157,6 +157,29 @@
             listener="#{postkorbVC.changeStardartSortierung}"
             update="@form" />
 </p:selectBooleanCheckbox>
+<!-- Outer horizontal layout -->
+<h:panelGroup layout="block" 
+              style="display:flex; flex-direction:row; width:100%; align-items:center;">
+
+    <!-- Inner form layout equivalent -->
+    <p:panelGrid columns="5" style="width:100%" columnClasses="label,value,value,value,value">
+
+        <!-- Label -->
+        <h:outputLabel value="Termine:" style="margin-right:1rem;" />
+
+        <!-- Radio group -->
+        <p:selectOneRadio id="selTermine"
+                          value="#{postkorbVC.postkorbModell.selectedTermine}"
+                          layout="responsive">
+            <f:selectItem itemLabel="aktuelle" itemValue="aktuelle" />
+            <f:selectItem itemLabel="zukünftige" itemValue="zukuenftige" />
+            <f:selectItem itemLabel="erledigte" itemValue="erledigte" />
+            <p:ajax event="change"
+                    listener="#{postkorbVC.aktualisierenListener}"
+                    update="@form" />
+        </p:selectOneRadio>
+    </p:panelGrid>
+</h:panelGroup>
 
     </h:form>
 </h:body>
