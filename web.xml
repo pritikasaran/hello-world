@@ -203,7 +203,7 @@
     </p:panelGrid>
 <p:panelGrid column="4">
 <h:outputLabel value="Termine:" />
-<p:selectOneRadio id="selTermine"  value="#{postkorbVC.postkorbModell.selectedTermine}">
+<p:selectOneRadio id="selTermine">
 			<f:selectItem itemLabel="aktuelle" itemValue="aktuelle" />
             <f:selectItem itemLabel="zukünftige" itemValue="zukuenftige" />
             <f:selectItem itemLabel="erledigte" itemValue="erledigte" />
@@ -212,6 +212,19 @@
                     update="@form" />
         </p:selectOneRadio>
 </p:panelGrid>
+	<h:panelGroup layout="block" 
+              style="display:flex; flex-direction:row; justify-content:flex-end; align-items:center; width:100%; gap:0.5rem;">
+
+    <!-- Label -->
+    <h:outputLabel for="ikzTxt" value="Individuelles Kennzeichen:" 
+                   style="white-space:nowrap;" />
+
+    <!-- Input -->
+    <p:inputText id="ikzTxt"
+                 value="#{postkorbVC.postkorbModell.terminIndivText}"
+                 size="5" maxlength="5" />
+</h:panelGroup>
+
 
     <!-- DataTable -->
     <p:dataTable id="tabPostkorb"
