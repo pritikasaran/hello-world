@@ -20,17 +20,16 @@ StandardError=append:/home/athora/ex20708/companion/logs/companion.err.log
 [Install]
 WantedBy=multi-user.target
 
-    <p:tab id="tabPostkorb" title="Postkorb"
-           rendered="#{!akteVC.akteModell.imsModell.modusIMS2}">
-        
-        <!-- Disclosure listener equivalent -->
-        <p:ajax event="tabChange" listener="#{akteVC.disclosePostkorb}" update="@form" />
-        
-        <!-- Clear messages on tab change -->
-        <p:ajax event="tabChange" listener="#{akteVC.clearAllMessages}" update="@form" />
-        
-        <!-- Scrollable content -->
-        <h:panelGroup layout="block" style="overflow:auto; max-height:600px;">
-            <ui:include src="/pages/postkorb.xhtml" />
-        </h:panelGroup>
-    </p:tab>
+private String selectedTermine = "aktuelle"; // default
+
+public String getSelectedTermine() { 
+    return selectedTermine; 
+}
+
+public void setSelectedTermine(String value) {
+    this.selectedTermine = value;
+    // automatically keeps your 3 booleans in sync
+    this.aktuelleTermine    = "aktuelle".equals(value);
+    this.zukuenftigeTermine = "zukuenftige".equals(value);
+    this.erledigteTermine   = "erledigte".equals(value);
+}
