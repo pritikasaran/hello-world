@@ -19,3 +19,5 @@ StandardError=append:/home/athora/ex20708/companion/logs/companion.err.log
 
 [Install]
 WantedBy=multi-user.target
+
+<p:tabView id="panelTabbs" orientation="top" style="width:100%">
