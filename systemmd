@@ -20,4 +20,17 @@ StandardError=append:/home/athora/ex20708/companion/logs/companion.err.log
 [Install]
 WantedBy=multi-user.target
 
-<p:tabView id="panelTabbs" orientation="top" style="width:100%">
+    <p:tab id="tabPostkorb" title="Postkorb"
+           rendered="#{!akteVC.akteModell.imsModell.modusIMS2}">
+        
+        <!-- Disclosure listener equivalent -->
+        <p:ajax event="tabChange" listener="#{akteVC.disclosePostkorb}" update="@form" />
+        
+        <!-- Clear messages on tab change -->
+        <p:ajax event="tabChange" listener="#{akteVC.clearAllMessages}" update="@form" />
+        
+        <!-- Scrollable content -->
+        <h:panelGroup layout="block" style="overflow:auto; max-height:600px;">
+            <ui:include src="/pages/postkorb.xhtml" />
+        </h:panelGroup>
+    </p:tab>
