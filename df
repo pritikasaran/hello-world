@@ -6,3 +6,40 @@ mvn deploy:deploy-file \
   -Dfile=gre.jar \
   -DrepositoryId=nexus \
   -Durl=http://your-nexus-server/repository/your-repo/
+<h:head>
+    <title>Postkorb</title>
+    <style>
+        .textfett { font-weight: bold; }
+
+        /* base rule for all custom icon buttons */
+        .ui-button .custom-icon {
+            width: 16px;
+            height: 16px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+        }
+
+        .refresh-btn .custom-icon {
+            background-image: url('#{resource["images:refresh.gif"]}');
+        }
+        .sort-btn .custom-icon {
+            background-image: url('#{resource["images:sortieren.gif"]}');
+        }
+        .bearbeiten-btn .custom-icon {
+            background-image: url('#{resource["images:bearbeiten.gif"]}');
+        }
+        .weiterleiten-btn .custom-icon {
+            background-image: url('#{resource["images:weiterleiten.gif"]}');
+        }
+        .kzaendern-btn .custom-icon {
+            background-image: url('#{resource["images:kzaendern2.gif"]}');
+        }
+        .kke-btn .custom-icon {
+            background-image: url('#{resource["images:kke.gif"]}');
+        }
+        .erledigen-btn .custom-icon {
+            background-image: url('#{resource["images:termin_erled.gif"]}');
+        }
+    </style>
+</h:head>
