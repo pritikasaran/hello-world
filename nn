@@ -1,5 +1,1 @@
-<h:form>
-    <p:panel header="Welcome">
-        <h:outputText value="Logged in as: #{loginVC.currentUser}" />
-    </p:panel>
-</h:form>
+                 onclick="window.open('#{request.contextPath}/faces/pages/sortierung.xhtml', '_blank', 'width=600,height=400,resizable=yes'); return false;">
