@@ -1,8 +1,38 @@
-                 onclick="window.open('#{request.contextPath}/faces/pages/sortierung.xhtml', '_blank', 'width=600,height=400,resizable=yes'); return false;">
-<p:selectOneMenu value="#{bean.selectedValue}">
-    <f:selectItem itemLabel="Option 1" itemValue="opt1"/>
-    <f:selectItem itemLabel="Option 2" itemValue="opt2"/>
-    <p:ajax event="change"
-            listener="#{bean.onChangeListener}"
-            update="@form"/>
-</p:selectOneMenu>
+<h:panelGroup layout="block">
+
+    <!-- Header row: Sortierkriterium + Sortierreihenfolge labels -->
+    <h:panelGroup layout="block" style="display:flex; flex-direction:row; margin-bottom:10px;">
+        <h:outputText value="Sortierkriterium:" style="font-weight:bold;"/>
+        <!-- spacer equivalent to af:spacer width="112" -->
+        <h:outputText value="" style="display:inline-block; width:112px;"/>
+        <h:outputText value="Sortierreihenfolge:" style="font-weight:bold;"/>
+    </h:panelGroup>
+
+    <!-- Content row: dropdown + radio buttons -->
+    <h:panelGroup layout="block" style="display:flex; flex-direction:row; align-items:center; gap:8px;">
+
+        <!-- af:selectOneChoice → h:selectOneMenu -->
+        <h:outputLabel value="1." />
+        <h:selectOneMenu id="sortkrit1"
+                         value="#{sortierenVC.sortierung.sortierung1}">
+            <f:selectItems value="#{sortierenVC.sortierung.sortierungsKriterien}"/>
+            <f:ajax event="change" render="@form"/>
+        </h:selectOneMenu>
+
+        <!-- af:selectOneRadio horizontal → p:selectOneRadio -->
+        <p:selectOneRadio value="#{sortierenVC.sortierung.sort1Asc}"
+                          layout="custom">
+            <f:selectItem itemLabel="Aufsteigend" itemValue="true"/>
+            <f:selectItem itemLabel="Absteigend"  itemValue="false"/>
+            <p:ajax event="change" update="@form"/>
+        </p:selectOneRadio>
+
+        <p:radioButton for="sort1Asc" itemIndex="0"/>
+        <h:outputLabel value="Aufsteigend"/>
+
+        <p:radioButton for="sort1Asc" itemIndex="1"/>
+        <h:outputLabel value="Absteigend"/>
+
+    </h:panelGroup>
+
+</h:panelGroup>
