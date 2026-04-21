@@ -11,8 +11,24 @@ mvn deploy:deploy-file \
     min-height: 0 !important;
 }
 
-.ui-toolbar .ui-toolbar-group-left,
-.ui-toolbar .ui-toolbar-group-right {
-    display: inline-block !important;
-    padding: 0 !important;
+/* hide the empty button text span */
+.ui-button-icon-only .ui-button-text {
+    display: none !important;
+}
+
+/* make button only as big as the image */
+.ui-button-icon-only {
+    width: auto !important;
+    height: auto !important;
+    padding: 2px !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* remove PrimeFaces hover effects */
+.ui-button-icon-only:hover {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
 }
