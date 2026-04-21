@@ -1,1 +1,8 @@
                  onclick="window.open('#{request.contextPath}/faces/pages/sortierung.xhtml', '_blank', 'width=600,height=400,resizable=yes'); return false;">
+<p:selectOneMenu value="#{bean.selectedValue}">
+    <f:selectItem itemLabel="Option 1" itemValue="opt1"/>
+    <f:selectItem itemLabel="Option 2" itemValue="opt2"/>
+    <p:ajax event="change"
+            listener="#{bean.onChangeListener}"
+            update="@form"/>
+</p:selectOneMenu>
