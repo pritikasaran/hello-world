@@ -10,13 +10,16 @@ mvn deploy:deploy-file \
     padding: 2px 4px !important;
     min-height: 0 !important;
 }
+.textfett { 
+    font-weight: bold; 
+}
 
-/* hide the empty button text span */
+/* hide empty text span */
 .ui-button-icon-only .ui-button-text {
     display: none !important;
 }
 
-/* make button only as big as the image */
+/* base button reset */
 .ui-button-icon-only {
     width: auto !important;
     height: auto !important;
@@ -24,11 +27,57 @@ mvn deploy:deploy-file \
     border: none !important;
     background: transparent !important;
     box-shadow: none !important;
+    cursor: pointer !important;
 }
 
-/* remove PrimeFaces hover effects */
+/* base icon styles */
+.custom-icon {
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    display: inline-block;
+}
+
+/* hover effect on button */
 .ui-button-icon-only:hover {
     border: none !important;
-    background: transparent !important;
+    background: #ddeeff !important;
     box-shadow: none !important;
+    opacity: 0.8;
+}
+
+/* icon slightly dims on hover */
+.ui-button-icon-only:hover .custom-icon {
+    opacity: 0.75;
+}
+
+/* individual icons */
+.refresh-btn .custom-icon {
+    background-image: url("#{resource['images:refresh.gif']}");
+}
+
+.sort-btn .custom-icon {
+    background-image: url("#{resource['images:sortieren.gif']}");
+}
+
+.bearbeiten-btn .custom-icon {
+    background-image: url("#{resource['images:bearbeiten.gif']}");
+}
+
+.weiterleiten-btn .custom-icon {
+    background-image: url("#{resource['images:weiterleiten.gif']}");
+}
+
+.kzaendern-btn .custom-icon {
+    background-image: url("#{resource['images:kzaendern2.gif']}");
+}
+
+.kke-btn .custom-icon {
+    background-image: url("#{resource['images:kke.gif']}");
+}
+
+.erledigen-btn .custom-icon {
+    background-image: url("#{resource['images:termin_erled.gif']}");
 }
