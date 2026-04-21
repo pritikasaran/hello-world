@@ -81,3 +81,27 @@ mvn deploy:deploy-file \
 .erledigen-btn .custom-icon {
     background-image: url("#{resource['images:termin_erled.gif']}");
 }
+
+.ui-button-icon-only {
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 2px !important;
+}
+
+.ui-button-icon-only:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* remove PrimeFaces state classes borders */
+.ui-button-icon-only.ui-state-default,
+.ui-button-icon-only.ui-state-hover,
+.ui-button-icon-only.ui-state-focus {
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
