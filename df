@@ -6,12 +6,29 @@ mvn deploy:deploy-file \
   -Dfile=gre.jar \
   -DrepositoryId=nexus \
   -Durl=http://your-nexus-server/repository/your-repo/
-.ui-toolbar {
-    padding: 2px 4px !important;
-    min-height: 0 !important;
+
+.ui-button-icon-only {
+    width: auto !important;
+    height: auto !important;
+    padding: 1px !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    vertical-align: middle !important;
 }
-.textfett { 
-    font-weight: bold; 
+
+.ui-button-icon-only:focus,
+.ui-button-icon-only:hover,
+.ui-button-icon-only.ui-state-default,
+.ui-button-icon-only.ui-state-hover,
+.ui-button-icon-only.ui-state-focus,
+.ui-button-icon-only.ui-state-active {
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
 }
 
 /* hide empty text span */
@@ -19,89 +36,28 @@ mvn deploy:deploy-file \
     display: none !important;
 }
 
-/* base button reset */
-.ui-button-icon-only {
-    width: auto !important;
-    height: auto !important;
-    padding: 2px !important;
-    border: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    cursor: pointer !important;
-}
-
-/* base icon styles */
+/* icon size matching ADF */
 .custom-icon {
-    width: 16px;
-    height: 16px;
+    width: 22px !important;
+    height: 22px !important;
     background-repeat: no-repeat;
     background-position: center;
-    background-size: contain;
-    display: inline-block;
+    background-size: 22px 22px !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
 }
 
-/* hover effect on button */
-.ui-button-icon-only:hover {
-    border: none !important;
-    background: #ddeeff !important;
-    box-shadow: none !important;
-    opacity: 0.8;
-}
-
-/* icon slightly dims on hover */
-.ui-button-icon-only:hover .custom-icon {
-    opacity: 0.75;
-}
-
-/* individual icons */
-.refresh-btn .custom-icon {
-    background-image: url("#{resource['images:refresh.gif']}");
-}
-
-.sort-btn .custom-icon {
-    background-image: url("#{resource['images:sortieren.gif']}");
-}
-
-.bearbeiten-btn .custom-icon {
-    background-image: url("#{resource['images:bearbeiten.gif']}");
-}
-
-.weiterleiten-btn .custom-icon {
-    background-image: url("#{resource['images:weiterleiten.gif']}");
-}
-
-.kzaendern-btn .custom-icon {
-    background-image: url("#{resource['images:kzaendern2.gif']}");
-}
-
-.kke-btn .custom-icon {
-    background-image: url("#{resource['images:kke.gif']}");
-}
-
-.erledigen-btn .custom-icon {
-    background-image: url("#{resource['images:termin_erled.gif']}");
-}
-
-.ui-button-icon-only {
-    border: none !important;
-    outline: none !important;
+/* compact toolbar */
+.ui-toolbar {
+    padding: 2px 4px !important;
+    min-height: 0 !important;
     background: transparent !important;
-    box-shadow: none !important;
-    padding: 2px !important;
+    border: none !important;
+    border-bottom: 1px solid #cccccc !important;
 }
 
-.ui-button-icon-only:focus {
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
+.ui-toolbar .ui-toolbar-group-left,
+.ui-toolbar .ui-toolbar-group-right {
+    padding: 0 !important;
 }
 
-/* remove PrimeFaces state classes borders */
-.ui-button-icon-only.ui-state-default,
-.ui-button-icon-only.ui-state-hover,
-.ui-button-icon-only.ui-state-focus {
-    border: none !important;
-    outline: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-}
