@@ -1,77 +1,36 @@
-<p:toolbar style="width:100%; padding:0; min-height:0;">
-    <p:toolbarGroup style="display:table-cell; padding:0;">
+<p:dataTable id="tabPostkoerbe"
+             var="postkoerbeTab"
+             value="#{postkorbOpenCloseVC.modell.berechtigungen}"
+             selectionMode="single"
+             selection="#{postkorbOpenCloseVC.openCloseRowKeySet}"
+             rowKey="#{postkoerbeTab.postkorbId}"
+             emptyMessage="Sie können keine Rechte verändern."
+             style="height:100%;"
+             styleClass="postkorb-table">
 
-       <p:commandButton id="cmdNeuLaden"
-                 title="Aktualisieren"
-                 action="#{postkorbVC.actionAktualisieren}"
-                 ajax="true"
-                 icon="custom-icon"
-                 styleClass="ui-button-icon-only refresh-btn"
-                 style="padding-left:2px; padding-right:2px;">
-</p:commandButton>
+    <p:column headerText="Diktat-Kz"
+              style="width:120px;">
+        <h:outputText value="#{postkoerbeTab.kurzBez}"/>
+    </p:column>
 
-<p:commandButton id="cmdPkSort"
-                 title="Postkorb sortieren"
-                 action="#{postkorbVC.sortierungEinstellen}"
-                 ajax="true"
-                 icon="custom-icon"
-                 styleClass="ui-button-icon-only sort-btn"
-                 style="padding-left:2px; padding-right:2px;">
-</p:commandButton>
+    <p:column headerText="UserID"
+              style="width:120px;">
+        <h:outputText value="#{postkoerbeTab.postkorbId}"/>
+    </p:column>
 
-<p:commandButton id="cmdTerminBearbeiten"
-                 title="Termin bearbeiten"
-                 action="#{postkorbVC.bearbeiteTermin}"
-                 ajax="true"
-                 icon="custom-icon"
-                 process="@this"
-                 update="@form"
-                 styleClass="ui-button-icon-only bearbeiten-btn"
-                 style="padding-left:2px; padding-right:2px;">
-</p:commandButton>
+    <p:column headerText="Name"
+              style="width:330px;">
+        <h:outputText value="#{postkoerbeTab.langBez}"/>
+    </p:column>
 
-<p:commandButton id="cmdPkWW"
-                 title="Weiterleiten/Wiedervorlage"
-                 action="#{postkorbVC.weiterleiten}"
-                 ajax="true"
-                 icon="custom-icon"
-                 styleClass="ui-button-icon-only weiterleiten-btn"
-                 style="padding-left:2px; padding-right:2px;"
-                 rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}">
-</p:commandButton>
+    <p:column headerText="Status"
+              style="width:70px;">
+        <h:outputText value="#{postkoerbeTab.status}"/>
+    </p:column>
 
-<p:commandButton id="cmdPkKzEdit"
-                 title="Kennzeichen ändern"
-                 action="#{postkorbVC.kennzeichenAendern}"
-                 ajax="true"
-                 icon="custom-icon"
-                 styleClass="ui-button-icon-only kzaendern-btn"
-                 style="padding-left:2px; padding-right:2px;"
-                 rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}">
-</p:commandButton>
+    <p:column headerText="E-Mail"
+              style="width:70px;">
+        <h:outputText value="#{postkoerbeTab.email}"/>
+    </p:column>
 
-<p:commandButton id="cmdKKE"
-                 title="Kundenkontakterfassung"
-                 action="#{postkorbVC.startKKE}"
-                 ajax="true"
-                 immediate="true"
-                 icon="custom-icon"
-                 styleClass="ui-button-icon-only kke-btn"
-                 style="padding-left:2px; padding-right:2px;"
-                 rendered="#{akteVC.akteModell.KKEBerechtigt}">
-</p:commandButton>
-
-    </p:toolbarGroup>
-
-    <p:toolbarGroup align="right" style="display:table-cell; padding:0;">
-        <h:commandButton id="cmdTerminErledigenPostkorb"
-                         title="Termin erledigen"
-                         action="#{postkorbVC.erledigenTermin}"
-                         style="padding-left:2px; padding-right:2px; border:none; background:transparent; cursor:pointer;"
-                         rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}">
-            <h:graphicImage library="images" name="termin_erled.gif" alt="Termin erledigen"/>
-            <f:ajax execute="@this" render="@form"/>
-        </h:commandButton>
-    </p:toolbarGroup>
-
-</p:toolbar>
+</p:dataTable>
