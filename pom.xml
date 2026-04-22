@@ -1,36 +1,7 @@
-<p:dataTable id="tabPostkoerbe"
-             var="postkoerbeTab"
-             value="#{postkorbOpenCloseVC.modell.berechtigungen}"
-             selectionMode="single"
-             selection="#{postkorbOpenCloseVC.openCloseRowKeySet}"
-             rowKey="#{postkoerbeTab.postkorbId}"
-             emptyMessage="Sie können keine Rechte verändern."
-             style="height:100%;"
-             styleClass="postkorb-table">
-
-    <p:column headerText="Diktat-Kz"
-              style="width:120px;">
-        <h:outputText value="#{postkoerbeTab.kurzBez}"/>
-    </p:column>
-
-    <p:column headerText="UserID"
-              style="width:120px;">
-        <h:outputText value="#{postkoerbeTab.postkorbId}"/>
-    </p:column>
-
-    <p:column headerText="Name"
-              style="width:330px;">
-        <h:outputText value="#{postkoerbeTab.langBez}"/>
-    </p:column>
-
-    <p:column headerText="Status"
-              style="width:70px;">
-        <h:outputText value="#{postkoerbeTab.status}"/>
-    </p:column>
-
-    <p:column headerText="E-Mail"
-              style="width:70px;">
-        <h:outputText value="#{postkoerbeTab.email}"/>
-    </p:column>
+<h:panelGroup layout="block" 
+              style="position:fixed; bottom:0; left:0; right:0; 
+                     text-align:center; padding:4px; 
+                     background:#ffffc0; border-top:1px solid #cccc88;
+                     z-index:999;">
 
 </p:dataTable>
