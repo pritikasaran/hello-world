@@ -33,3 +33,6 @@ public void setSelectedTermine(String value) {
     this.zukuenftigeTermine = "zukuenftige".equals(value);
     this.erledigteTermine   = "erledigte".equals(value);
 }
+SELECT s.name AS SchemaName, t.name AS TableName
+FROM sys.tables t
+INNER JOIN sys.schemas s ON t.schema_id = s.schema_id;
