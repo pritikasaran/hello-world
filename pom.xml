@@ -1,9 +1,27 @@
-<h:panelGroup layout="block" 
-              style="position:fixed; bottom:0; left:0; right:0; 
-                     text-align:center; padding:4px; 
-                     background:#ffffc0; border-top:1px solid #cccc88;
-                     z-index:999;">
-
-</p:dataTable>
-
-  <h:outputText value="" style="display:inline-block; width:112px;"/>
+public void suchen() {
+    try {
+        // setup work
+        EintraegeFilterModell filter = akteModell.getFilter();
+        filter.resetValues();
+        
+        if (!StringUtils.isEmpty(akteModell.getOrb())) {
+            filter.setMandant(akteModell.getMandant());
+            filter.setOrbArt(akteModell.getOrbart());
+            filter.setOrb(akteModell.getOrb());
+        } else {
+            filter.setMandant(null);
+            filter.setOrbArt(null);
+            filter.setOrb(null);
+        }
+        
+        // only opens if no exception above
+        PrimeFaces.current().executeScript(Pages.SUCHEN.getWindowOpenScript());
+        
+    } catch (Exception e) {
+        LOG.severe("suchen error: " + e.getMessage());
+        // show error to user
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                "Fehler", e.getMessage()));
+    }
+}
