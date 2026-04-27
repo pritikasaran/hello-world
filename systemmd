@@ -36,3 +36,7 @@ public void setSelectedTermine(String value) {
 SELECT s.name AS SchemaName, t.name AS TableName
 FROM sys.tables t
 INNER JOIN sys.schemas s ON t.schema_id = s.schema_id;
+<p:ajax event="change"
+                    listener="#{eintraegeFilterVC.mandantValueChangeListener}"
+                    process="@this"
+                    update="frmSuchen"/>
