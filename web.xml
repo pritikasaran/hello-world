@@ -1,276 +1,74 @@
-<!DOCTYPE html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
-<h:head>
-    <title>Postkorb</title>
-</h:head>
-<h:body>
-<h:form id="postkorbSubForm">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+      xmlns:tr="http://myfaces.apache.org/trinidad"
+      xmlns:trh="http://myfaces.apache.org/trinidad/html">
+<body>
+	<ui:composition template="/templates/mainTemplate.xhtml">
+		<ui:define name="title">
+			<af:clientListener method="setErrorPageButtonVisibility" type="load" />
+			<div style="padding:0px 5px 0 5px">
+			<h3>#{errorVC.windowTitle}</h3>
+			</div>
+		</ui:define>
+	    <ui:define name="content">
+	    <af:subform>
+	    	 <f:event type="jakarta.faces.event.PreRenderViewEvent" listener="#{errorVC.preRenderView}"/> 
+	    
+	   		 <af:panelLabelAndMessage label="Meldung:">
+		    	<af:outputText value="#{errorVC.meldung}" />
+		    </af:panelLabelAndMessage>
+		    
+		     <af:spacer height="30px" />
+		    	
+	    	<tr:panelCaptionGroup captionText="Daten">
+		    	<af:panelLabelAndMessage label="Datum:">
+		    		<af:outputText value="#{errorVC.currentDate}" />
+		    	</af:panelLabelAndMessage>
+		    	<af:panelLabelAndMessage label="User-ID:">
+		    		<af:outputText value="#{errorVC.benutzerID}" />
+		    	</af:panelLabelAndMessage>
+		    	<af:panelLabelAndMessage label="Akte:">
+		    		<af:outputText value="#{errorVC.currentAkte}" />
+		    	</af:panelLabelAndMessage>
+		    	<af:panelLabelAndMessage label="Termin:">
+		    		<af:outputText value="#{errorVC.termin}" />
+		    	</af:panelLabelAndMessage>
+		    </tr:panelCaptionGroup>
+		    
+		    <af:spacer width="10" height="10" />
+	    	
+	    	<af:panelGroupLayout layout="horizontal" halign="center">
+	    	  	<f:facet name="separator">
+    				<af:spacer width="10" height="1"/>
+ 				 </f:facet>
+		    	<af:commandButton text="Zum Postkorb" id="cmdPostkorb" accessKey="P"
+		        	action="#{errorVC.gotToPostkorb}" immediate="true" 
+		        	rendered="#{errorVC.mainDialog}"/>   	
+		        <af:commandButton id="cmdCancel" text="Abbrechen" accessKey="A"
+		        	action="#{errorVC.cancel}" immediate="true"
+		        	rendered="#{!errorVC.mainDialog}"/>  	
+		    	<af:commandButton text="Programm Beenden" id="cmdCancelErr" accessKey="B"
+		        	action="#{akteVC.programmBeenden}" immediate="true">
+		        </af:commandButton>
+				<af:commandButton text="Details anzeigen" rendered="#{errorVC.hasDetails}">
+				  <af:clientListener method="showErrorDetails" type="action"/>
+				</af:commandButton>
+	        </af:panelGroupLayout>
 
-    <!-- Menubar -->
-    <p:menubar>
-        <p:submenu label="Postkorb">
-             <p:menuitem value="Neu Laden"
-            action="#{postkorbVC.actionAktualisieren}" ajax="true"
-            target="_blank">
-			<h:graphicImage library="images" name="refresh.gif" alt="Neu Laden"/>
-			<h:outputText value="Neu Laden"/>
-			</p:menuitem>
-             <p:menuitem value="Sortieren"
-            action="#{postkorbVC.sortierungEinstellen}" ajax="true"
-            title="Postkorb sortieren" target="_blank">
-            <h:graphicImage library="images" name="sortieren.gif" alt="Sortieren"/>
-			<h:outputText value="Sortieren"/>
-        </p:menuitem>
-            <p:menuitem value="Öffnen/Schließen"
-            action="#{postkorbVC.openClose}" ajax="true" target="_blank">
-            <f:setPropertyActionListener value="#{postkorbVC.postkorbModell.postkorbID}"
-                target="#{postkorbOpenCloseVC.modell.postkorbID}" />
-            <f:setPropertyActionListener value="true"
-                target="#{postkorbOpenCloseVC.modell.resetModell}" />
-        </p:menuitem>
-          <p:menuitem value="Berechtigung"
-            action="#{postkorbVC.berechtigung}" ajax="true" target="_blank"
-            rendered="#{postkorbVC.imsModell.benutzer.orgPosition eq 'A' or postkorbVC.imsModell.benutzer.orgPosition eq 'G'}">
-            <f:setPropertyActionListener value="#{postkorbVC.postkorbModell.postkorbID}"
-                target="#{postkorbBerechtVC.modell.postkorbID}" />
-            <f:setPropertyActionListener value="true"
-                target="#{postkorbBerechtVC.modell.resetModell}" />
-        </p:menuitem>
-        </p:submenu>
-
-       <p:submenu label="Eintrag">
-        <p:menuitem value="Termin bearbeiten"
-            action="#{postkorbVC.bearbeiteTermin}" target="_blank">
-            <h:graphicImage library="images" name="bearbeiten.gif" alt="Bearbeiten"/>
-			<h:outputText value="Termin bearbeiten"/>
-        </p:menuitem>
-
-        <p:menuitem value="Weiterleiten/Wiedervorlage"
-            action="#{postkorbVC.weiterleiten}" ajax="true" target="_blank"
-            rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}">
-            <h:graphicImage library="images" name="weiterleiten.gif" alt="Weiterleiten"/>
-			<h:outputText value="Weiterleiten/Wiedervorlage"/>
-        </p:menuitem>
-
-        <p:menuitem value="Kennzeichen ändern"
-            action="#{postkorbVC.kennzeichenAendern}" ajax="true" target="_blank"
-            rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}">
-            <h:graphicImage library="images" name="kzaendern2.gif" alt="Kennzeichen ändern"/>
-			<h:outputText value="Kennzeichen ändern"/>
-        </p:menuitem>
-
-        <p:menuitem value="Erledigen"
-            action="#{postkorbVC.erledigenTermin}" ajax="true" target="_blank"
-            rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}">
-            <h:graphicImage library="images" name="termin_erled.gif" alt="Erledigen"/>
-			<h:outputText value="Erledigen"/>
-        </p:menuitem>
-    </p:submenu>
-
-    <!-- Hilfe Menu -->
-    <p:submenu label="Hilfe">
-        <p:menuitem value="Anzeige Handbuch IMS"
-            action="#{postkorbVC.openIMSHandbuch}" ajax="true" target="_blank">
-            <h:graphicImage library="images" name="information.gif" alt="IMS"/>
-			<h:outputText value="Anzeige Handbuch IMS"/>
-        </p:menuitem>
-
-        <p:menuitem value="Anzeige Handbuch KKE"
-            action="#{postkorbVC.openKKEHandbuch}" ajax="true" target="_blank">
-            <h:graphicImage library="images" name="information.gif" alt="KKE"/>
-			<h:outputText value="Anzeige Handbuch KKE"/>
-        </p:menuitem>
-
-        <p:menuitem value="Anzeige Handbuch BQM"
-            action="#{postkorbVC.openBQMHandbuch}" ajax="true" target="_blank">
-            <h:graphicImage library="images" name="information.gif" alt="BQM"/>
-			<h:outputText value="Anzeige Handbuch BQM"/>
-        </p:menuitem>
-
-        <p:menuitem value="Info"
-            action="#{postkorbVC.showInfo}" ajax="true" target="_blank">
-            <h:graphicImage library="images" name="information.gif" alt="Info"/>
-			<h:outputText value="Info"/>
-        </p:menuitem>
-
-        <p:menuitem value="Teste Fehlerseite"
-            action="#{postkorbVC.showTestError}" ajax="true" target="_blank"
-            rendered="#{postkorbVC.showTestButtons}">
-            <h:graphicImage library="images" name="information.gif" alt="Test"/>
-			<h:outputText value="Teste Fehlerseite"/>
-        </p:menuitem>
-        </p:submenu>
-    </p:menubar>
-
-    <!-- Toolbar buttons -->
-    <p:toolbar styleClass="AFStretchWidth">
-    <p:toolbarGroup>
-        <!-- Neu Laden -->
-        <p:commandButton id="cmdNeuLaden" value="Aktualisieren"
-            action="#{postkorbVC.actionAktualisieren}" ajax="true"
-            style="padding-left:2px;padding-right:2px;">
-            <h:graphicImage library="images" name="refresh.gif" alt="Aktualisieren"/>
-        </p:commandButton>
-
-        <!-- Sortieren -->
-        <p:commandButton id="cmdPkSort" value="Postkorb sortieren"
-            action="#{postkorbVC.sortierungEinstellen}" ajax="true"
-            style="padding-left:2px;padding-right:2px;">
-            <h:graphicImage library="images" name="sortieren.gif" alt="Sortieren"/>
-        </p:commandButton>
-
-        <!-- Termin bearbeiten -->
-        <p:commandButton id="cmdTerminBearbeiten" value="Termin bearbeiten"
-            action="#{postkorbVC.bearbeiteTermin}" ajax="true"
-            style="padding-left:2px;padding-right:2px;">
-            <h:graphicImage library="images" name="bearbeiten.gif" alt="Bearbeiten"/>
-            <f:ajax execute="@this" render="@form" />
-        </p:commandButton>
-
-        <!-- Weiterleiten/Wiedervorlage -->
-        <p:commandButton id="cmdPkWW" value="Weiterleiten/Wiedervorlage"
-            action="#{postkorbVC.weiterleiten}" ajax="true"
-            style="padding-left:2px;padding-right:2px;"
-            rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}">
-            <h:graphicImage library="images" name="weiterleiten.gif" alt="Weiterleiten"/>
-        </p:commandButton>
-
-        <!-- Kennzeichen ändern -->
-        <p:commandButton id="cmdPkKzEdit" value="Kennzeichen ändern"
-            action="#{postkorbVC.kennzeichenAendern}" ajax="true"
-            style="padding-left:2px;padding-right:2px;"
-            rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}">
-            <h:graphicImage library="images" name="kzaendern2.gif" alt="Kennzeichen ändern"/>
-        </p:commandButton>
-
-        <!-- Kundenkontakterfassung -->
-        <p:commandButton id="cmdKKE" value="Kundenkontakterfassung"
-            action="#{postkorbVC.startKKE}" ajax="true"
-            style="padding-left:2px;padding-right:2px;"
-            rendered="#{akteVC.akteModell.KKEBerechtigt}" immediate="true">
-            <h:graphicImage library="images" name="kke.gif" alt="KKE"/>
-        </p:commandButton>
-    </p:toolbarGroup>
-
-    <!-- Right-aligned group -->
-    <p:toolbarGroup align="right">
-        <p:commandButton id="cmdTerminErledigenPostkorb" value="Termin erledigen"
-            action="#{postkorbVC.erledigenTermin}" ajax="true"
-            style="padding-left:2px;padding-right:2px;"
-            rendered="#{!postkorbVC.postkorbModell.filter.erledigteTermine}">
-            <h:graphicImage library="images" name="termin_erled.gif" alt="Termin erledigen"/>
-        </p:commandButton>
-    </p:toolbarGroup>
-</p:toolbar>
-
-    <!-- Filters -->
-    <p:panel header="Postkorb Filter" rendered="#{postkorbVC.postkorbModell.filterLoaded}">
-        <p:panelGrid columns="3">
-            <p:inputText id="pkAbteilung" value="#{postkorbVC.postkorbModell.filter.abteilung}" placeholder="Abteilung" />
-            <p:inputText id="pkGruppe" value="#{postkorbVC.postkorbModell.filter.gruppe}" placeholder="Gruppe" />
-            <p:inputText id="pkDiktatKz" value="#{postkorbVC.postkorbModell.filter.diktatKz}" placeholder="Diktatkennzeichen" />
-        </p:panelGrid>
-    </p:panel>
-
-    <!-- Info Panel -->
-    <p:panelGrid columns="1" style="width:100%">
-	   <p:panelGrid columns="4" style="width:100%">
-        <h:outputLabel value="User-ID:" />
-        <h:outputText value="#{postkorbVC.imsModell.benutzerID}" styleClass="textfett" />
-
-        <h:outputLabel value="Postkorb-ID:" />
-        <h:outputText value="#{postkorbVC.postkorbModell.postkorbID}" styleClass="textfett" />
-
-        <h:outputLabel value="Anzahl Einträge:" />
-        <h:outputText value="#{postkorbVC.anzahlTermine}" styleClass="textfett" />
-
-        <h:outputLabel value="Datum:" />
-        <h:outputText value="#{postkorbVC.postkorbModell.currentDate}" styleClass="textfett" />
-      </p:panelGrid>
-	  <p:panelGrid columns="1" style="width:100%">
-		<p:selectBooleanCheckbox id="selSortierung"
-				value="#{postkorbVC.postkorbModell.stardartSortierung}"
-				disabled="#{postkorbVC.postkorbModell.stardartSortierung}"
-				itemLabel="Standardsortierung">
-			<p:ajax event="change"
-					listener="#{postkorbVC.changeStardartSortierung}"
-					update="@form" />
-		</p:selectBooleanCheckbox>
-	  </p:panelGrid>
-    </p:panelGrid>
-<p:panelGrid column="4">
-<h:outputLabel value="Termine:" />
-<p:selectOneRadio id="selTermine">
-			<f:selectItem itemLabel="aktuelle" itemValue="aktuelle" />
-            <f:selectItem itemLabel="zukünftige" itemValue="zukuenftige" />
-            <f:selectItem itemLabel="erledigte" itemValue="erledigte" />
-            <p:ajax event="change"
-                    listener="#{postkorbVC.aktualisierenListener}"
-                    update="@form" />
-        </p:selectOneRadio>
-</p:panelGrid>
-	<h:panelGroup layout="block" 
-              style="display:flex; flex-direction:row; justify-content:flex-end; align-items:center; width:100%; gap:0.5rem;">
-
-    <!-- Label -->
-    <h:outputLabel for="ikzTxt" value="Individuelles Kennzeichen:" 
-                   style="white-space:nowrap;" />
-
-    <!-- Input -->
-    <p:inputText id="ikzTxt"
-                 value="#{postkorbVC.postkorbModell.terminIndivText}"
-                 size="5" maxlength="5" />
-</h:panelGroup>
-
-
-    <!-- DataTable -->
-    <p:dataTable id="tabPostkorb"
-                 value="#{postkorbVC.postkorbModell.eintraege}"
-                 var="eintrag"
-                 selectionMode="multiple"
-                 emptyMessage="#{postkorbVC.postkorbModell.emptyTextTable}">
-        <p:column headerText="IKz">
-            <h:outputText value="#{eintrag.terminIndivText}" />
-        </p:column>
-        <p:column headerText="Art">
-            <h:outputText value="#{eintrag.terminArt}" />
-        </p:column>
-        <p:column headerText="Eing-Dat">
-            <h:outputText value="#{eintrag.eingangDat}" />
-        </p:column>
-        <!-- … replicate other columns … -->
-    </p:dataTable>
-
-    <!-- Popup Dialog -->
-    <p:dialog id="popupDialogPK" widgetVar="popupDlg"
-              header="KKE" modal="true" closable="false" resizable="false">
-        <p:panelGrid columns="2" columnClasses="label,value">
-            <h:outputLabel for="inpZeit" value="Bearbeitungsdauer (in Minuten):" />
-            <p:inputText id="inpZeit" value="#{kKEControllerMasch.kkeModel.bearbeitungsZeit}" required="true">
-                <f:convertNumber locale="de" minFractionDigits="1" maxFractionDigits="1" />
-                <f:validator validatorId="KkeZeitwertValidator" />
-            </p:inputText>
-
-            <h:outputLabel for="inpTage" value="Anzahl Arbeitstage:" />
-            <p:inputText id="inpTage" value="#{kKEControllerMasch.kkeModel.arbeitstage}" required="true">
-                <f:convertNumber locale="de" />
-                <f:validator validatorId="KkeArbeitstagValidator" />
-            </p:inputText>
-
-            <h:outputLabel for="selBearb" value="Bearbeitung:" />
-            <p:selectOneMenu id="selBearb" value="#{kKEControllerMasch.kkeModel.bearbeitung}" style="width:300px">
-                <f:selectItems value="#{kKEControllerMasch.kkeModel.bearbItems}" />
-            </p:selectOneMenu>
-        </p:panelGrid>
-
-        <p:commandButton value="Ausführen"
-                         actionListener="#{postkorbVC.kkeAusfuehrenListener}"
-                         update="@form" />
-    </p:dialog>
-
-</h:form>
-</h:body>
+			<af:panelGroupLayout layout="horizontal" halign="center" 
+					id="error_details" clientComponent="true" visible="false">
+		        <ui:repeat value="#{errorVC.errorModell.details}" var="entry">
+		            #{entry}<br/>
+		        </ui:repeat>
+	        </af:panelGroupLayout>
+	        </af:subform>
+	    </ui:define>
+	</ui:composition>
+</body>
 </html>
