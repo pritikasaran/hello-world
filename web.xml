@@ -1,74 +1,80 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
-      xmlns:tr="http://myfaces.apache.org/trinidad"
-      xmlns:trh="http://myfaces.apache.org/trinidad/html">
-<body>
-	<ui:composition template="/templates/mainTemplate.xhtml">
-		<ui:define name="title">
-			<af:clientListener method="setErrorPageButtonVisibility" type="load" />
-			<div style="padding:0px 5px 0 5px">
-			<h3>#{errorVC.windowTitle}</h3>
-			</div>
-		</ui:define>
-	    <ui:define name="content">
-	    <af:subform>
-	    	 <f:event type="jakarta.faces.event.PreRenderViewEvent" listener="#{errorVC.preRenderView}"/> 
-	    
-	   		 <af:panelLabelAndMessage label="Meldung:">
-		    	<af:outputText value="#{errorVC.meldung}" />
-		    </af:panelLabelAndMessage>
-		    
-		     <af:spacer height="30px" />
-		    	
-	    	<tr:panelCaptionGroup captionText="Daten">
-		    	<af:panelLabelAndMessage label="Datum:">
-		    		<af:outputText value="#{errorVC.currentDate}" />
-		    	</af:panelLabelAndMessage>
-		    	<af:panelLabelAndMessage label="User-ID:">
-		    		<af:outputText value="#{errorVC.benutzerID}" />
-		    	</af:panelLabelAndMessage>
-		    	<af:panelLabelAndMessage label="Akte:">
-		    		<af:outputText value="#{errorVC.currentAkte}" />
-		    	</af:panelLabelAndMessage>
-		    	<af:panelLabelAndMessage label="Termin:">
-		    		<af:outputText value="#{errorVC.termin}" />
-		    	</af:panelLabelAndMessage>
-		    </tr:panelCaptionGroup>
-		    
-		    <af:spacer width="10" height="10" />
-	    	
-	    	<af:panelGroupLayout layout="horizontal" halign="center">
-	    	  	<f:facet name="separator">
-    				<af:spacer width="10" height="1"/>
- 				 </f:facet>
-		    	<af:commandButton text="Zum Postkorb" id="cmdPostkorb" accessKey="P"
-		        	action="#{errorVC.gotToPostkorb}" immediate="true" 
-		        	rendered="#{errorVC.mainDialog}"/>   	
-		        <af:commandButton id="cmdCancel" text="Abbrechen" accessKey="A"
-		        	action="#{errorVC.cancel}" immediate="true"
-		        	rendered="#{!errorVC.mainDialog}"/>  	
-		    	<af:commandButton text="Programm Beenden" id="cmdCancelErr" accessKey="B"
-		        	action="#{akteVC.programmBeenden}" immediate="true">
-		        </af:commandButton>
-				<af:commandButton text="Details anzeigen" rendered="#{errorVC.hasDetails}">
-				  <af:clientListener method="showErrorDetails" type="action"/>
-				</af:commandButton>
-	        </af:panelGroupLayout>
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
 
-			<af:panelGroupLayout layout="horizontal" halign="center" 
-					id="error_details" clientComponent="true" visible="false">
-		        <ui:repeat value="#{errorVC.errorModell.details}" var="entry">
-		            #{entry}<br/>
-		        </ui:repeat>
-	        </af:panelGroupLayout>
-	        </af:subform>
-	    </ui:define>
-	</ui:composition>
-</body>
+<h:head>
+    <title>#{errorVC.windowTitle}</title>
+</h:head>
+
+<h:body>
+    <ui:composition template="/templates/mainTemplate.xhtml">
+        <ui:define name="title">
+            <h3 style="padding:0px 5px 0 5px">#{errorVC.windowTitle}</h3>
+        </ui:define>
+
+        <ui:define name="content">
+            <h:form id="errorForm">
+                <f:event type="preRenderView" listener="#{errorVC.preRenderView}" />
+
+                <!-- Meldung -->
+                <p:panelGrid columns="2">
+                    <h:outputLabel value="Meldung:" />
+                    <h:outputText value="#{errorVC.meldung}" />
+                </p:panelGrid>
+
+                <p:spacer height="30" />
+
+                <!-- Daten -->
+                <p:fieldset legend="Daten">
+                    <p:panelGrid columns="2">
+                        <h:outputLabel value="Datum:" />
+                        <h:outputText value="#{errorVC.currentDate}" />
+
+                        <h:outputLabel value="User-ID:" />
+                        <h:outputText value="#{errorVC.benutzerID}" />
+
+                        <h:outputLabel value="Akte:" />
+                        <h:outputText value="#{errorVC.currentAkte}" />
+
+                        <h:outputLabel value="Termin:" />
+                        <h:outputText value="#{errorVC.termin}" />
+                    </p:panelGrid>
+                </p:fieldset>
+
+                <p:spacer height="10" width="10" />
+
+                <!-- Buttons -->
+                <p:panelGrid columns="4" style="text-align:center">
+                    <p:commandButton value="Zum Postkorb" id="cmdPostkorb"
+                                     action="#{errorVC.gotToPostkorb}"
+                                     immediate="true"
+                                     rendered="#{errorVC.mainDialog}" />
+
+                    <p:commandButton value="Abbrechen" id="cmdCancel"
+                                     action="#{errorVC.cancel}"
+                                     immediate="true"
+                                     rendered="#{!errorVC.mainDialog}" />
+
+                    <p:commandButton value="Programm Beenden" id="cmdCancelErr"
+                                     action="#{akteVC.programmBeenden}"
+                                     immediate="true" />
+
+                    <p:commandButton value="Details anzeigen"
+                                     rendered="#{errorVC.hasDetails}"
+                                     onclick="showErrorDetails()" />
+                </p:panelGrid>
+
+                <!-- Error Details -->
+                <p:outputPanel id="error_details" style="text-align:center" visible="false">
+                    <ui:repeat value="#{errorVC.errorModell.details}" var="entry">
+                        #{entry}<br/>
+                    </ui:repeat>
+                </p:outputPanel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</h:body>
 </html>
