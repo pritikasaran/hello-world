@@ -40,3 +40,12 @@ INNER JOIN sys.schemas s ON t.schema_id = s.schema_id;
                     listener="#{eintraegeFilterVC.mandantValueChangeListener}"
                     process="@this"
                     update="frmSuchen"/>
+<h:outputLabel for="datVon" value="Von:"/>
+<p:datePicker id="datVon"
+              value="#{bean.datVon}"
+              pattern="dd.MM.yyyy"
+              showIcon="true">
+    <p:ajax event="dateSelect"
+            listener="#{bean.onDateSelect}"
+            update="@form"/>
+</p:datePicker>
