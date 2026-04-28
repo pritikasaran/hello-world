@@ -1,2 +1,9 @@
-<h:outputText id="testCount" 
-              value="Count: #{postkorbVC.postkorbModell.eintraege.size()}"/>
+<context-param>
+    <param-name>jakarta.faces.STATE_SAVING_METHOD</param-name>
+    <param-value>server</param-value>
+</context-param>
+
+<context-param>
+    <param-name>jakarta.faces.NUMBER_OF_VIEWS_IN_SESSION</param-name>
+    <param-value>20</param-value>
+</context-param>
