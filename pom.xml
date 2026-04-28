@@ -1,12 +1,6 @@
-<p:column headerText="Termin-Dat" 
-          style="width:105px;"
-          styleClass="imsTableHeader">
-    <h:outputText value="#{eintrag.terminDat}" 
-                  rendered="#{eintrag.terminDat != null}">
-        <f:convertDateTime pattern="dd.MM.yyyy" 
-                           timeZone="Europe/Berlin"/>
-    </h:outputText>
-    <h:outputText value="" 
-                  rendered="#{eintrag.terminDat == null}"/>
-</p:column>
+public String getTerminDatFormatted() {
+    return (terminDat == null) ? "" 
+        : terminDat.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+}
+
 
