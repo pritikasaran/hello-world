@@ -1,7 +1,4 @@
-public void loadFirstEntry() {
-        if (postkorbModell.getEintraege() != null && !postkorbModell.getEintraege().isEmpty()) {
-            firstEntry = postkorbModell.getEintraege().get(0).toString();
-        } else {
-            firstEntry = "No entries";
-        }
-    }
+<h:outputText value="#{eintrag.terminDat}" rendered="#{not empty eintrag.terminDat}">
+    <f:convertDateTime pattern="dd.MM.yyyy" />
+</h:outputText>
+
