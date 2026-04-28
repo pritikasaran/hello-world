@@ -90,5 +90,50 @@
             <f:selectItems value="#{kKEControllerManuel.kkeModel.nachBearbItems}" />
         </p:selectOneMenu>
 
+    <!-- Bearbeitungsdauer (in Minuten) -->
+    <h:outputLabel for="inpZeit" value="Bearbeitungsdauer (in Minuten):" />
+    <p:inputText id="inpZeit" maxlength="10" size="10"
+                 value="#{kKEControllerManuel.kkeModel.bearbeitungsZeit}"
+                 required="true"
+                 onClick="selectContent()">
+        <f:convertNumber locale="de" minFractionDigits="1" maxFractionDigits="1" />
+        <f:validator validatorId="KkeZeitwertValidator" />
+    </p:inputText>
+
+    <!-- Hinweistext -->
+    <h:outputText styleClass="imsAnzeigeRotKlein"
+                  value="#{kKEControllerManuel.kkeModel.hinweisText}" />
+
+    <!-- Anzahl Arbeitstage -->
+    <h:outputLabel for="inpTage" value="Anzahl Arbeitstage:" />
+    <p:inputText id="inpTage" maxlength="10" size="10"
+                 value="#{kKEControllerManuel.kkeModel.arbeitstage}"
+                 required="true"
+                 onClick="selectContent()">
+        <f:convertNumber locale="de" />
+        <f:validator validatorId="KkeArbeitstagValidator" />
+    </p:inputText>
+
+    <!-- Spacer -->
+    <h:panelGroup style="margin-top:50px;" />
+
+    <!-- Buttons row -->
+    <p:panelGrid columns="3" style="width:100%;" columnClasses="col1,col2,col3">
+        <h:panelGroup style="width:250px;" /> <!-- spacer -->
+
+        <p:commandButton id="cmdSubmit" value="Ausführen"
+                         action="#{kKEControllerManuel.submit}" accesskey="u" />
+
+        <p:commandButton id="cmdCancel" value="Abbrechen"
+                         action="#{kKEControllerManuel.cancel}"
+                         immediate="true" accesskey="A" />
     </p:panelGrid>
+
+    <!-- Spacer -->
+    <h:panelGroup style="margin-top:30px;" />
+
+    <!-- Messages -->
+    <p:messages id="messages" closable="true" />
+
+
 </h:form>
