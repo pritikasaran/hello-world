@@ -1,11 +1,7 @@
-<context-param>
-    <param-name>jakarta.faces.STATE_SAVING_METHOD</param-name>
-    <param-value>server</param-value>
-</context-param>
-
-<context-param>
-    <param-name>jakarta.faces.NUMBER_OF_VIEWS_IN_SESSION</param-name>
-    <param-value>20</param-value>
-</context-param>
-
-document.getElementById('panelTabbs:postkorbSubForm:postkorbTable')
+public void loadFirstEntry() {
+        if (postkorbModell.getEintraege() != null && !postkorbModell.getEintraege().isEmpty()) {
+            firstEntry = postkorbModell.getEintraege().get(0).toString();
+        } else {
+            firstEntry = "No entries";
+        }
+    }
