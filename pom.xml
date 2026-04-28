@@ -1,139 +1,41 @@
-<h:form id="mainForm" enctype="multipart/form-data">
-    
-    <!-- JavaScript resource -->
-    <h:outputScript>
-        function resizeWindowOnLoad(){
-            if(!#{archivierenVC.archivierenModell.upload}){
-                resizeArchivierenWindow();
-            }
-        }
-        window.onload = resizeWindowOnLoad;
-    </h:outputScript>
+<h:form id="LoginForm">
 
-    <!-- Dialog -->
-    <p:dialog id="archivierungausgefuehrt"
-              widgetVar="archivierungDialog"
-              header="IMS: Hinweis"
-              modal="true"
-              closable="false"
-              draggable="false"
-              resizable="false"
-              width="280">
+    <p:panelGrid columns="2" cellpadding="7" style="width:100%;">
         
-        <h:panelGroup layout="block" style="text-align:center;">
-            <h:outputText value="Das Dokument wurde archiviert." />
-            <h:panelGroup style="margin-top:20px;">
-                <p:commandButton value="OK"
-                                 action="#{archivierenVC.beendenFenster}"
-                                 update="@form" />
-            </h:panelGroup>
+        <!-- User-ID -->
+        <h:outputLabel value="User-ID:" />
+        <h:outputText value="#{startVC.imsModelL.benutzerID}" />
+
+        <!-- Token -->
+        <h:outputLabel value="Token:" />
+        <h:outputText value="#{startVC.imsModelL.token}" />
+
+        <!-- Dokuid -->
+        <h:outputLabel for="dokuid" value="Dokuid:" />
+        <p:inputText id="dokuid" value="#{startVC.imsModelL.dokuidPrint}" />
+
+        <!-- Error Message -->
+        <h:outputLabel />
+        <h:outputText id="errorMessage" value="#{startVC.errorMessage}" />
+
+        <!-- Spacer -->
+        <h:outputLabel />
+        <h:panelGroup style="width:20px;" />
+
+        <!-- Buttons -->
+        <h:outputLabel />
+        <h:panelGroup>
+            <p:commandButton id="cmdStart" value="Start DocAnzeige2"
+                             action="#{startVC.dokuanzeigeZwei}"
+                             ajax="true"
+                             disabled="#{startVC.weiterButtondisabled}"
+                             onclick="registerWindowAttrs()" />
+            
+            <h:panelGroup style="display:inline-block; width:10px;" />
+
+            <p:commandButton id="cmdCancel" value="Schliessen"
+                             onclick="closeIMS()" />
         </h:panelGroup>
-    </p:dialog>
-</h:form>
-<h:form id="pf2" styleClass="kke-form-list">
-    <p:panelGrid columns="2" columnClasses="labelCol,valueCol" style="width:550px;">
-        
-        <!-- Anzahl Einzelverträge -->
-        <h:outputLabel for="selAnzahlVtr" value="Anzahl Einzelverträge:" />
-        <p:inputText id="selAnzahlVtr" maxlength="10" size="10"
-                     value="#{kKEControllerManuel.kkeModel.rollVtrAnzahl}"
-                     onClick="selectContent()" />
 
-        <!-- Zugangskanal -->
-        <h:outputLabel for="selMedium" value="Zugangskanal:" />
-        <p:selectOneMenu id="selMedium"
-                         style="width:#{kKEControllerManuel.widthSelectBoxen}"
-                         value="#{kKEControllerManuel.kkeModel.zugangsKanal}">
-            <f:selectItems value="#{kKEControllerManuel.kkeModel.zugangsKanaeleItems}" />
-        </p:selectOneMenu>
-
-        <!-- Anlassgeber -->
-        <h:outputLabel for="selAnlassgeber" value="Anlassgeber:" />
-        <p:selectOneMenu id="selAnlassgeber"
-                         style="width:#{kKEControllerManuel.widthSelectBoxen}"
-                         value="#{kKEControllerManuel.kkeModel.anlassgeber}">
-            <f:selectItems value="#{kKEControllerManuel.kkeModel.anlassgeberItems}" />
-        </p:selectOneMenu>
-
-        <!-- Prozess -->
-        <h:outputLabel for="selProzess" value="Prozess:" />
-        <p:selectOneMenu id="selProzess"
-                         style="width:#{kKEControllerManuel.widthSelectBoxen}"
-                         value="#{kKEControllerManuel.kkeModel.prozess}">
-            <f:selectItems value="#{kKEControllerManuel.kkeModel.prozessItems}" />
-            <p:ajax event="change"
-                    listener="#{kKEControllerManuel.prozessValueChangeListener}"
-                    update="selVgart" />
-        </p:selectOneMenu>
-
-        <!-- Vorgangsart -->
-        <h:outputLabel for="selVgart" value="Vorgangsart:" />
-        <p:selectOneMenu id="selVgart"
-                         style="width:#{kKEControllerManuel.widthSelectBoxen}"
-                         value="#{kKEControllerManuel.kkeModel.vgart}">
-            <f:selectItems value="#{kKEControllerManuel.kkeModel.vgartItems}" />
-        </p:selectOneMenu>
-
-        <!-- Bearbeitung -->
-        <h:outputLabel for="selBearb" value="Bearbeitung:" />
-        <p:selectOneMenu id="selBearb"
-                         style="width:#{kKEControllerManuel.widthSelectBoxen}"
-                         value="#{kKEControllerManuel.kkeModel.bearbeitung}">
-            <f:selectItems value="#{kKEControllerManuel.kkeModel.bearbItems}" />
-        </p:selectOneMenu>
-
-        <!-- Nachbearbeitung -->
-        <h:outputLabel for="selNachBearb" value="Nachbearbeitung:" />
-        <p:selectOneMenu id="selNachBearb"
-                         style="width:#{kKEControllerManuel.widthSelectBoxen}"
-                         value="#{kKEControllerManuel.kkeModel.nachBearbeitung}">
-            <f:selectItems value="#{kKEControllerManuel.kkeModel.nachBearbItems}" />
-        </p:selectOneMenu>
-
-    <!-- Bearbeitungsdauer (in Minuten) -->
-    <h:outputLabel for="inpZeit" value="Bearbeitungsdauer (in Minuten):" />
-    <p:inputText id="inpZeit" maxlength="10" size="10"
-                 value="#{kKEControllerManuel.kkeModel.bearbeitungsZeit}"
-                 required="true"
-                 onClick="selectContent()">
-        <f:convertNumber locale="de" minFractionDigits="1" maxFractionDigits="1" />
-        <f:validator validatorId="KkeZeitwertValidator" />
-    </p:inputText>
-
-    <!-- Hinweistext -->
-    <h:outputText styleClass="imsAnzeigeRotKlein"
-                  value="#{kKEControllerManuel.kkeModel.hinweisText}" />
-
-    <!-- Anzahl Arbeitstage -->
-    <h:outputLabel for="inpTage" value="Anzahl Arbeitstage:" />
-    <p:inputText id="inpTage" maxlength="10" size="10"
-                 value="#{kKEControllerManuel.kkeModel.arbeitstage}"
-                 required="true"
-                 onClick="selectContent()">
-        <f:convertNumber locale="de" />
-        <f:validator validatorId="KkeArbeitstagValidator" />
-    </p:inputText>
-
-    <!-- Spacer -->
-    <h:panelGroup style="margin-top:50px;" />
-
-    <!-- Buttons row -->
-    <p:panelGrid columns="3" style="width:100%;" columnClasses="col1,col2,col3">
-        <h:panelGroup style="width:250px;" /> <!-- spacer -->
-
-        <p:commandButton id="cmdSubmit" value="Ausführen"
-                         action="#{kKEControllerManuel.submit}" accesskey="u" />
-
-        <p:commandButton id="cmdCancel" value="Abbrechen"
-                         action="#{kKEControllerManuel.cancel}"
-                         immediate="true" accesskey="A" />
     </p:panelGrid>
-
-    <!-- Spacer -->
-    <h:panelGroup style="margin-top:30px;" />
-
-    <!-- Messages -->
-    <p:messages id="messages" closable="true" />
-
-
 </h:form>
