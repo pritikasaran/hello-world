@@ -1,27 +1,94 @@
-public void suchen() {
-    try {
-        // setup work
-        EintraegeFilterModell filter = akteModell.getFilter();
-        filter.resetValues();
-        
-        if (!StringUtils.isEmpty(akteModell.getOrb())) {
-            filter.setMandant(akteModell.getMandant());
-            filter.setOrbArt(akteModell.getOrbart());
-            filter.setOrb(akteModell.getOrb());
-        } else {
-            filter.setMandant(null);
-            filter.setOrbArt(null);
-            filter.setOrb(null);
+<h:form id="mainForm" enctype="multipart/form-data">
+    
+    <!-- JavaScript resource -->
+    <h:outputScript>
+        function resizeWindowOnLoad(){
+            if(!#{archivierenVC.archivierenModell.upload}){
+                resizeArchivierenWindow();
+            }
         }
+        window.onload = resizeWindowOnLoad;
+    </h:outputScript>
+
+    <!-- Dialog -->
+    <p:dialog id="archivierungausgefuehrt"
+              widgetVar="archivierungDialog"
+              header="IMS: Hinweis"
+              modal="true"
+              closable="false"
+              draggable="false"
+              resizable="false"
+              width="280">
         
-        // only opens if no exception above
-        PrimeFaces.current().executeScript(Pages.SUCHEN.getWindowOpenScript());
+        <h:panelGroup layout="block" style="text-align:center;">
+            <h:outputText value="Das Dokument wurde archiviert." />
+            <h:panelGroup style="margin-top:20px;">
+                <p:commandButton value="OK"
+                                 action="#{archivierenVC.beendenFenster}"
+                                 update="@form" />
+            </h:panelGroup>
+        </h:panelGroup>
+    </p:dialog>
+</h:form>
+<h:form id="pf2" styleClass="kke-form-list">
+    <p:panelGrid columns="2" columnClasses="labelCol,valueCol" style="width:550px;">
         
-    } catch (Exception e) {
-        LOG.severe("suchen error: " + e.getMessage());
-        // show error to user
-        FacesContext.getCurrentInstance().addMessage(null,
-            new FacesMessage(FacesMessage.SEVERITY_ERROR, 
-                "Fehler", e.getMessage()));
-    }
-}
+        <!-- Anzahl Einzelverträge -->
+        <h:outputLabel for="selAnzahlVtr" value="Anzahl Einzelverträge:" />
+        <p:inputText id="selAnzahlVtr" maxlength="10" size="10"
+                     value="#{kKEControllerManuel.kkeModel.rollVtrAnzahl}"
+                     onClick="selectContent()" />
+
+        <!-- Zugangskanal -->
+        <h:outputLabel for="selMedium" value="Zugangskanal:" />
+        <p:selectOneMenu id="selMedium"
+                         style="width:#{kKEControllerManuel.widthSelectBoxen}"
+                         value="#{kKEControllerManuel.kkeModel.zugangsKanal}">
+            <f:selectItems value="#{kKEControllerManuel.kkeModel.zugangsKanaeleItems}" />
+        </p:selectOneMenu>
+
+        <!-- Anlassgeber -->
+        <h:outputLabel for="selAnlassgeber" value="Anlassgeber:" />
+        <p:selectOneMenu id="selAnlassgeber"
+                         style="width:#{kKEControllerManuel.widthSelectBoxen}"
+                         value="#{kKEControllerManuel.kkeModel.anlassgeber}">
+            <f:selectItems value="#{kKEControllerManuel.kkeModel.anlassgeberItems}" />
+        </p:selectOneMenu>
+
+        <!-- Prozess -->
+        <h:outputLabel for="selProzess" value="Prozess:" />
+        <p:selectOneMenu id="selProzess"
+                         style="width:#{kKEControllerManuel.widthSelectBoxen}"
+                         value="#{kKEControllerManuel.kkeModel.prozess}">
+            <f:selectItems value="#{kKEControllerManuel.kkeModel.prozessItems}" />
+            <p:ajax event="change"
+                    listener="#{kKEControllerManuel.prozessValueChangeListener}"
+                    update="selVgart" />
+        </p:selectOneMenu>
+
+        <!-- Vorgangsart -->
+        <h:outputLabel for="selVgart" value="Vorgangsart:" />
+        <p:selectOneMenu id="selVgart"
+                         style="width:#{kKEControllerManuel.widthSelectBoxen}"
+                         value="#{kKEControllerManuel.kkeModel.vgart}">
+            <f:selectItems value="#{kKEControllerManuel.kkeModel.vgartItems}" />
+        </p:selectOneMenu>
+
+        <!-- Bearbeitung -->
+        <h:outputLabel for="selBearb" value="Bearbeitung:" />
+        <p:selectOneMenu id="selBearb"
+                         style="width:#{kKEControllerManuel.widthSelectBoxen}"
+                         value="#{kKEControllerManuel.kkeModel.bearbeitung}">
+            <f:selectItems value="#{kKEControllerManuel.kkeModel.bearbItems}" />
+        </p:selectOneMenu>
+
+        <!-- Nachbearbeitung -->
+        <h:outputLabel for="selNachBearb" value="Nachbearbeitung:" />
+        <p:selectOneMenu id="selNachBearb"
+                         style="width:#{kKEControllerManuel.widthSelectBoxen}"
+                         value="#{kKEControllerManuel.kkeModel.nachBearbeitung}">
+            <f:selectItems value="#{kKEControllerManuel.kkeModel.nachBearbItems}" />
+        </p:selectOneMenu>
+
+    </p:panelGrid>
+</h:form>
