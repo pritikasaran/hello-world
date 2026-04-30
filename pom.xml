@@ -3,12 +3,4 @@
                  update="postkorbTable"/>
 
 
-public void speichern() {
-    // save sort criteria to postkorbModell
-    postkorbModell.setSortierKriterien(sortierungModell.getSortierKriterien());
-    
-    // close window and trigger reload in parent
-    PrimeFaces.current().executeScript(
-        "window.opener.applySortierung(); window.close();"
-    );
-}
+oncomplete="window.opener.applySortierung(); window.close();
