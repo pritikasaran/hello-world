@@ -1,35 +1,14 @@
-<ui:define name="title">
-    <h:outputScript>
-        window.parent.moveTo(0, 0);
-        window.parent.resizeTo(window.screen.availWidth / 2, window.screen.availHeight);
-    </h:outputScript>
-</ui:define>
-
-<ui:define name="content">
-    <h:form>
-        <!-- Stretch layout equivalent -->
-        <p:layout fullPage="false" style="height:100%;">
-
-            <!-- Center facet -->
-            <p:layoutUnit position="center">
-                <iframe id="framePDF"
-                        src="#{pdfAnzeigeVC.servletURL}"
-                        style="width:100%; height:100%; border:none;">
-                </iframe>
-            </p:layoutUnit>
-
-            <!-- Bottom facet -->
-            <p:layoutUnit position="south" size="45" style="text-align:center;">
-                <p:commandButton id="cmdNext" value="Weitere Dokumente" accesskey="W"
-                                 rendered="#{pdfAnzeigeVC.pdfAnzeigeModell.renderNextButton}"
-                                 action="#{pdfAnzeigeVC.next}" update="@form" />
-                <p:commandButton id="cmdCancel" value="Abbrechen" accesskey="A"
-                                 action="#{pdfAnzeigeVC.cancel}" update="@form" />
-            </p:layoutUnit>
-
-        </p:layout>
-    </h:form>
-</ui:define>
+<p:remoteCommand name="applySortierung"
+                 action="#{postkorbVC.actionAktualisieren}"
+                 update="postkorbTable"/>
 
 
-
+public void speichern() {
+    // save sort criteria to postkorbModell
+    postkorbModell.setSortierKriterien(sortierungModell.getSortierKriterien());
+    
+    // close window and trigger reload in parent
+    PrimeFaces.current().executeScript(
+        "window.opener.applySortierung(); window.close();"
+    );
+}
