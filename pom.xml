@@ -4,3 +4,4 @@
 
 
 oncomplete="window.opener.applySortierung(); window.close();
+update=":postkorbTable"
