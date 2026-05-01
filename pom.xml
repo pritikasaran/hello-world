@@ -5,3 +5,19 @@
     <p:ajax event="rowUnselect"
             listener="#{postkorbVC.onRowUnselect}"
             update="@form"/>
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
+
+public void onRowSelect(SelectEvent<PostkorbEintrag> event) {
+    PostkorbEintrag selected = event.getObject();
+    LOG.info("Row selected: " + selected.getPk().getPostkorbId() + 
+             " - " + selected.getPk().getTerminLnr());
+    
+    // store selected in model
+    postkorbModell.setSelectedEintrag(selected);
+}
+
+public void onRowUnselect(UnselectEvent<PostkorbEintrag> event) {
+    PostkorbEintrag unselected = event.getObject();
+    LOG.info("Row unselected: " + unselected.getPk().getTerminLnr());
+}
