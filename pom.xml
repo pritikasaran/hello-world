@@ -1,7 +1,7 @@
-<p:remoteCommand name="applySortierung"
-                 action="#{postkorbVC.actionAktualisieren}"
-                 update="postkorbTable"/>
+    <p:ajax event="rowSelect"
+            listener="#{postkorbVC.onRowSelect}"
+            update="@form"/>
 
-
-oncomplete="window.opener.applySortierung(); window.close();
-update=":postkorbTable"
+    <p:ajax event="rowUnselect"
+            listener="#{postkorbVC.onRowUnselect}"
+            update="@form"/>
