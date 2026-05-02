@@ -21,3 +21,4 @@ public void onRowUnselect(UnselectEvent<PostkorbEintrag> event) {
     PostkorbEintrag unselected = event.getObject();
     LOG.info("Row unselected: " + unselected.getPk().getTerminLnr());
 }
+window.opener.document.title
