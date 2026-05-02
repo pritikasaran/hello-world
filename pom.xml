@@ -22,3 +22,7 @@ public void onRowUnselect(UnselectEvent<PostkorbEintrag> event) {
     LOG.info("Row unselected: " + unselected.getPk().getTerminLnr());
 }
 window.opener.document.title
+
+    if (window.opener) {
+    window.opener.document.getElementById("formA:cmdCancel").click();
+}
