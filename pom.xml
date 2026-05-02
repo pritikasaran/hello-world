@@ -26,3 +26,4 @@ window.opener.document.title
     if (window.opener) {
     window.opener.document.getElementById("formA:cmdCancel").click();
 }
+    <p:remoteCommand name="triggerCancel" process="@this" action="#{bean.cancel}" />
