@@ -27,3 +27,8 @@ window.opener.document.title
     window.opener.document.getElementById("formA:cmdCancel").click();
 }
     <p:remoteCommand name="triggerCancel" process="@this" action="#{bean.cancel}" />
+
+    
+
+        <p:ajax event="rowSelect" listener="#{aktenEintraegeVC.selectEintraege}" update="@form" />
+        <p:ajax event="rowUnselect" listener="#{aktenEintraegeVC.selectEintraege}" update="@form" 
