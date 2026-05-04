@@ -49,3 +49,9 @@ INNER JOIN sys.schemas s ON t.schema_id = s.schema_id;
             listener="#{bean.onDateSelect}"
             update="@form"/>
 </p:datePicker>
+/* Selected row */
+.ui-datatable .ui-datatable-data .ui-state-highlight {
+    background-color: #c8e6c9 !important; /* light green */
+    color: #000 !important;
+}
+
