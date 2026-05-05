@@ -1,10 +1,3 @@
-Perfect — let’s carefully translate your ADF/Trinidad fax dialog into **PrimeFaces + Jakarta Faces**, keeping the same semantics and not inventing backend logic. Every `af:*` and `trh:*` component gets a direct PrimeFaces equivalent, with `rendered`, `disabled`, `value`, `validator`, and `f:ajax` preserved exactly.
-
----
-
-### PrimeFaces Conversion
-
-```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
@@ -17,152 +10,144 @@ Perfect — let’s carefully translate your ADF/Trinidad fax dialog into **Prim
     <h:form id="faxenForm">
 
         <p:panel id="tabFaxen">
-            <h:panelGroup id="content">
+            <p:panelGrid columns="3" layout="tabular" cellpadding="7" style="width:100%;">
 
-                <p:panelGrid columns="3" cellpadding="7">
+                <!-- VgNr -->
+                <h:outputLabel for="faxVgNrAnzeigeId" value="VgNr:" />
+                <p:inputText id="faxVgNrAnzeigeId"
+                             maxlength="4" size="2"
+                             disabled="#{faxenVC.faxenModell.neuenVorgangAnlegen}"
+                             value="#{faxenVC.faxenModell.vgNummer}">
+                    <f:ajax event="change" execute="@this" render="faxVgArtId"
+                            listener="#{faxenVC.updateVgArt}" />
+                    <f:validator validatorId="faxenVC.validateVgNr"/>
+                </p:inputText>
+                <p:selectBooleanCheckbox id="faxNeuVgId"
+                                         value="#{faxenVC.faxenModell.neuenVorgangAnlegen}">
+                    <f:ajax event="change" execute="@this"
+                            render="faxVgArtId faxVgNrAnzeigeId"
+                            listener="#{faxenVC.updateVgNr}" />
+                </p:selectBooleanCheckbox>
 
-                    <!-- VgNr input -->
-                    <p:row>
-                        <p:inputText id="faxVgNrAnzeigeId" label="VgNr:"
-                                     maxlength="4" size="2"
-                                     disabled="#{faxenVC.faxenModell.neuenVorgangAnlegen}"
-                                     value="#{faxenVC.faxenModell.vgNummer}">
-                            <f:ajax event="change" execute="@this" render="faxVgArtId" listener="#{faxenVC.updateVgArt}" />
-                            <f:validator validatorId="faxenVC.validateVgNr"/>
-                        </p:inputText>
+                <!-- Vorgangsart -->
+                <h:outputLabel for="faxVgArtId" value="Vorgangsart:" />
+                <p:selectOneMenu id="faxVgArtId"
+                                 disabled="#{!faxenVC.faxenModell.neuenVorgangAnlegen}"
+                                 value="#{faxenVC.faxenModell.selectedVgArt}"
+                                 styleClass="faxdialogfeldlang">
+                    <f:selectItems value="#{faxenVC.faxenModell.vgArtItems}" />
+                    <f:ajax event="change" execute="@this" render="tabFaxen" />
+                </p:selectOneMenu>
+                <h:outputText value="" />
 
-                        <p:selectBooleanCheckbox id="faxNeuVgId"
-                                                 value="#{faxenVC.faxenModell.neuenVorgangAnlegen}">
-                            <f:ajax event="change" execute="@this" render="faxVgArtId faxVgNrAnzeigeId" listener="#{faxenVC.updateVgNr}" />
-                        </p:selectBooleanCheckbox>
-                        <h:outputLabel for="faxNeuVgId" value="Neuen Vorgang anlegen:" />
-                    </p:row>
+                <!-- Weitere ORBs -->
+                <p:selectBooleanCheckbox id="faxWeitereOrbsCheckboxId"
+                                         value="#{faxenVC.faxenModell.weitereOrbFrage}">
+                    <f:ajax event="change" execute="@this"
+                            render="faxMandant1 faxMandant2 faxMandant3 faxMandant4 faxMandant5
+                                    orb1Id orb2Id orb3Id orb4Id orb5Id
+                                    faxOrbart1 faxOrbart2 faxOrbart3 faxOrbart4 faxOrbart5" />
+                </p:selectBooleanCheckbox>
+                <h:outputLabel for="faxWeitereOrbsCheckboxId" value="Weitere ORB's" />
+                <h:outputText value="" />
 
-                    <!-- Vorgangsart -->
-                    <p:row>
-                        <h:outputLabel for="faxVgArtId" value="Vorgangsart:" />
-                        <p:selectOneMenu id="faxVgArtId"
-                                         disabled="#{!faxenVC.faxenModell.neuenVorgangAnlegen}"
-                                         value="#{faxenVC.faxenModell.selectedVgArt}"
-                                         styleClass="faxdialogfeldlang">
-                            <f:selectItems value="#{faxenVC.faxenModell.vgArtItems}" />
-                            <f:ajax event="change" execute="@this" render="tabFaxen" />
-                        </p:selectOneMenu>
-                    </p:row>
+                <!-- Mandant + Orbart + Orb fields (repeat pattern for 1–5) -->
+                <p:selectOneMenu id="faxMandant1"
+                                 value="#{faxenVC.faxenModell.mandant1}"
+                                 disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+                                 styleClass="faxdialogfeldkurz">
+                    <f:selectItems value="#{faxenVC.faxenModell.mandantItems}" />
+                    <f:ajax event="change" execute="@this" render="faxOrbart1"
+                            listener="#{faxenVC.updateOrbart}" />
+                </p:selectOneMenu>
+                <p:selectOneMenu id="faxOrbart1"
+                                 value="#{faxenVC.faxenModell.orbArt1}"
+                                 disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+                                 styleClass="faxdialogfeldkurz">
+                    <f:selectItems value="#{faxenVC.faxenModell.orbArtItems1}" />
+                    <f:ajax event="change" execute="@this" render="@this" />
+                </p:selectOneMenu>
+                <p:inputText id="orb1Id"
+                             value="#{faxenVC.faxenModell.orb1}"
+                             disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+                             style="width:90px;">
+                    <f:ajax event="change" execute="@this" render="tabFaxen" />
+                </p:inputText>
 
-                    <!-- Weitere ORBs -->
-                    <p:row>
-                        <p:selectBooleanCheckbox id="faxWeitereOrbsCheckboxId"
-                                                 value="#{faxenVC.faxenModell.weitereOrbFrage}">
-                            <f:ajax event="change" execute="@this"
-                                    render="faxMandant1 faxMandant2 faxMandant3 faxMandant4 faxMandant5
-                                            orb1Id orb2Id orb3Id orb4Id orb5Id
-                                            faxOrbart1 faxOrbart2 faxOrbart3 faxOrbart4 faxOrbart5" />
-                        </p:selectBooleanCheckbox>
-                        <h:outputLabel for="faxWeitereOrbsCheckboxId" value="Weitere ORB's" />
-                    </p:row>
+                <!-- Rolle -->
+                <h:outputLabel for="faxRolle" value="Rolle:" />
+                <p:selectOneMenu id="faxRolle"
+                                 value="#{faxenVC.faxenModell.selRolle}"
+                                 styleClass="faxdialogfeldlang">
+                    <f:selectItem itemLabel="" noSelectionOption="true"/>
+                    <f:selectItems value="#{faxenVC.faxenModell.rolleItems}" />
+                    <f:ajax event="change" execute="@this"
+                            render="faxNameId faxStrasseId faxOrtId faxNrId cmdUebernehmen"
+                            listener="#{faxenVC.rolleChanged}" />
+                </p:selectOneMenu>
+                <h:outputText value="" />
 
-                    <!-- Mandant + Orbart groups -->
-                    <p:row>
-                        <p:selectOneMenu id="faxMandant1"
-                                         value="#{faxenVC.faxenModell.mandant1}"
-                                         disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
-                                         styleClass="faxdialogfeldkurz">
-                            <f:selectItems value="#{faxenVC.faxenModell.mandantItems}" />
-                            <f:ajax event="change" execute="@this" render="faxOrbart1" listener="#{faxenVC.updateOrbart}" />
-                        </p:selectOneMenu>
-                        <p:selectOneMenu id="faxOrbart1"
-                                         value="#{faxenVC.faxenModell.orbArt1}"
-                                         disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
-                                         styleClass="faxdialogfeldkurz">
-                            <f:selectItems value="#{faxenVC.faxenModell.orbArtItems1}" />
-                            <f:ajax event="change" execute="@this" render="@this" />
-                        </p:selectOneMenu>
-                        <p:inputText id="orb1Id"
-                                     value="#{faxenVC.faxenModell.orb1}"
-                                     disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
-                                     style="width:90px;">
-                            <f:ajax event="change" execute="@this" render="tabFaxen" />
-                        </p:inputText>
-                    </p:row>
+                <!-- Name, Strasse, Ort -->
+                <h:outputLabel for="faxNameId" value="Vorname, Nachname:" />
+                <p:inputText id="faxNameId"
+                             value="#{faxenVC.faxenModell.currentRolle.name}"
+                             styleClass="faxdialogfeldlang" />
+                <h:outputText value="" />
 
-                    <!-- Rolle -->
-                    <p:row>
-                        <h:outputLabel for="faxRolle" value="Rolle:" />
-                        <p:selectOneMenu id="faxRolle"
-                                         value="#{faxenVC.faxenModell.selRolle}"
-                                         styleClass="faxdialogfeldlang">
-                            <f:selectItem itemLabel="" noSelectionOption="true"/>
-                            <f:selectItems value="#{faxenVC.faxenModell.rolleItems}" />
-                            <f:ajax event="change" execute="@this"
-                                    render="faxNameId faxStrasseId faxOrtId faxNrId cmdUebernehmen"
-                                    listener="#{faxenVC.rolleChanged}" />
-                        </p:selectOneMenu>
-                    </p:row>
+                <h:outputLabel for="faxStrasseId" value="Straße:" />
+                <p:inputText id="faxStrasseId"
+                             value="#{faxenVC.faxenModell.currentRolle.strasse}"
+                             styleClass="faxdialogfeldlang" />
+                <p:inputText id="faxOrtId"
+                             value="#{faxenVC.faxenModell.currentRolle.ort}"
+                             styleClass="faxdialogfeldlang" />
 
-                    <!-- Name, Strasse, Ort -->
-                    <p:row>
-                        <h:outputLabel for="faxNameId" value="Vorname, Nachname:" />
-                        <p:inputText id="faxNameId"
-                                     value="#{faxenVC.faxenModell.currentRolle.name}"
-                                     styleClass="faxdialogfeldlang" />
-                    </p:row>
+                <!-- Fax-Nr -->
+                <h:outputLabel for="faxNrId" value="Fax-Nr:" />
+                <p:inputText id="faxNrId"
+                             value="#{faxenVC.faxenModell.currentRolle.fax}"
+                             styleClass="faxdialogfeldlang">
+                    <f:validator validatorId="faxenVC.validateNummer"/>
+                    <f:ajax event="change" execute="@this" render="cmdUebernehmen" />
+                </p:inputText>
+                <p:commandButton id="cmdUebernehmen" value="Übernehmen"
+                                 action="#{faxenVC.actionUebernehmen}" update="tabFaxen"/>
+                <p:commandButton id="cmdAlleLoeschen" value="Alle Löschen"
+                                 action="#{faxenVC.actionAlleLoeschen}" update="tabFaxen"/>
 
-                    <p:row>
-                        <h:outputLabel for="faxStrasseId" value="Straße:" />
-                        <p:inputText id="faxStrasseId"
-                                     value="#{faxenVC.faxenModell.currentRolle.strasse}"
-                                     styleClass="faxdialogfeldlang" />
-                        <h:outputLabel for="faxOrtId" value="Ort:" />
-                        <p:inputText id="faxOrtId"
-                                     value="#{faxenVC.faxenModell.currentRolle.ort}"
-                                     styleClass="faxdialogfeldlang" />
-                    </p:row>
+                <!-- Empfänger / Absender -->
+                <h:outputLabel for="faxEmpfaengerId" value="Empfänger:" />
+                <p:inputText id="faxEmpfaengerId"
+                             value="#{faxenVC.faxenModell.empfaenger}"
+                             disabled="true"
+                             styleClass="faxdialogfeldlang"/>
+                <p:inputText value="#{faxenVC.faxenModell.absender}"
+                             disabled="true"
+                             styleClass="faxdialogfeldlang"/>
 
-                    <!-- Fax-Nr -->
-                    <p:row>
-                        <h:outputLabel for="faxNrId" value="Fax-Nr:" />
-                        <p:inputText id="faxNrId"
-                                     value="#{faxenVC.faxenModell.currentRolle.fax}"
-                                     styleClass="faxdialogfeldlang">
-                            <f:validator validatorId="faxenVC.validateNummer"/>
-                            <f:ajax event="change" execute="@this" render="cmdUebernehmen" />
-                        </p:inputText>
-                        <p:commandButton id="cmdUebernehmen" value="Übernehmen"
-                                         action="#{faxenVC.actionUebernehmen}" update="tabFaxen"/>
-                        <p:commandButton id="cmdAlleLoeschen" value="Alle Löschen"
-                                         action="#{faxenVC.actionAlleLoeschen}" update="tabFaxen"/>
-                    </p:row>
+                <!-- Kopie -->
+                <h:outputLabel for="faxKopien" value="Kopie:" />
+                <p:inputText id="faxKopien"
+                             value="#{faxenVC.faxenModell.kopie}"
+                             disabled="true"
+                             styleClass="faxdialogfeldfull"/>
+                <h:outputText value="" />
 
-                    <!-- Empfänger / Absender -->
-                    <p:row>
-                        <h:outputLabel for="faxEmpfaengerId" value="Empfänger:" />
-                        <p:inputText id="faxEmpfaengerId"
-                                     value="#{faxenVC.faxenModell.empfaenger}"
-                                     disabled="true"
-                                     styleClass="faxdialogfeldlang"/>
-                        <h:outputLabel value="Absender:" />
-                        <p:inputText value="#{faxenVC.faxenModell.absender}"
-                                     disabled="true"
-                                     styleClass="faxdialogfeldlang"/>
-                    </p:row>
+                <!-- Betreff -->
+                <h:outputLabel for="faxBetreffId" value="Betreff:" />
+                <p:inputText id="faxBetreffId"
+                             value="#{faxenVC.faxenModell.betreff}"
+                             styleClass="faxdialogfeldfull"/>
+                <h:outputText value="" />
 
-                    <!-- Kopie -->
-                    <p:row>
-                        <h:outputLabel for="faxKopien" value="Kopie:" />
-                        <p:inputText id="faxKopien"
-                                     value="#{faxenVC.faxenModell.kopie}"
-                                     disabled="true"
-                                     styleClass="faxdialogfeldfull"/>
-                    </p:row>
+                <!-- Deckblatt -->
+                <h:outputLabel for="faxDeckblatt" value="Deckblatt:" />
+                <p:selectOneMenu id="faxDeckblatt"
+                                 value="#{faxenVC.faxenModell.deckblatt}"
+                                 disabled="#{faxenVC.disableDeckblattSelection}"
+                                 style="width:150px;">
+                    <f:selectItem itemLabel="" noSelectionOption="true"/>
+                    <f:selectItems value="#{faxenVC.faxenModell.deckblattItems}" />
+                    <f:ajax event="change" execute="@this" render="tabFaxen" />
+                </p:selectOneMenu>
 
-                    <!-- Betreff -->
-                    <p:row>
-                        <h:outputLabel for="faxBetreffId" value="Betreff:" />
-                        <p:inputText id="faxBetreffId"
-                                     value="#{faxenVC.faxenModell.betreff}"
-                                     styleClass="faxdialogfeldfull"/>
-                    </p:row>
-
-                    <!-- Deckblatt -->
-                    
