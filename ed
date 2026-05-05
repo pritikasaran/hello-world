@@ -1,0 +1,529 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+	xmlns:tr="http://myfaces.apache.org/trinidad"
+	xmlns:trh="http://myfaces.apache.org/trinidad/html">
+
+	<div id="page">
+		<div id="main">
+			<af:subform id="faxenForm" defaultCommand="cmdFaxen">
+				<af:panelGroupLayout id="tabFaxen" binding="#{faxenVC.faxPanel}">
+					<div id="content">
+						<trh:tableLayout cellSpacing="7">
+							<trh:rowLayout>
+								<af:spacer height="5" />
+							</trh:rowLayout>
+							<trh:rowLayout>
+								<af:inputText id="faxVgNrAnzeigeId" label="VgNr:"
+									maximumLength="4" columns="2" autoSubmit="true"
+									disabled="#{faxenVC.faxenModell.neuenVorgangAnlegen}"
+									valueChangeListener="#{faxenVC.updateVgArt}"
+									validator="#{faxenVC.validateVgNr}"
+									value="#{faxenVC.faxenModell.vgNummer}">
+									<f:ajax event="valueChange" execute="@this"
+										render="@this faxVgArtId" />
+								</af:inputText>
+
+								<af:panelGroupLayout layout="horizontal">
+									<af:selectBooleanCheckbox id="faxNeuVgId" autoSubmit="true"
+										valueChangeListener="#{faxenVC.updateVgNr}"
+										value="#{faxenVC.faxenModell.neuenVorgangAnlegen}">
+										<f:ajax event="valueChange" execute="@this"
+											render="@this faxVgArtId faxVgNrAnzeigeId" />
+									</af:selectBooleanCheckbox>
+									<af:spacer width="1" />
+									<af:outputLabel value="Neuen Vorgang anlegen:" for="faxNeuVgId" />
+								</af:panelGroupLayout>
+
+								<af:panelGroupLayout layout="horizontal">
+									<af:outputLabel value="Vorgangsart:" for="faxVgArtId" />
+									<af:selectOneChoice id="faxVgArtId"
+										disabled="#{!faxenVC.faxenModell.neuenVorgangAnlegen}"
+										value="#{faxenVC.faxenModell.selectedVgArt}"
+										styleClass="faxdialogfeldlang" >
+										<f:selectItems value="#{faxenVC.faxenModell.vgArtItems}" />
+										<f:ajax event="valueChange" execute="@this" render="tabFaxen" />
+										<af:clientListener method="focus" type="propertyChange">
+											<ui:remove>
+												Hack fuer IE-10. Entfernt Focus von Select Feld.
+												Sonst Select Feld reagiert nicht auf Click (vb 34508)
+												Type ist propertyChange und nicht valueChange, weil
+												in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+												Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+												valueChangeListener.
+											</ui:remove>
+										</af:clientListener>
+									</af:selectOneChoice>
+								</af:panelGroupLayout>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+								<af:panelGroupLayout layout="horizontal">
+									<af:selectBooleanCheckbox id="faxWeitereOrbsCheckboxId"
+										value="#{faxenVC.faxenModell.weitereOrbFrage}">
+										<f:ajax event="valueChange" execute="@this"
+											render="@this faxMandant1 faxMandant2 faxMandant3 
+											faxMandant4 faxMandant5 orb1Id orb2Id orb3Id 
+											orb4Id orb5Id faxOrbart1 faxOrbart2 faxOrbart3
+											faxOrbart4 faxOrbart5" />
+									</af:selectBooleanCheckbox>
+									<af:outputLabel value="Weitere ORB's"
+										for="faxWeitereOrbsCheckboxId" />
+								</af:panelGroupLayout>
+
+								<af:panelGroupLayout layout="horizontal">
+									<af:panelGroupLayout layout="vertical">
+										<af:selectOneChoice id="faxMandant1"
+											value="#{faxenVC.faxenModell.mandant1}"
+											disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+											valueChangeListener="#{faxenVC.updateOrbart}"
+											styleClass="faxdialogfeldkurz">
+											<f:selectItems value="#{faxenVC.faxenModell.mandantItems}" />
+											<f:ajax event="valueChange" execute="@this"
+												render="@this faxOrbart1" />
+											<af:clientListener method="focus" type="propertyChange">
+												<ui:remove>
+													Hack fuer IE-10. Entfernt Focus von Select Feld.
+													Sonst Select Feld reagiert nicht auf Click (vb 34508)
+													Type ist propertyChange und nicht valueChange, weil
+													in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+													Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+													valueChangeListener.
+												</ui:remove>
+											</af:clientListener>
+										</af:selectOneChoice>
+										<af:selectOneChoice id="faxMandant2"
+											value="#{faxenVC.faxenModell.mandant2}"
+											disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+											valueChangeListener="#{faxenVC.updateOrbart}"
+											styleClass="faxdialogfeldkurz">
+											<f:selectItems value="#{faxenVC.faxenModell.mandantItems}" />
+											<f:ajax event="valueChange" execute="@this"
+												render="@this faxOrbart2" />
+											<af:clientListener method="focus" type="propertyChange">
+												<ui:remove>
+													Hack fuer IE-10. Entfernt Focus von Select Feld.
+													Sonst Select Feld reagiert nicht auf Click (vb 34508)
+													Type ist propertyChange und nicht valueChange, weil
+													in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+													Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+													valueChangeListener.
+												</ui:remove>
+											</af:clientListener>
+										</af:selectOneChoice>
+										<af:selectOneChoice id="faxMandant3"
+											value="#{faxenVC.faxenModell.mandant3}"
+											valueChangeListener="#{faxenVC.updateOrbart}"
+											disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+											styleClass="faxdialogfeldkurz">
+											<f:selectItems value="#{faxenVC.faxenModell.mandantItems}" />
+											<f:ajax event="valueChange" execute="@this"
+												render="@this faxOrbart3" />
+											<af:clientListener method="focus" type="propertyChange">
+												<ui:remove>
+													Hack fuer IE-10. Entfernt Focus von Select Feld.
+													Sonst Select Feld reagiert nicht auf Click (vb 34508)
+													Type ist propertyChange und nicht valueChange, weil
+													in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+													Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+													valueChangeListener.
+												</ui:remove>
+											</af:clientListener>
+										</af:selectOneChoice>
+									</af:panelGroupLayout>
+
+				
+									<af:panelGroupLayout layout="vertical">
+										<af:selectOneChoice id="faxOrbart1"
+											value="#{faxenVC.faxenModell.orbArt1}"
+											disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+											styleClass="faxdialogfeldkurz">
+											<f:selectItems value="#{faxenVC.faxenModell.orbArtItems1}" />
+											<f:ajax event="valueChange" execute="@this" render="@this" />
+											<af:clientListener method="focus" type="propertyChange">
+												<ui:remove>
+													Hack fuer IE-10. Entfernt Focus von Select Feld.
+													Sonst Select Feld reagiert nicht auf Click (vb 34508)
+													Type ist propertyChange und nicht valueChange, weil
+													in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+													Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+													valueChangeListener.
+												</ui:remove>
+											</af:clientListener>
+										</af:selectOneChoice>
+										<af:selectOneChoice id="faxOrbart2"
+											value="#{faxenVC.faxenModell.orbArt2}"
+											disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+											styleClass="faxdialogfeldkurz">
+											<f:selectItems value="#{faxenVC.faxenModell.orbArtItems2}" />
+											<f:ajax event="valueChange" execute="@this" render="@this" />
+											<af:clientListener method="focus" type="propertyChange">
+												<ui:remove>
+													Hack fuer IE-10. Entfernt Focus von Select Feld.
+													Sonst Select Feld reagiert nicht auf Click (vb 34508)
+													Type ist propertyChange und nicht valueChange, weil
+													in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+													Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+													valueChangeListener.
+												</ui:remove>
+											</af:clientListener>
+										</af:selectOneChoice>
+										<af:selectOneChoice id="faxOrbart3"
+											value="#{faxenVC.faxenModell.orbArt3}"
+											disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+											styleClass="faxdialogfeldkurz">
+											<f:selectItems value="#{faxenVC.faxenModell.orbArtItems3}" />
+											<f:ajax event="valueChange" execute="@this" render="@this" />
+											<af:clientListener method="focus" type="propertyChange">
+												<ui:remove>
+													Hack fuer IE-10. Entfernt Focus von Select Feld.
+													Sonst Select Feld reagiert nicht auf Click (vb 34508)
+													Type ist propertyChange und nicht valueChange, weil
+													in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+													Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+													valueChangeListener.
+												</ui:remove>
+											</af:clientListener>
+										</af:selectOneChoice>
+									</af:panelGroupLayout>
+
+									<af:panelGroupLayout layout="vertical">
+										<af:inputText id="orb1Id"
+											disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+											value="#{faxenVC.faxenModell.orb1}"
+											contentStyle="width:90px;">
+											<f:ajax event="valueChange" execute="@this"
+												render="tabFaxen" />
+										</af:inputText>
+										<af:inputText id="orb2Id"
+											disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+											value="#{faxenVC.faxenModell.orb2}"
+											contentStyle="width:90px;">
+											<f:ajax event="valueChange" execute="@this"
+												render="tabFaxen" />
+										</af:inputText>
+										<af:inputText id="orb3Id"
+											disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+											value="#{faxenVC.faxenModell.orb3}"
+											contentStyle="width:90px;">
+											<f:ajax event="valueChange" execute="@this"
+												render="tabFaxen" />
+										</af:inputText>
+									</af:panelGroupLayout>
+								</af:panelGroupLayout>
+
+
+								<af:panelGroupLayout layout="vertical">
+									<af:panelGroupLayout layout="horizontal">
+										<af:outputLabel value="Berecht. Dokument:" />
+										<af:spacer width="3px" />
+										<af:selectOneChoice id="selBerechtigungDok"
+											styleClass="imsfieldlarge"
+											value="#{faxenVC.faxenModell.eintragBerechtigungDok}">
+											<f:selectItems
+												value="#{faxenVC.faxenModell.eintragBerechtigungItems}" />
+											<f:ajax event="valueChange" execute="@this"
+												render="@none" />
+										</af:selectOneChoice>
+									</af:panelGroupLayout>
+									<af:panelGroupLayout layout="horizontal">
+										<af:panelGroupLayout layout="vertical">
+											<af:selectOneChoice id="faxMandant4"
+												value="#{faxenVC.faxenModell.mandant4}"
+												valueChangeListener="#{faxenVC.updateOrbart}"
+												disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+												styleClass="faxdialogfeldkurz">
+												<f:selectItems value="#{faxenVC.faxenModell.mandantItems}" />
+												<f:ajax event="valueChange" execute="@this"
+													render="@this faxOrbart4" />
+												<af:clientListener method="focus" type="propertyChange">
+													<ui:remove>
+														Hack fuer IE-10. Entfernt Focus von Select Feld.
+														Sonst Select Feld reagiert nicht auf Click (vb 34508)
+														Type ist propertyChange und nicht valueChange, weil
+														in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+														Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+														valueChangeListener.
+													</ui:remove>
+												</af:clientListener>
+											</af:selectOneChoice>
+											<af:selectOneChoice id="faxMandant5"
+												value="#{faxenVC.faxenModell.mandant5}"
+												valueChangeListener="#{faxenVC.updateOrbart}"
+												disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+												styleClass="faxdialogfeldkurz">
+												<f:selectItems value="#{faxenVC.faxenModell.mandantItems}" />
+												<f:ajax event="valueChange" execute="@this"
+													render="@this faxOrbart5" />
+												<af:clientListener method="focus" type="propertyChange">
+													<ui:remove>
+														Hack fuer IE-10. Entfernt Focus von Select Feld.
+														Sonst Select Feld reagiert nicht auf Click (vb 34508)
+														Type ist propertyChange und nicht valueChange, weil
+														in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+														Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+														valueChangeListener.
+													</ui:remove>
+												</af:clientListener>
+											</af:selectOneChoice>
+										</af:panelGroupLayout>
+	
+										<af:panelGroupLayout layout="vertical">
+											<af:selectOneChoice id="faxOrbart4"
+												value="#{faxenVC.faxenModell.orbArt4}"
+												disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+												styleClass="faxdialogfeldkurz">
+												<f:selectItems value="#{faxenVC.faxenModell.orbArtItems4}" />
+												<f:ajax event="valueChange" execute="@this" render="@this" />
+												<af:clientListener method="focus" type="propertyChange">
+													<ui:remove>
+														Hack fuer IE-10. Entfernt Focus von Select Feld.
+														Sonst Select Feld reagiert nicht auf Click (vb 34508)
+														Type ist propertyChange und nicht valueChange, weil
+														in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+														Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+														valueChangeListener.
+													</ui:remove>
+												</af:clientListener>
+											</af:selectOneChoice>
+											<af:selectOneChoice id="faxOrbart5"
+												value="#{faxenVC.faxenModell.orbArt5}"
+												disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+												styleClass="faxdialogfeldkurz">
+												<f:selectItems value="#{faxenVC.faxenModell.orbArtItems5}" />
+												<f:ajax event="valueChange" execute="@this" render="@this" />
+												<af:clientListener method="focus" type="propertyChange">
+													<ui:remove>
+														Hack fuer IE-10. Entfernt Focus von Select Feld.
+														Sonst Select Feld reagiert nicht auf Click (vb 34508)
+														Type ist propertyChange und nicht valueChange, weil
+														in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+														Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+														valueChangeListener.
+													</ui:remove>
+												</af:clientListener>
+											</af:selectOneChoice>
+										</af:panelGroupLayout>
+	
+										<af:panelGroupLayout layout="vertical">
+											<af:inputText id="orb4Id"
+												disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+												value="#{faxenVC.faxenModell.orb4}"
+												contentStyle="width:90px;">
+												<f:ajax event="valueChange" execute="@this"
+													render="tabFaxen" />
+											</af:inputText>
+											<af:inputText id="orb5Id"
+												disabled="#{!faxenVC.faxenModell.weitereOrbFrage}"
+												value="#{faxenVC.faxenModell.orb5}"
+												contentStyle="width:90px;">
+												<f:ajax event="valueChange" execute="@this"
+													render="tabFaxen" />
+											</af:inputText>
+										</af:panelGroupLayout>
+									</af:panelGroupLayout>
+								</af:panelGroupLayout>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="3">
+									<hr />
+								</trh:cellFormat>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+								<af:outputLabel value="Rolle:" />
+								<af:selectOneChoice id="faxRolle"
+									valueChangeListener="#{faxenVC.rolleChanged}"
+									value="#{faxenVC.faxenModell.selRolle}"
+									styleClass="faxdialogfeldlang">
+									<f:selectItem noSelectionOption="true" />
+									<f:selectItems value="#{faxenVC.faxenModell.rolleItems}" />
+									<f:ajax event="valueChange" execute="@this"
+										render="@this faxNameId faxStrasseId faxOrtId faxNrId cmdUebernehmen" />
+									<af:clientListener method="focus" type="propertyChange">
+										<ui:remove>
+											Hack fuer IE-10. Entfernt Focus von Select Feld.
+											Sonst Select Feld reagiert nicht auf Click (vb 34508)
+											Type ist propertyChange und nicht valueChange, weil
+											in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+											Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+											valueChangeListener.
+										</ui:remove>
+									</af:clientListener>
+								</af:selectOneChoice>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+								<af:outputLabel for="faxNameId" value="Vorname, Nachname:" />
+								<trh:cellFormat columnSpan="2">
+									<af:inputText id="faxNameId" autoSubmit="true"
+										value="#{faxenVC.faxenModell.currentRolle.name}"
+										styleClass="faxdialogfeldlang" />
+								</trh:cellFormat>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+								<af:outputLabel for="faxStrasseId" value="Straße:" />
+								<af:inputText id="faxStrasseId" autoSubmit="true"
+									value="#{faxenVC.faxenModell.currentRolle.strasse}"
+									styleClass="faxdialogfeldlang" />
+
+								<af:panelGroupLayout layout="horizontal">
+									<af:outputLabel for="faxOrtId" value="Ort:" />
+									<af:spacer width="10" />
+									<af:inputText id="faxOrtId" autoSubmit="true"
+										value="#{faxenVC.faxenModell.currentRolle.ort}"
+										styleClass="faxdialogfeldlang" />
+								</af:panelGroupLayout>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+								<af:outputLabel for="faxNrId" value="Fax-Nr:" />
+								<af:inputText id="faxNrId" validator="#{faxenVC.validateNummer}"
+									value="#{faxenVC.faxenModell.currentRolle.fax}"
+									styleClass="faxdialogfeldlang">
+									<f:ajax event="valueChange" execute="@this"
+										render="@this cmdUebernehmen" />
+								</af:inputText>
+
+								<af:panelGroupLayout layout="horizontal">
+									<af:commandButton text="Übernehmen" id="cmdUebernehmen"
+										action="#{faxenVC.actionUebernehmen}">
+										<f:ajax render="tabFaxen"  execute="@form" />
+									</af:commandButton>
+									<af:spacer width="7" />
+									<af:commandButton text="Alle Löschen" id="cmdAlleLoeschen"
+										action="#{faxenVC.actionAlleLoeschen}" >
+										<f:ajax render="tabFaxen"  execute="@form" />
+									</af:commandButton>
+								</af:panelGroupLayout>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+							 	<trh:cellFormat columnSpan="3">
+									<hr />
+								</trh:cellFormat>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+								<af:outputLabel for="faxEmpfaengerId" value="Empfänger:" />
+								<af:inputText id="faxEmpfaengerId" disabled="true"
+									validator="#{faxenVC.validateNummer}"
+									value="#{faxenVC.faxenModell.empfaenger}"
+									styleClass="faxdialogfeldlang">
+									<f:ajax event="valueChange" execute="@this"
+										render="@this faxDeckblatt" />
+								</af:inputText>
+								<af:panelGroupLayout layout="horizontal">
+									<af:outputLabel value="Absender:" />
+									<af:spacer width="7" />
+									<af:inputText disabled="true"
+										value="#{faxenVC.faxenModell.absender}"
+										styleClass="faxdialogfeldlang" />
+								</af:panelGroupLayout>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+								<af:outputLabel value="Kopie:" />
+								<trh:cellFormat columnSpan="2">
+									<af:inputText id="faxKopien" disabled="true"
+										styleClass="faxdialogfeldfull"
+										value="#{faxenVC.faxenModell.kopie}" />
+								</trh:cellFormat>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+								<af:outputLabel for="faxBetreffId" value="Betreff:" />
+								<trh:cellFormat columnSpan="2">
+									<af:inputText id="faxBetreffId" autoSubmit="true"
+										value="#{faxenVC.faxenModell.betreff}"
+										styleClass="faxdialogfeldfull" />
+								</trh:cellFormat>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+								<af:outputLabel value="Deckblatt:" />
+								<af:selectOneChoice id="faxDeckblatt"
+									value="#{faxenVC.faxenModell.deckblatt}"
+									disabled="#{faxenVC.disableDeckblattSelection}"
+									valueChangeListener="#{faxenVC.fdChangeListener}"
+									contentStyle="width:150px;">
+									<f:selectItem noSelectionOption="true" />
+									<f:selectItems value="#{faxenVC.faxenModell.deckblattItems}" />
+									<f:ajax event="valueChange" execute="@this" render="tabFaxen" />
+									<af:clientListener method="focus" type="propertyChange">
+										<ui:remove>
+											Hack fuer IE-10. Entfernt Focus von Select Feld.
+											Sonst Select Feld reagiert nicht auf Click (vb 34508)
+											Type ist propertyChange und nicht valueChange, weil
+											in IE-8 funktionieren nicht gleichzeitig gesetzte client und Server
+											Listener, mit gleichem Event Type. Und wir haben in viele Faelle 
+											valueChangeListener.
+										</ui:remove>
+									</af:clientListener>
+								</af:selectOneChoice>
+								<af:panelGroupLayout rendered="#{faxenVC.renderSeiten}"
+									layout="horizontal">
+									<af:outputLabel value="Seiten" />
+									<af:spacer width="7" />
+									<af:inputText id="faxSeitenVon" label="von:" maximumLength="4"
+										validator="#{faxenVC.validateNummer}" columns="2"
+										value="#{faxenVC.faxenModell.seitenVon}">
+										<f:ajax event="valueChange" execute="@this" render="@this" />
+									</af:inputText>
+									<af:spacer width="4" />
+									<af:inputText id="faxSeitenBis" label="bis:" maximumLength="4"
+										validator="#{faxenVC.validateNummer}" columns="2"
+										value="#{faxenVC.faxenModell.seitenBis}">
+										<f:ajax event="valueChange" execute="@this" render="@this" />
+									</af:inputText>
+								</af:panelGroupLayout>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+								<af:spacer height="5" />
+							</trh:rowLayout>
+						</trh:tableLayout>
+
+						<af:panelGroupLayout id="faxDeckblattStandard">
+							<ui:include src="#{faxenVC.faxenModell.currentDeckblatt.uri}" />
+						</af:panelGroupLayout>
+
+
+						<af:spacer height="10" />
+
+						<!-- Button RowLayout -->
+						<af:panelGroupLayout halign="center" layout="horizontal">
+							<af:commandButton text="Faxen" id="cmdFaxen"
+								partialSubmit="true" partialTriggers="akteSubform:tabFaxen"
+								action="#{faxenVC.actionFaxenV}">
+								<af:clientListener type="action" method="callImageServlet" />
+							</af:commandButton>
+							<af:spacer width="5" />
+							<af:commandButton text="Abbrechen" id="cmdAbbrechenFax"
+								action="#{faxenVC.actionAbbrechen}">
+							</af:commandButton>
+							<af:commandButton text="FaxenHidden" id="cmdFaxenHidden"
+								visible="false"
+								action="#{faxenVC.actionFaxen}">
+							</af:commandButton>
+						</af:panelGroupLayout>
+
+						<input id="pathToExportFax" type="hidden"
+							value="#{facesContext.externalContext.requestContextPath}/imageFaces/pages/faxDialog.xhtml" />
+					</div>
+				</af:panelGroupLayout>
+			</af:subform>
+		</div>
+		<div id="footer">
+			<tr:panelHorizontalLayout id="faxFooterPanel">
+				<af:messages globalOnly="true" />
+			</tr:panelHorizontalLayout>
+		</div>
+	</div>
+</div>
