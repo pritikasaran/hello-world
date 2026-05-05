@@ -10,3 +10,9 @@ if (result.startsWith("error")) {
          showDetail="true" 
          showSummary="true"
          life="5000"/>
+
+
+         <p:splitter style="height:100%; border:none;">
+    
+    <!-- Left panel -->
+    <p:splitterPanel size="50" style="overflow:auto;">
