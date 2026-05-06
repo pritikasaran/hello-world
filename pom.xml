@@ -32,3 +32,4 @@ window.opener.document.title
 
         <p:ajax event="rowSelect" listener="#{aktenEintraegeVC.selectEintraege}" update="@form" />
         <p:ajax event="rowUnselect" listener="#{aktenEintraegeVC.selectEintraege}" update="@form" 
+http://dtde10665.a1-core.athora.net:9090/IMS-Frontend/DocumentServlet?token=TinyAm7eb21494dae8430294d8ec12ae885580_E&userId=EX20708&guid=%7B20A82A92-0800-CFDF-B52F-B5EA2C161353%7D&dokuid=95390711&save=true&mdt=1&oa=0001&orb=03000016&vgn=9&vgln=0&adz=1727292509855/855000000
