@@ -59,8 +59,12 @@ INNER JOIN sys.schemas s ON t.schema_id = s.schema_id;
             <artifactId>jaxb-plugins</artifactId>
             <version>4.0.0</version>
         </dependency>
-if (appletStr == null) return "";
-    
-    // extract doc1 parameter value
-    String marker = "name=\"doc1\" value=\"";
+ String marker = "name=\"doc1\" value=\"";
     int start = appletStr.indexOf(marker);
+    if (start == -1) return "";
+    
+    start = start + marker.length();
+    int end = appletStr.indexOf("\"", start);
+    if (end == -1) return "";
+    
+    return appletStr.substring(start, end);
