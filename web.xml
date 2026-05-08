@@ -1,80 +1,25 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:f="jakarta.faces.core"
-      xmlns:h="jakarta.faces.html"
-      xmlns:ui="jakarta.faces.facelets"
-      xmlns:p="http://primefaces.org/ui">
+  <p:ajax event="tabChange"
+            listener="#{akteVC.onTabChange}"
+            update="@form"/>
 
-<h:head>
-    <title>#{errorVC.windowTitle}</title>
-</h:head>
 
-<h:body>
-    <ui:composition template="/templates/mainTemplate.xhtml">
-        <ui:define name="title">
-            <h3 style="padding:0px 5px 0 5px">#{errorVC.windowTitle}</h3>
-        </ui:define>
-
-        <ui:define name="content">
-            <h:form id="errorForm">
-                <f:event type="preRenderView" listener="#{errorVC.preRenderView}" />
-
-                <!-- Meldung -->
-                <p:panelGrid columns="2">
-                    <h:outputLabel value="Meldung:" />
-                    <h:outputText value="#{errorVC.meldung}" />
-                </p:panelGrid>
-
-                <p:spacer height="30" />
-
-                <!-- Daten -->
-                <p:fieldset legend="Daten">
-                    <p:panelGrid columns="2">
-                        <h:outputLabel value="Datum:" />
-                        <h:outputText value="#{errorVC.currentDate}" />
-
-                        <h:outputLabel value="User-ID:" />
-                        <h:outputText value="#{errorVC.benutzerID}" />
-
-                        <h:outputLabel value="Akte:" />
-                        <h:outputText value="#{errorVC.currentAkte}" />
-
-                        <h:outputLabel value="Termin:" />
-                        <h:outputText value="#{errorVC.termin}" />
-                    </p:panelGrid>
-                </p:fieldset>
-
-                <p:spacer height="10" width="10" />
-
-                <!-- Buttons -->
-                <p:panelGrid columns="4" style="text-align:center">
-                    <p:commandButton value="Zum Postkorb" id="cmdPostkorb"
-                                     action="#{errorVC.gotToPostkorb}"
-                                     immediate="true"
-                                     rendered="#{errorVC.mainDialog}" />
-
-                    <p:commandButton value="Abbrechen" id="cmdCancel"
-                                     action="#{errorVC.cancel}"
-                                     immediate="true"
-                                     rendered="#{!errorVC.mainDialog}" />
-
-                    <p:commandButton value="Programm Beenden" id="cmdCancelErr"
-                                     action="#{akteVC.programmBeenden}"
-                                     immediate="true" />
-
-                    <p:commandButton value="Details anzeigen"
-                                     rendered="#{errorVC.hasDetails}"
-                                     onclick="showErrorDetails()" />
-                </p:panelGrid>
-
-                <!-- Error Details -->
-                <p:outputPanel id="error_details" style="text-align:center" visible="false">
-                    <ui:repeat value="#{errorVC.errorModell.details}" var="entry">
-                        #{entry}<br/>
-                    </ui:repeat>
-                </p:outputPanel>
-            </h:form>
-        </ui:define>
-    </ui:composition>
-</h:body>
-</html>
+public void onTabChange(TabChangeEvent event) {
+    // get the tab index that was clicked
+    int index = ((TabView) event.getSource()).getActiveIndex();
+    activeIndex = index;
+    
+    // update imsModell currentTab
+    switch (index) {
+        case 0: imsModell.setCurrentTab(Tab.POSTKORB); break;
+        case 1: imsModell.setCurrentTab(Tab.AKTENANSICHT); break;
+        case 2: imsModell.setCurrentTab(Tab.AKTENEINTRAEGE); break;
+        case 3: imsModell.setCurrentTab(Tab.FORMULAR); break;
+        case 4: imsModell.setCurrentTab(Tab.FAXEN); break;
+        case 5: imsModell.setCurrentTab(Tab.EMAIL); break;
+        case 6: imsModell.setCurrentTab(Tab.BESCHWERDEN); break;
+        default: imsModell.setCurrentTab(Tab.POSTKORB); break;
+    }
+    
+    LOG.info("onTabChange - activeIndex: " + activeIndex + 
+             " - currentTab: " + imsModell.getCurrentTab());
+}
