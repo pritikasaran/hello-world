@@ -23,3 +23,24 @@ public void onTabChange(TabChangeEvent event) {
     LOG.info("onTabChange - activeIndex: " + activeIndex + 
              " - currentTab: " + imsModell.getCurrentTab());
 }
+
+  String tabId = event.getTab().getId();
+        LOG.info("=== tab id: " + tabId);
+        
+        // map title to Tab enum
+        switch (tabTitle) {
+            case "Postkorb":        
+                imsModell.setCurrentTab(Tab.POSTKORB); 
+                activeIndex = 0;
+                break;
+            case "Akteinansicht":   
+                imsModell.setCurrentTab(Tab.AKTENANSICHT); 
+                activeIndex = 1;
+                break;
+            case "Akteneintraege":  
+                imsModell.setCurrentTab(Tab.AKTENEINTRAEGE); 
+                activeIndex = 2;
+                break;
+            // rest of tabs
+        }
+        
