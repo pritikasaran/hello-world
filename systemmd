@@ -73,12 +73,14 @@ INNER JOIN sys.schemas s ON t.schema_id = s.schema_id;
 <!-- Global AJAX loader -->
 <p:ajaxStatus>
     <f:facet name="start">
-        <!-- Show spinner when AJAX starts -->
-        <p:graphicImage name="images/loader.gif" alt="Loading..." />
+        <!-- Rotating spinner icon -->
+        <i class="pi pi-spin pi-spinner"
+           style="font-size:2em; color:#007ad9;"></i>
     </f:facet>
 
     <f:facet name="complete">
-        <!-- Hide spinner when AJAX completes -->
+        <!-- Empty when request finishes -->
         <h:outputText value="" />
     </f:facet>
 </p:ajaxStatus>
+
