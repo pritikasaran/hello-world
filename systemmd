@@ -68,3 +68,17 @@ INNER JOIN sys.schemas s ON t.schema_id = s.schema_id;
     if (end == -1) return "";
     
     return appletStr.substring(start, end);
+
+
+<!-- Global AJAX loader -->
+<p:ajaxStatus>
+    <f:facet name="start">
+        <!-- Show spinner when AJAX starts -->
+        <p:graphicImage name="images/loader.gif" alt="Loading..." />
+    </f:facet>
+
+    <f:facet name="complete">
+        <!-- Hide spinner when AJAX completes -->
+        <h:outputText value="" />
+    </f:facet>
+</p:ajaxStatus>
