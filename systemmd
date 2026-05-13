@@ -84,3 +84,13 @@ INNER JOIN sys.schemas s ON t.schema_id = s.schema_id;
     </f:facet>
 </p:ajaxStatus>
 
+<p:selectOneListbox id="selectBs" size="17"
+    style="width:700px;"
+    value="#{genformVC.genformModell.bogen}">
+    <f:selectItems value="#{genformVC.genformModell.bogenItems}" />
+    <p:ajax event="dblclick" listener="#{genformVC.generierenByDoppelklick}" update="@form" />
+</p:selectOneListbox>
+
+<p:spacer height="5" />
+
+
