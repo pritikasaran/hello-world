@@ -1,96 +1,24 @@
-[Unit]
-Description=Companion Application
-After=network.target
+ <h:outputScript>
+        function resizeWindowOnLoad() {
+            if (!#{archivierenVC.archivierenModell.upload}) {
+                resizeArchivierenWindow();
+            }
+        }
+        window.addEventListener('load', resizeWindowOnLoad);
+    </h:outputScript>
 
-[Service]
-Type=simple
-User=athora
-WorkingDirectory=/home/athora/ex20708/companion
-
-Environment="JAVA_OPTS=-Dcompanion.home=/home/athora/ex20708/companion \
- -Dspring.config.location=classpath:/application.properties,/home/athora/ex20708/companion/.genre/conf/settings.properties \
- -Dserver.port=9090"
-
-ExecStart=/usr/bin/java $JAVA_OPTS -cp ./lib/*:companion.war org.springframework.boot.loader.WarLauncher
-
-Restart=always
-StandardOutput=append:/home/athora/ex20708/companion/logs/companion.out.log
-StandardError=append:/home/athora/ex20708/companion/logs/companion.err.log
-
-[Install]
-WantedBy=multi-user.target
-
-private String selectedTermine = "aktuelle"; // default
-
-public String getSelectedTermine() { 
-    return selectedTermine; 
-}
-
-public void setSelectedTermine(String value) {
-    this.selectedTermine = value;
-    // automatically keeps your 3 booleans in sync
-    this.aktuelleTermine    = "aktuelle".equals(value);
-    this.zukuenftigeTermine = "zukuenftige".equals(value);
-    this.erledigteTermine   = "erledigte".equals(value);
-}
-SELECT s.name AS SchemaName, t.name AS TableName
-FROM sys.tables t
-INNER JOIN sys.schemas s ON t.schema_id = s.schema_id;
-<p:ajax event="change"
-                    listener="#{eintraegeFilterVC.mandantValueChangeListener}"
-                    process="@this"
-                    update="frmSuchen"/>
-<h:outputLabel for="datVon" value="Von:"/>
-<p:datePicker id="datVon"
-              value="#{bean.datVon}"
-              pattern="dd.MM.yyyy"
-              showIcon="true">
-    <p:ajax event="dateSelect"
-            listener="#{bean.onDateSelect}"
-            update="@form"/>
-</p:datePicker>
-/* Selected row */
-.ui-datatable .ui-datatable-data .ui-state-highlight {
-    background-color: #c8e6c9 !important; /* light green */
-    color: #000 !important;
-}
- <dependency>
-            <groupId>org.jvnet.jaxb</groupId>
-            <artifactId>jaxb-plugins</artifactId>
-            <version>4.0.0</version>
-        </dependency>
- String marker = "name=\"doc1\" value=\"";
-    int start = appletStr.indexOf(marker);
-    if (start == -1) return "";
-    
-    start = start + marker.length();
-    int end = appletStr.indexOf("\"", start);
-    if (end == -1) return "";
-    
-    return appletStr.substring(start, end);
-
-
-<!-- Global AJAX loader -->
-<p:ajaxStatus>
-    <f:facet name="start">
-        <!-- Rotating spinner icon -->
-        <i class="pi pi-spin pi-spinner"
-           style="font-size:2em; color:#007ad9;"></i>
-    </f:facet>
-
-    <f:facet name="complete">
-        <!-- Empty when request finishes -->
-        <h:outputText value="" />
-    </f:facet>
-</p:ajaxStatus>
-
-<p:selectOneListbox id="selectBs" size="17"
-    style="width:700px;"
-    value="#{genformVC.genformModell.bogen}">
-    <f:selectItems value="#{genformVC.genformModell.bogenItems}" />
-    <p:ajax event="dblclick" listener="#{genformVC.generierenByDoppelklick}" update="@form" />
-</p:selectOneListbox>
-
-<p:spacer height="5" />
-
-
+    <p:dialog id="archivierungausgefuehrt"
+              widgetVar="archivierungausgefuehrt"
+              header="IMS: Hinweis"
+              modal="true"
+              closable="false"
+              width="280">
+        <h:panelGrid columns="1" style="text-align:center;">
+            <h:outputText value="Das Dokument wurde archiviert." />
+            <p:spacer height="20" />
+            <p:commandButton value="OK"
+                             action="#{archivierenVC.beendenFenster}"
+                             process="@this"
+                             update="@none" />
+        </h:panelGrid>
+    </p:dialog>
