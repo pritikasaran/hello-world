@@ -1,25 +1,28 @@
-<p:dialog id="orbexistiertnicht"
-          widgetVar="orbexistiertnicht"
-          header="IMS"
-          modal="true"
-          closable="false"
-          width="280">
-    <h:panelGrid columns="1" style="text-align:center;">
-        <h:outputText value="#{archivierenVC.archivierenModell.errorORBMessage}" />
-        <p:spacer height="20" />
-        <h:panelGrid columns="3" style="text-align:center;">
-            <p:commandButton value="OK"
-                             style="width:100px;"
-                             action="#{archivierenVC.errorORBAnlegen}"
-                             process="@this"
-                             update="@none" />
-            <p:spacer width="15" />
-            <p:commandButton value="Abbrechen"
-                             style="width:100px;"
-                             action="#{archivierenVC.errorORBAbbrechen}"
-                             process="@this"
-                             update="@none" />
-        </h:panelGrid>
-    </h:panelGrid>
-</p:dialog>
+<p:dataTable id="zielTable"
+             value="#{archivierenVC.archivierenModell.zielList}"
+             var="zielItem"
+             selectionMode="single"
+             selection="#{archivierenVC.archivierenModell.zielRowKeySet}"
+             emptyMessage="Keine Dokumente ausgewählt."
+             styleClass="imsORBTable"
+             scrollable="true"
+             scrollHeight="300">
+
+    <p:column headerText="MA" style="width:45px;" styleClass="imsTableData">
+        <h:outputText value="#{zielItem.mandant1}" />
+    </p:column>
+
+    <p:column headerText="ORB-Art" style="width:140px;" styleClass="imsTableData">
+        <h:outputText value="#{zielItem.orbArt}" />
+    </p:column>
+
+    <p:column headerText="ORB" style="width:140px;" styleClass="imsTableData">
+        <h:outputText value="#{zielItem.orb1}" />
+    </p:column>
+
+    <p:column headerText="VG-Nr" style="width:65px;" styleClass="imsTableData">
+        <h:outputText value="#{zielItem.vgNr}" />
+    </p:column>
+</p:dataTable>
+
 
