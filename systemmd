@@ -1,24 +1,25 @@
- <h:outputScript>
-        function resizeWindowOnLoad() {
-            if (!#{archivierenVC.archivierenModell.upload}) {
-                resizeArchivierenWindow();
-            }
-        }
-        window.addEventListener('load', resizeWindowOnLoad);
-    </h:outputScript>
-
-    <p:dialog id="archivierungausgefuehrt"
-              widgetVar="archivierungausgefuehrt"
-              header="IMS: Hinweis"
-              modal="true"
-              closable="false"
-              width="280">
-        <h:panelGrid columns="1" style="text-align:center;">
-            <h:outputText value="Das Dokument wurde archiviert." />
-            <p:spacer height="20" />
+<p:dialog id="orbexistiertnicht"
+          widgetVar="orbexistiertnicht"
+          header="IMS"
+          modal="true"
+          closable="false"
+          width="280">
+    <h:panelGrid columns="1" style="text-align:center;">
+        <h:outputText value="#{archivierenVC.archivierenModell.errorORBMessage}" />
+        <p:spacer height="20" />
+        <h:panelGrid columns="3" style="text-align:center;">
             <p:commandButton value="OK"
-                             action="#{archivierenVC.beendenFenster}"
+                             style="width:100px;"
+                             action="#{archivierenVC.errorORBAnlegen}"
+                             process="@this"
+                             update="@none" />
+            <p:spacer width="15" />
+            <p:commandButton value="Abbrechen"
+                             style="width:100px;"
+                             action="#{archivierenVC.errorORBAbbrechen}"
                              process="@this"
                              update="@none" />
         </h:panelGrid>
-    </p:dialog>
+    </h:panelGrid>
+</p:dialog>
+
