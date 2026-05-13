@@ -1,28 +1,29 @@
-<p:dataTable id="zielTable"
-             value="#{archivierenVC.archivierenModell.zielList}"
-             var="zielItem"
-             selectionMode="single"
-             selection="#{archivierenVC.archivierenModell.zielRowKeySet}"
-             emptyMessage="Keine Dokumente ausgewählt."
-             styleClass="imsORBTable"
-             scrollable="true"
-             scrollHeight="300">
+<p:dialog id="sicherheitsabfrage"
+          widgetVar="sicherheitsabfrage"
+          header="Sind sie sicher?"
+          modal="true"
+          closable="false"
+          width="300">
+    <h:panelGrid columns="1" style="text-align:center;">
+        <h:outputText value="Der Ordnungsbegriff '#{archivierenVC.archivierenModell.umbAktuellerEintrag}'" />
+        <p:spacer height="10" />
+        <h:panelGrid columns="3" style="text-align:center;">
+            <p:commandButton id="cmdOk"
+                             value="OK"
+                             style="width:100px;"
+                             action="#{archivierenVC.fuegeZielHinzu}"
+                             process="@this"
+                             update="@none" />
+            <p:spacer width="15" />
+            <p:commandButton id="cmdCancel"
+                             value="Abbrechen"
+                             style="width:100px;"
+                             action="#{archivierenVC.doNothing}"
+                             process="@this"
+                             update="@none" />
+        </h:panelGrid>
+    </h:panelGrid>
+</p:dialog>
 
-    <p:column headerText="MA" style="width:45px;" styleClass="imsTableData">
-        <h:outputText value="#{zielItem.mandant1}" />
-    </p:column>
-
-    <p:column headerText="ORB-Art" style="width:140px;" styleClass="imsTableData">
-        <h:outputText value="#{zielItem.orbArt}" />
-    </p:column>
-
-    <p:column headerText="ORB" style="width:140px;" styleClass="imsTableData">
-        <h:outputText value="#{zielItem.orb1}" />
-    </p:column>
-
-    <p:column headerText="VG-Nr" style="width:65px;" styleClass="imsTableData">
-        <h:outputText value="#{zielItem.vgNr}" />
-    </p:column>
-</p:dataTable>
 
 
