@@ -1,29 +1,17 @@
-<p:dialog id="sicherheitsabfrage"
-          widgetVar="sicherheitsabfrage"
-          header="Sind sie sicher?"
-          modal="true"
-          closable="false"
-          width="300">
-    <h:panelGrid columns="1" style="text-align:center;">
-        <h:outputText value="Der Ordnungsbegriff '#{archivierenVC.archivierenModell.umbAktuellerEintrag}'" />
-        <p:spacer height="10" />
-        <h:panelGrid columns="3" style="text-align:center;">
-            <p:commandButton id="cmdOk"
-                             value="OK"
-                             style="width:100px;"
-                             action="#{archivierenVC.fuegeZielHinzu}"
-                             process="@this"
-                             update="@none" />
-            <p:spacer width="15" />
-            <p:commandButton id="cmdCancel"
-                             value="Abbrechen"
-                             style="width:100px;"
-                             action="#{archivierenVC.doNothing}"
-                             process="@this"
-                             update="@none" />
-        </h:panelGrid>
-    </h:panelGrid>
-</p:dialog>
-
-
-
+  URL url = new URL(servletUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        
+        // read response
+        BufferedReader reader = new BufferedReader(
+            new InputStreamReader(conn.getInputStream()));
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
+        }
+        reader.close();
+        
+        // parse JSON - what fields does it return?
+        // share the JSON structure and I can parse it exactly
+        LOG.info("DocumentParameterServlet response: " + response.toString());
