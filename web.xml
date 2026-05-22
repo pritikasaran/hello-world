@@ -1,46 +1,6 @@
-  <p:ajax event="tabChange"
-            listener="#{akteVC.onTabChange}"
-            update="@form"/>
-
-
-public void onTabChange(TabChangeEvent event) {
-    // get the tab index that was clicked
-    int index = ((TabView) event.getSource()).getActiveIndex();
-    activeIndex = index;
-    
-    // update imsModell currentTab
-    switch (index) {
-        case 0: imsModell.setCurrentTab(Tab.POSTKORB); break;
-        case 1: imsModell.setCurrentTab(Tab.AKTENANSICHT); break;
-        case 2: imsModell.setCurrentTab(Tab.AKTENEINTRAEGE); break;
-        case 3: imsModell.setCurrentTab(Tab.FORMULAR); break;
-        case 4: imsModell.setCurrentTab(Tab.FAXEN); break;
-        case 5: imsModell.setCurrentTab(Tab.EMAIL); break;
-        case 6: imsModell.setCurrentTab(Tab.BESCHWERDEN); break;
-        default: imsModell.setCurrentTab(Tab.POSTKORB); break;
-    }
-    
-    LOG.info("onTabChange - activeIndex: " + activeIndex + 
-             " - currentTab: " + imsModell.getCurrentTab());
-}
-
-  String tabId = event.getTab().getId();
-        LOG.info("=== tab id: " + tabId);
-        
-        // map title to Tab enum
-        switch (tabTitle) {
-            case "Postkorb":        
-                imsModell.setCurrentTab(Tab.POSTKORB); 
-                activeIndex = 0;
-                break;
-            case "Akteinansicht":   
-                imsModell.setCurrentTab(Tab.AKTENANSICHT); 
-                activeIndex = 1;
-                break;
-            case "Akteneintraege":  
-                imsModell.setCurrentTab(Tab.AKTENEINTRAEGE); 
-                activeIndex = 2;
-                break;
-            // rest of tabs
-        }
-        
+Host gitlab.a1-core.athora.net
+    Hostname gitlab.a1-core.athora.net
+    User git
+    Port 443
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_ed25519
