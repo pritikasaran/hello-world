@@ -3,4 +3,4 @@ Host gitlab.a1-core.athora.net
     User git
     Port 443
     PreferredAuthentications publickey
-    IdentityFile ~/.ssh/id_ed25519
+    IdentityFile ~/.ssh/id_rsa
