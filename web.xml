@@ -4,3 +4,7 @@ Host gitlab.a1-core.athora.net
     Port 443
     PreferredAuthentications publickey
     IdentityFile ~/.ssh/id_rsa
+
+
+
+git fetch --prune origin +refs/heads/*:refs/remotes/origin/*
