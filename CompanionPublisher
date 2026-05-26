@@ -1,28 +1,147 @@
-@Named("loginVC")
-@ViewScoped
-public class LoginVC implements Serializable {
+package de.deltalloyd.partnerdb.rest.restWrapper;
 
-    @Inject
-    private ImsModell imsModell;   // CDI will inject this bean
+import java.util.List;
 
-    private String windowTitle = "Login";
+import de.deltalloyd.partnerdb.core.type.AdresseTO;
+import de.deltalloyd.partnerdb.core.type.BankVerbindungTO;
+import de.deltalloyd.partnerdb.core.type.EinzelVsnrTO;
+import de.deltalloyd.partnerdb.core.type.JournalEintragTO;
+import de.deltalloyd.partnerdb.core.type.util.PartnerBilanzdaten;
+import de.deltalloyd.partnerdb.rest.DTO.AddressDto;
+import de.deltalloyd.partnerdb.rest.DTO.CreatePasswordDto;
+import de.deltalloyd.partnerdb.rest.DTO.GetKopfDublettenAdressNrDto;
+import de.deltalloyd.partnerdb.rest.DTO.GetKopfDublettenDto;
+import de.deltalloyd.partnerdb.rest.DTO.GetNeusteEinzelVsnrDto;
+import de.deltalloyd.partnerdb.rest.DTO.HoleFreiePartnerNummerDto;
+import de.deltalloyd.partnerdb.rest.DTO.LadePartnerPostAdresseDto;
+import de.deltalloyd.partnerdb.rest.DTO.PartnerLadeDto;
+import de.deltalloyd.partnerdb.rest.DTO.PartnerSaveDto;
+import de.deltalloyd.partnerdb.rest.DTO.PartnerbankLade;
+import de.deltalloyd.partnerdb.rest.DTO.UpdateUebertragungBRSDto;
+import de.deltalloyd.partnerdb.rest.DTO.ValidateAddressDto;
+import de.deltalloyd.partnerdb.rest.DTO.ValidatePartnerDto;
+import de.deltalloyd.partnerdb.rest.DTO.ValidiereBankverbindungDto;
+import de.deltalloyd.partnerdb.rest.DTO.ValidierePartnerGrunddatenDto;
+import de.deltalloyd.partnerdb.core.type.PartnerGrunddatenTO;
+import de.deltalloyd.partnerdb.core.type.PartnerTO;
+import de.deltalloyd.partnerdb.core.type.PostAdresseTO;
+import de.deltalloyd.partnerdb.core.type.PostPruefAntwortTO;
+import de.deltalloyd.partnerdb.core.type.ValidationResult;
+import de.deltalloyd.partnerdb.webservices.impl.KksnWSImpl;
+import de.deltalloyd.partnerdb.webservices.interfaces.IPartnerWebService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Path;
+import jakarta.xml.ws.BindingProvider;
 
-    public void preRenderView() {
-        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance()
-                .getExternalContext().getRequest();
+@ApplicationScoped
+@Path("/partnerWeb")
+public class RestApplication3 {
+	
+	
+	@Inject
+	IPartnerWebService partnerWebService;
+	
 
-        if (req.getUserPrincipal() != null) {
-            // Populate the injected model with Kerberos principal
-            imsModell.setBenutzerID(req.getUserPrincipal().getName());
-        }
-    }
+	public List<String[]> ladeSapPartnerInformation(String aPID) throws Exception {
+		return partnerWebService.ladeSapPartnerInformation(aPID);
+	}
 
-    public String anmelden() {
-        // Navigate forward, Kerberos already authenticated
-        return "home.xhtml?faces-redirect=true";
-    }
+	public void aktualisierePartner(PartnerSaveDto dto) throws Exception {
+		partnerWebService.aktualisierePartner(dto.getAuthToken(),  dto.getPartnerTo(), dto.getaParameter());
+	}
 
-    // getter for EL
-    public ImsModell getImsModell() { return imsModell; }
-    public String getWindowTitle() { return windowTitle; }
+	public ValidationResult erzeugePartner(ValidatePartnerDto dto) throws Exception {
+		return partnerWebService.erzeugePartner(dto.getAuthToken(), dto.getPartnerTo(), dto.getaParameter());
+	}
+
+	public ValidationResult validiereGrunddaten(ValidierePartnerGrunddatenDto dto)
+			throws Exception {
+		return partnerWebService.validiereGrunddaten( dto.getPartnerTo(), dto.getaParameter());
+	}
+
+	public ValidationResult validiereUebergreifend(ValidatePartnerDto dto)
+			throws Exception {
+		return partnerWebService.validiereUebergreifend( dto.getPartnerTo(), dto.getaParameter());
+	}
+
+	public PartnerTO ladePartner(PartnerLadeDto dto)
+			throws Exception {
+		return partnerWebService.ladePartner(dto.getAuthToken(), dto.isNebendubletteaufloesen(), dto.getKlient(), dto.getPartnernr(), dto.getParameter());
+	}
+
+	public List<EinzelVsnrTO> getNeusteEinzelVsnr(GetNeusteEinzelVsnrDto dto)
+			throws Exception {
+		return partnerWebService.getNeusteEinzelVsnr(dto.getAuthToken(), dto.getMandant(), dto.getOrbart(), dto.getOrb());
+	}
+
+	public int getKopfDublettenBankVerbNr(PartnerbankLade dto)
+			throws Exception {
+		return partnerWebService.getKopfDublettenBankVerbNr(dto.getKlient(), dto.getPartnernr(), dto.getBankNr());
+	}
+
+	public PostPruefAntwortTO pruefePostAdresse(AddressDto dto)
+			throws Exception {
+		return partnerWebService.pruefePostAdresse((PostAdresseTO) dto.getAdresseTO(), dto.getaParameter());
+	}
+
+	public BankVerbindungTO ladePartnerBankverbindung(PartnerbankLade dto) throws Exception {
+		return partnerWebService.ladePartnerBankverbindung(dto.getAuthToken(), dto.getKlient(), dto.getPartnernr(), dto.getBankNr(), dto.getParameter());
+	}
+
+	public ValidationResult validiereAdresse(ValidateAddressDto dto)
+			throws Exception {
+		return partnerWebService.validiereAdresse(dto.getPartnerTo(), dto.getAdresseTO(), dto.getaParameter());
+	}
+
+	public ValidationResult validiereBankverbindung(ValidiereBankverbindungDto dto) throws Exception {
+		return partnerWebService.validiereBankverbindung(dto.getPartnerTo(), dto.getAdresseTO(), dto.getaParameter());
+	}
+
+	public PostAdresseTO ladePartnerPostAdresse(LadePartnerPostAdresseDto dto)
+			throws Exception {
+		return partnerWebService.ladePartnerPostAdresse(dto.getAuthToken(), dto.getKlient(), dto.getPartnernr(), dto.getaAnschrnr(), dto.getParameter());
+	}
+
+	public long getKopfDublettenPartnerNr(GetKopfDublettenDto dto) throws Exception {
+		return partnerWebService.getKopfDublettenPartnerNr(dto.getKlient(), dto.getPartnernr());
+	}
+
+	public int getKopfDublettenAdressNr(GetKopfDublettenAdressNrDto dto) throws Exception {
+		return partnerWebService.getKopfDublettenAdressNr(dto.getKlient(), dto.getPartnernr(), dto.getaAdressNr());
+	}
+
+	public long holeFreiePartnerNummer(HoleFreiePartnerNummerDto dto) throws Exception {
+		return partnerWebService.holeFreiePartnerNummer(dto.getAuthToken(), dto.getKlient(), dto.getaParameter());
+	}
+
+	public void updateUebertragungBRS(UpdateUebertragungBRSDto dto )
+			throws Exception {
+		partnerWebService.updateUebertragungBRS(dto.getAuthToken(), dto.getKlient(), dto.getPartnernr(), dto.getBrsUebertragung());
+
+	}
+
+	public PartnerBilanzdaten getbilanzdaten(Integer klient, Long partnernr) throws Exception {
+		return partnerWebService.getbilanzdaten(klient, partnernr);
+	}
+
+	public String getReleaseInfo() {
+		return partnerWebService.getReleaseInfo();
+	}
+
+	public List<JournalEintragTO> ladeJournalFuerPartner(PartnerLadeDto dto)
+			throws Exception {
+		return partnerWebService.ladeJournalFuerPartner(dto.getKlient(), dto.getKlient());
+	}
+	
+	public List<Object> CreatePassword(CreatePasswordDto dto)
+			throws Exception {
+		List<Object> list = partnerWebService.createPassword(dto.getAuthToken(), dto.getKlient(), dto.getPartnernr(), dto.getMail());
+		return 	list;
+
+	}
+
 }
+
+
+
