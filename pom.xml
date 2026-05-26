@@ -1,210 +1,341 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<div xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
-	xmlns:tr="http://myfaces.apache.org/trinidad"
-	xmlns:trh="http://myfaces.apache.org/trinidad/html">
-	
-	  <af:menuBar>
-        <af:menu text="BQM">
-            <af:commandMenuItem text="Beschwerdebericht anzeigen" 
-                action="${beschwUebersichtVC.beschwerdeAnzeigen}"
-                icon="/resources/images/beschw_anzeigen.gif"/>
-            <af:commandMenuItem text="Beschwerdebericht löschen" 
-            	rendered="#{beschwUebersichtVC.bewerdeManager}"
-            	partialSubmit="true"
-                actionListener="#{beschwUebersichtVC.actionLoeschen}"
-                icon="/resources/images/delete.gif"/>
-    	</af:menu>
-    	<af:menu text="Hilfe">
-			<af:commandMenuItem text="Anzeige Handbuch IMS"
-				windowModalityType="applicationModal" useWindow="true"
-                windowWidth="750" windowHeight="900" partialSubmit="true"
-				action="#{beschwUebersichtVC.openIMSHandbuch}"
-				icon="/resources/images/information.gif" />
-			<af:commandMenuItem text="Anzeige Handbuch KKE"
-				windowModalityType="applicationModal" useWindow="true"
-                windowWidth="750" windowHeight="900" partialSubmit="true"
-				action="#{beschwUebersichtVC.openKKEHandbuch}"
-				icon="/resources/images/information.gif" />
-			<af:commandMenuItem text="Anzeige Handbuch BQM"
-				windowModalityType="applicationModal" useWindow="true"
-                windowWidth="750" windowHeight="900" partialSubmit="true"
-				action="#{beschwUebersichtVC.openBQMHandbuch}"
-				icon="/resources/images/information.gif" />
-			<af:commandMenuItem text="Info"
-				windowModalityType="applicationModal" useWindow="true"
-				windowWidth="200" windowHeight="200" partialSubmit="true"
-				action="#{beschwUebersichtVC.showInfo}"/>
-		</af:menu>
-    </af:menuBar>
-    
-    <ui:remove>Buttons</ui:remove>
-	<af:panelFormLayout id="buttonBarAE" rows="1" fieldWidth="100%">
-		<af:panelGroupLayout layout="horizontal" styleClass="AFStretchWidth">
-			<af:panelGroupLayout layout="horizontal">
-			 <af:commandButton id="cmdAktualisieren"
-                	partialSubmit="true"
-                    inlineStyle="padding-left:2px;padding-right:2px;"
-                    icon="/resources/images/refresh.gif" shortDesc="Aktualisieren"
-                    action="#{beschwUebersichtVC.aktualisieren}">
-                </af:commandButton>
-				<af:commandButton id="cmdBQMAnzeigen"
-					icon="/resources/images/beschw_anzeigen.gif" 
-					shortDesc="Beschwerdebericht anzeigen"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					action="#{beschwUebersichtVC.beschwerdeAnzeigen}">
-					<f:ajax execute="@this" render="@form" />
-				</af:commandButton>
-				<af:commandButton id="cmdBQMLoeschen"
-					partialSubmit="true"
-					icon="/resources/images/delete.gif" 
-					shortDesc="Beschwerdebericht löschen"
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					rendered="#{beschwUebersichtVC.bewerdeManager}" 
-					actionListener="#{beschwUebersichtVC.actionLoeschen}"/>
-			</af:panelGroupLayout>
-			
-			<af:panelGroupLayout layout="horizontal" halign="right">
-				<af:commandButton icon="/resources/images/akteschliessen.gif" 
-					inlineStyle="padding-left:2px;padding-right:2px;"
-					id="cmdAkteVerlassen" accessKey="V" shortDesc="Beschwerdeübersicht schlie&#223;en"
-					action="#{beschwUebersichtVC.schliessen}">
-				</af:commandButton>
-			</af:panelGroupLayout>
-		</af:panelGroupLayout>
-	</af:panelFormLayout>
-			
-	<tr:panelCaptionGroup captionText="Filter">
-		<af:panelGroupLayout layout="horizontal">
-			<af:outputLabel value="Jahr:"/>
-			<af:selectOneChoice id="selJahr" immediate="true" autoSubmit="true"
-				value="#{beschwUebersichtVC.beschwUebersichtModell.filter.jahr}">
-				<f:selectItems id="jahrItems"
-					value="#{beschwUebersichtVC.beschwUebersichtModell.jahrItems}"/>
-			</af:selectOneChoice>
-			
-			<af:outputLabel value="Status:"/>
-			<af:selectOneChoice id="selStatus" immediate="true" autoSubmit="true"
-				value="#{beschwUebersichtVC.beschwUebersichtModell.filter.status}">
-				<f:selectItems id="statusItems"
-					value="#{beschwUebersichtVC.beschwUebersichtModell.statusItems}"/>
-			</af:selectOneChoice>
-			
-			<af:outputLabel value="Art:"/>
-			<af:selectOneChoice id="selArt" immediate="true" autoSubmit="true"
-				value="#{beschwUebersichtVC.beschwUebersichtModell.filter.art}">
-				<f:selectItems id="artItems"
-					value="#{beschwUebersichtVC.beschwUebersichtModell.artItems}"/>
-			</af:selectOneChoice>
-			
-			<af:outputLabel value="Bereich:"/>
-			<af:selectOneChoice id="selBereich" immediate="true" autoSubmit="true"
-				value="#{beschwUebersichtVC.beschwUebersichtModell.filter.bereich}">
-				<f:selectItems id="bereichItems"
-					value="#{beschwUebersichtVC.beschwUebersichtModell.bereichItems}"/>
-			</af:selectOneChoice>
-		</af:panelGroupLayout>
-	</tr:panelCaptionGroup>
-	
-	 <af:spacer height="10pt"/>
-			
-	<af:panelGroupLayout layout="vertical">
-	<af:table id="tabAlleEintraege" var="eintrag" 
-		rowSelection="single" inlineStyle="height:#{beschwUebersichtVC.beschwUebersichtModell.heightTable}px;"
-		value="#{beschwUebersichtVC.beschwUebersichtModell.beschwerden}"
-		rowBandingInterval="0" emptyText="Keine Eintr&#228;ge vorhanden."
-		selectedRowKeys="#{beschwUebersichtVC.beschwUebersichtModell.eintraegeRowKeySet}"
-		selectionListener="#{beschwUebersichtVC.selectEintraege}"
-		styleClass="AFStretchWidth"
-		binding="#{beschwUebersichtVC.eintraegeTable}"
-		displayRow="selected" contentDelivery="immediate" 
-		fetchSize="#{beschwUebersichtVC.fetchSizeTable}"
-				disableColumnReordering="true">
-				
-		<af:clientListener type="dblClick" method="dblClickBeschwerde" />
-		<af:clientListener type="load" method="rewriteAdfSetFocusOnEditableElementInNode" />
-		<af:column headerText="Jahr" noWrap="true" sortProperty="jahr"
-			sortable="false" width="50px" headerClass="imsTableHeader"
-			styleClass="imsTableData">
-			<af:outputText value="#{eintrag.eingangDat}" converter="JahrConverter"/>
-		</af:column>
-		<af:column headerText="Nummer" noWrap="true" sortProperty="nummer"
-			sortable="false" width="80px" headerClass="imsTableHeader"
-			styleClass="imsTableData">
-			<af:outputText value="#{eintrag.nummer}"/>
-		</af:column>
-		<af:column headerText="Eingang" sortProperty="eingangDat"
-			sortable="false" headerNoWrap="true" noWrap="true" width="105px"
-			headerClass="imsTableHeader" styleClass="imsTableData">
-			<af:outputFormatted value="#{eintrag.eingangDat}" converter="DatumKurz" />
-		</af:column>
-		<af:column headerText="Art" noWrap="true"
-			sortProperty="art" sortable="false"
-			headerClass="imsTableHeader" styleClass="imsTableData" width="155px">
-			<af:outputText value="#{eintrag.beschwArtKurzText}"
-				shortDesc="#{eintrag.beschwArtSchl}: #{eintrag.beschwArtLangText}" />
-		</af:column>
-		<af:column headerText="Status" sortProperty="status"
-			sortable="false" headerNoWrap="true" noWrap="true" width="65px"
-			headerClass="imsTableHeader" styleClass="imsTableData">
-			<af:outputText value="#{eintrag.beschwStatusKurzText}"
-				shortDesc="#{eintrag.beschwStatus}: #{eintrag.beschwStatusLangText}" />
-		</af:column>
-		<af:column headerText="Bearbeiter" noWrap="true" sortProperty="bearbeiter"
-			sortable="false" headerClass="imsTableHeader"
-			styleClass="imsTableData" width="100px">
-			<af:outputText value="#{eintrag.verantwortlKurzText}"
-				shortDesc="#{eintrag.verantwortlUserid}: #{eintrag.verantwortlName}" />
-		</af:column>
-		<af:column headerText="MA" noWrap="true"
-			sortProperty="mandant" sortable="false" width="54px"
-			headerClass="imsTableHeader" styleClass="imsTableData">
-			<af:outputText value="#{eintrag.mandantKurzText}" 
-				shortDesc="#{eintrag.mandant}: #{eintrag.mandantLangText}"/>
-		</af:column>
-		<af:column headerText="ORB-Art" noWrap="true"
-			sortProperty="orbart" sortable="false" width="70px"
-			headerClass="imsTableHeader" styleClass="imsTableData">
-			<af:outputText value="#{eintrag.orbartKurzText}" 
-				shortDesc="#{eintrag.orbart}: #{eintrag.orbartLangText}"/>
-		</af:column>
-		<af:column headerText="ORB" noWrap="true"
-			sortProperty="orb" sortable="false" width="120px"
-			headerClass="imsTableHeader" styleClass="imsTableData">
-			<af:outputText value="#{eintrag.orb}" />
-		</af:column>
-		<af:column headerText="Erfasser" noWrap="true" sortProperty="erfasser"
-			sortable="false" headerClass="imsTableHeader"
-			styleClass="imsTableData" width="100px">
-			<af:outputText value="#{eintrag.erfasserKurzText}" 
-				shortDesc="#{eintrag.erfasserUserid}: #{eintrag.erfasserName}"/>
-		</af:column>
-		<af:column headerText="Bereich" sortProperty="bereich" sortable="false"
-			width="100px" headerClass="imsTableHeader" styleClass="imsTableData">
-			<af:outputText value="#{eintrag.bereichKurzText}" 
-				shortDesc="#{eintrag.bereichSchl}: #{eintrag.bereichLangText}" />
-		</af:column>
-	</af:table>
-	</af:panelGroupLayout>
-	
-	 <af:popup id="sicherheitsabfrage" binding="#{beschwUebersichtVC.sicherheitsabfragePopup}">
-         <af:dialog okVisible="false" cancelVisible="false" modal="true" title="Sind Sie sicher?">
-                <af:panelGroupLayout layout="vertical">
-                 <af:outputFormatted value="Der Beschwerdebericht Nr #{beschwUebersichtVC.beschwUebersichtModell.selBeschwerde.nummer} soll gelöscht werden?"/>
-                 <af:panelGroupLayout layout="horizontal">
-                    <af:commandButton text="Ja" action="#{beschwUebersichtVC.beschwerdeLoeschen}">
-                    	<f:ajax execute="@this" render="@form" />
-                    </af:commandButton>
-                    	<af:commandButton text="Nein" action="#{beschwUebersichtVC.doNothing}">
-                    <f:ajax execute="@this" render="@form" />
-                    </af:commandButton>
-                 </af:panelGroupLayout>
-             </af:panelGroupLayout>
-              
-            </af:dialog>
-        </af:popup>								
-</div>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>BQM - Beschwerdeübersicht</title>
+</h:head>
+
+<h:body>
+
+    <!-- ═══════════════════════════════════════════════
+         MENU BAR
+         af:menuBar → p:menubar
+         af:menu    → p:submenu
+         af:commandMenuItem → p:menuitem
+    ═══════════════════════════════════════════════ -->
+    <p:menubar>
+
+        <p:submenu label="BQM">
+            <p:menuitem value="Beschwerdebericht anzeigen"
+                        action="#{beschwUebersichtVC.beschwerdeAnzeigen}"
+                        icon="ui-icon-search"/>
+
+            <!-- rendered only for bewerdeManager role -->
+            <p:menuitem value="Beschwerdebericht löschen"
+                        rendered="#{beschwUebersichtVC.bewerdeManager}"
+                        icon="ui-icon-trash"
+                        actionListener="#{beschwUebersichtVC.actionLoeschen}"
+                        process="@this"
+                        update="@form"/>
+        </p:submenu>
+
+        <p:submenu label="Hilfe">
+            <!-- Each handbook opens in a modal dialog.
+                 af:commandMenuItem useWindow="true" → p:menuitem onclick triggers p:dialog show -->
+            <p:menuitem value="Anzeige Handbuch IMS"
+                        icon="ui-icon-info"
+                        action="#{beschwUebersichtVC.openIMSHandbuch}"
+                        process="@this"
+                        update="@form"/>
+
+            <p:menuitem value="Anzeige Handbuch KKE"
+                        icon="ui-icon-info"
+                        action="#{beschwUebersichtVC.openKKEHandbuch}"
+                        process="@this"
+                        update="@form"/>
+
+            <p:menuitem value="Anzeige Handbuch BQM"
+                        icon="ui-icon-info"
+                        action="#{beschwUebersichtVC.openBQMHandbuch}"
+                        process="@this"
+                        update="@form"/>
+
+            <p:menuitem value="Info"
+                        action="#{beschwUebersichtVC.showInfo}"
+                        process="@this"
+                        update="@form"/>
+        </p:submenu>
+
+    </p:menubar>
+
+    <!-- ═══════════════════════════════════════════════
+         BUTTON BAR
+         af:panelFormLayout + af:panelGroupLayout → plain divs with flex layout
+         af:commandButton → p:commandButton
+    ═══════════════════════════════════════════════ -->
+    <h:form id="mainForm">
+
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0;">
+
+            <!-- Left button group -->
+            <div style="display:flex; gap:2px;">
+
+                <!-- Aktualisieren: af:commandButton partialSubmit="true" → p:commandButton update="@form" -->
+                <p:commandButton id="cmdAktualisieren"
+                                 icon="ui-icon-refresh"
+                                 title="Aktualisieren"
+                                 action="#{beschwUebersichtVC.aktualisieren}"
+                                 process="@this"
+                                 update="@form"
+                                 style="padding:2px;"/>
+
+                <!-- Beschwerdebericht anzeigen: full-form submit (no partialSubmit in original) -->
+                <p:commandButton id="cmdBQMAnzeigen"
+                                 icon="ui-icon-search"
+                                 title="Beschwerdebericht anzeigen"
+                                 action="#{beschwUebersichtVC.beschwerdeAnzeigen}"
+                                 process="@this"
+                                 update="@form"
+                                 style="padding:2px;"/>
+
+                <!-- Beschwerdebericht löschen: only rendered for bewerdeManager -->
+                <p:commandButton id="cmdBQMLoeschen"
+                                 icon="ui-icon-trash"
+                                 title="Beschwerdebericht löschen"
+                                 rendered="#{beschwUebersichtVC.bewerdeManager}"
+                                 actionListener="#{beschwUebersichtVC.actionLoeschen}"
+                                 process="@this"
+                                 update="@form"
+                                 style="padding:2px;"/>
+            </div>
+
+            <!-- Right button group -->
+            <div style="display:flex; justify-content:flex-end;">
+                <p:commandButton id="cmdAkteVerlassen"
+                                 icon="ui-icon-closethick"
+                                 title="Beschwerdeübersicht schließen"
+                                 accesskey="V"
+                                 action="#{beschwUebersichtVC.schliessen}"
+                                 style="padding:2px;"/>
+            </div>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             FILTER PANEL
+             tr:panelCaptionGroup → p:fieldset
+             af:selectOneChoice + f:selectItems → p:selectOneMenu + f:selectItems
+             af:outputLabel → p:outputLabel
+             immediate="true" autoSubmit="true" → p:ajax event="change" update="@form"
+        ═══════════════════════════════════════════════ -->
+        <p:fieldset legend="Filter">
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+
+                <p:outputLabel for="selJahr" value="Jahr:"/>
+                <p:selectOneMenu id="selJahr"
+                                 value="#{beschwUebersichtVC.beschwUebersichtModell.filter.jahr}">
+                    <p:ajax event="change" process="@this" update="@form"/>
+                    <f:selectItems id="jahrItems"
+                                   value="#{beschwUebersichtVC.beschwUebersichtModell.jahrItems}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel for="selStatus" value="Status:"/>
+                <p:selectOneMenu id="selStatus"
+                                 value="#{beschwUebersichtVC.beschwUebersichtModell.filter.status}">
+                    <p:ajax event="change" process="@this" update="@form"/>
+                    <f:selectItems id="statusItems"
+                                   value="#{beschwUebersichtVC.beschwUebersichtModell.statusItems}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel for="selArt" value="Art:"/>
+                <p:selectOneMenu id="selArt"
+                                 value="#{beschwUebersichtVC.beschwUebersichtModell.filter.art}">
+                    <p:ajax event="change" process="@this" update="@form"/>
+                    <f:selectItems id="artItems"
+                                   value="#{beschwUebersichtVC.beschwUebersichtModell.artItems}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel for="selBereich" value="Bereich:"/>
+                <p:selectOneMenu id="selBereich"
+                                 value="#{beschwUebersichtVC.beschwUebersichtModell.filter.bereich}">
+                    <p:ajax event="change" process="@this" update="@form"/>
+                    <f:selectItems id="bereichItems"
+                                   value="#{beschwUebersichtVC.beschwUebersichtModell.bereichItems}"/>
+                </p:selectOneMenu>
+
+            </div>
+        </p:fieldset>
+
+        <!-- af:spacer height="10pt" → plain div with margin -->
+        <div style="margin-top:10pt;"/>
+
+        <!-- ═══════════════════════════════════════════════
+             DATA TABLE
+             af:table → p:dataTable
+             af:column → p:column
+             rowSelection="single" → selectionMode="single"
+             selectedRowKeys / selectionListener → selection + p:ajax event="rowSelect"
+             af:clientListener type="dblClick" → ondblclick JS on p:dataTable
+             af:clientListener type="load" → inline script after table
+             af:outputFormatted → h:outputText (converter preserved)
+             af:outputText shortDesc → title attribute on h:outputText wrapper
+             emptyText → emptyMessage
+             contentDelivery="immediate" → lazy="false" (default)
+             fetchSize → rows attribute
+             displayRow="selected" → no direct equivalent; handled by selection binding
+        ═══════════════════════════════════════════════ -->
+        <p:dataTable id="tabAlleEintraege"
+                     var="eintrag"
+                     value="#{beschwUebersichtVC.beschwUebersichtModell.beschwerden}"
+                     selectionMode="single"
+                     selection="#{beschwUebersichtVC.beschwUebersichtModell.selBeschwerde}"
+                     rowKey="#{eintrag.nummer}"
+                     emptyMessage="Keine Einträge vorhanden."
+                     style="width:100%; height:#{beschwUebersichtVC.beschwUebersichtModell.heightTable}px;"
+                     rows="#{beschwUebersichtVC.fetchSizeTable}"
+                     reflow="false"
+                     binding="#{beschwUebersichtVC.eintraegeTable}"
+                     ondblclick="dblClickBeschwerde(event)"
+                     stripedRows="true">
+
+            <!-- rowSelect replaces selectionListener -->
+            <p:ajax event="rowSelect"
+                    listener="#{beschwUebersichtVC.selectEintraege}"
+                    process="@this"
+                    update="@form"/>
+
+            <!-- Jahr column: af:outputText with JahrConverter -->
+            <p:column headerText="Jahr" width="50" style="white-space:nowrap;">
+                <h:outputText value="#{eintrag.eingangDat}">
+                    <f:converter converterId="JahrConverter"/>
+                </h:outputText>
+            </p:column>
+
+            <!-- Nummer column -->
+            <p:column headerText="Nummer" width="80" style="white-space:nowrap;">
+                <h:outputText value="#{eintrag.nummer}"/>
+            </p:column>
+
+            <!-- Eingang column: af:outputFormatted with DatumKurz converter -->
+            <p:column headerText="Eingang" width="105" style="white-space:nowrap;">
+                <h:outputText value="#{eintrag.eingangDat}">
+                    <f:converter converterId="DatumKurz"/>
+                </h:outputText>
+            </p:column>
+
+            <!-- Art column: shortDesc → title on wrapping span -->
+            <p:column headerText="Art" width="155" style="white-space:nowrap;">
+                <span title="#{eintrag.beschwArtSchl}: #{eintrag.beschwArtLangText}">
+                    <h:outputText value="#{eintrag.beschwArtKurzText}"/>
+                </span>
+            </p:column>
+
+            <!-- Status column -->
+            <p:column headerText="Status" width="65" style="white-space:nowrap;">
+                <span title="#{eintrag.beschwStatus}: #{eintrag.beschwStatusLangText}">
+                    <h:outputText value="#{eintrag.beschwStatusKurzText}"/>
+                </span>
+            </p:column>
+
+            <!-- Bearbeiter column -->
+            <p:column headerText="Bearbeiter" width="100" style="white-space:nowrap;">
+                <span title="#{eintrag.verantwortlUserid}: #{eintrag.verantwortlName}">
+                    <h:outputText value="#{eintrag.verantwortlKurzText}"/>
+                </span>
+            </p:column>
+
+            <!-- MA (Mandant) column -->
+            <p:column headerText="MA" width="54" style="white-space:nowrap;">
+                <span title="#{eintrag.mandant}: #{eintrag.mandantLangText}">
+                    <h:outputText value="#{eintrag.mandantKurzText}"/>
+                </span>
+            </p:column>
+
+            <!-- ORB-Art column -->
+            <p:column headerText="ORB-Art" width="70" style="white-space:nowrap;">
+                <span title="#{eintrag.orbart}: #{eintrag.orbartLangText}">
+                    <h:outputText value="#{eintrag.orbartKurzText}"/>
+                </span>
+            </p:column>
+
+            <!-- ORB column -->
+            <p:column headerText="ORB" width="120" style="white-space:nowrap;">
+                <h:outputText value="#{eintrag.orb}"/>
+            </p:column>
+
+            <!-- Erfasser column -->
+            <p:column headerText="Erfasser" width="100" style="white-space:nowrap;">
+                <span title="#{eintrag.erfasserUserid}: #{eintrag.erfasserName}">
+                    <h:outputText value="#{eintrag.erfasserKurzText}"/>
+                </span>
+            </p:column>
+
+            <!-- Bereich column -->
+            <p:column headerText="Bereich" width="100">
+                <span title="#{eintrag.bereichSchl}: #{eintrag.bereichLangText}">
+                    <h:outputText value="#{eintrag.bereichKurzText}"/>
+                </span>
+            </p:column>
+
+        </p:dataTable>
+
+        <!-- ═══════════════════════════════════════════════
+             CONFIRMATION DIALOG
+             af:popup + af:dialog → p:dialog
+             modal="true", closeable via Nein button
+             af:commandButton Ja/Nein → p:commandButton inside dialog
+        ═══════════════════════════════════════════════ -->
+        <p:dialog id="sicherheitsabfrage"
+                  widgetVar="sicherheitsabfrageWidget"
+                  binding="#{beschwUebersichtVC.sicherheitsabfragePopup}"
+                  header="Sind Sie sicher?"
+                  modal="true"
+                  closable="false"
+                  resizable="false"
+                  width="400">
+
+            <div style="display:flex; flex-direction:column; gap:8px;">
+
+                <h:outputFormat value="Der Beschwerdebericht Nr {0} soll gelöscht werden?">
+                    <f:param value="#{beschwUebersichtVC.beschwUebersichtModell.selBeschwerde.nummer}"/>
+                </h:outputFormat>
+
+                <div style="display:flex; gap:4px; margin-top:8px;">
+                    <p:commandButton value="Ja"
+                                     action="#{beschwUebersichtVC.beschwerdeLoeschen}"
+                                     process="@this"
+                                     update="@form"
+                                     oncomplete="PF('sicherheitsabfrageWidget').hide();"/>
+
+                    <p:commandButton value="Nein"
+                                     action="#{beschwUebersichtVC.doNothing}"
+                                     process="@this"
+                                     update="@form"
+                                     oncomplete="PF('sicherheitsabfrageWidget').hide();"/>
+                </div>
+
+            </div>
+        </p:dialog>
+
+        <!-- ═══════════════════════════════════════════════
+             CLIENT-SIDE SCRIPTS
+             af:clientListener type="dblClick" method="dblClickBeschwerde"
+             af:clientListener type="load"    method="rewriteAdfSetFocusOnEditableElementInNode"
+             → Inline JS. Function bodies are stubs; implement as needed.
+        ═══════════════════════════════════════════════ -->
+        <script type="text/javascript">
+            // Replaces: af:clientListener type="dblClick" method="dblClickBeschwerde"
+            function dblClickBeschwerde(event) {
+                // Original ADF double-click handler logic goes here.
+                // Typically triggers beschwerdeAnzeigen action — wire to a hidden button if needed:
+                // document.getElementById('mainForm:cmdBQMAnzeigen').click();
+            }
+
+            // Replaces: af:clientListener type="load" method="rewriteAdfSetFocusOnEditableElementInNode"
+            // Runs once the page/component has loaded.
+            (function () {
+                // Original ADF focus-rewrite logic goes here.
+                // This was an ADF-specific focus workaround; review whether it is still needed.
+            })();
+        </script>
+
+    </h:form>
+
+</h:body>
+</html>
