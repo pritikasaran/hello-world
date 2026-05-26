@@ -1,365 +1,210 @@
-package de.deltalloyd.partnerdb.rest.restWrapper;
-
-import java.util.List;
-
-import de.deltalloyd.partnerdb.core.type.AdresseTO;
-import de.deltalloyd.partnerdb.core.type.BankVerbindungTO;
-import de.deltalloyd.partnerdb.core.type.EinzelVsnrTO;
-import de.deltalloyd.partnerdb.core.type.JournalEintragTO;
-import de.deltalloyd.partnerdb.core.type.util.PartnerBilanzdaten;
-import de.deltalloyd.partnerdb.rest.DTO.AddressDto;
-import de.deltalloyd.partnerdb.rest.DTO.CreatePasswordDto;
-import de.deltalloyd.partnerdb.rest.DTO.GetKopfDublettenAdressNrDto;
-import de.deltalloyd.partnerdb.rest.DTO.GetKopfDublettenDto;
-import de.deltalloyd.partnerdb.rest.DTO.GetNeusteEinzelVsnrDto;
-import de.deltalloyd.partnerdb.rest.DTO.HoleFreiePartnerNummerDto;
-import de.deltalloyd.partnerdb.rest.DTO.LadePartnerPostAdresseDto;
-import de.deltalloyd.partnerdb.rest.DTO.PartnerLadeDto;
-import de.deltalloyd.partnerdb.rest.DTO.PartnerSaveDto;
-import de.deltalloyd.partnerdb.rest.DTO.PartnerbankLade;
-import de.deltalloyd.partnerdb.rest.DTO.UpdateUebertragungBRSDto;
-import de.deltalloyd.partnerdb.rest.DTO.ValidateAddressDto;
-import de.deltalloyd.partnerdb.rest.DTO.ValidatePartnerDto;
-import de.deltalloyd.partnerdb.rest.DTO.ValidiereBankverbindungDto;
-import de.deltalloyd.partnerdb.rest.DTO.ValidierePartnerGrunddatenDto;
-import de.deltalloyd.partnerdb.core.type.PartnerGrunddatenTO;
-import de.deltalloyd.partnerdb.core.type.PartnerTO;
-import de.deltalloyd.partnerdb.core.type.PostAdresseTO;
-import de.deltalloyd.partnerdb.core.type.PostPruefAntwortTO;
-import de.deltalloyd.partnerdb.core.type.ValidationResult;
-import de.deltalloyd.partnerdb.webservices.impl.KksnWSImpl;
-import de.deltalloyd.partnerdb.webservices.interfaces.IPartnerWebService;
-
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-
-@ApplicationScoped
-@Path("/partnerWeb")
-@Produces(MediaType.APPLICATION_XML)
-@Consumes(MediaType.APPLICATION_XML)
-public class RestApplication3 {
-
-    @Inject
-    IPartnerWebService partnerWebService;
-
-    // -------------------------------------------------------------------------
-    // Partner core CRUD
-    // -------------------------------------------------------------------------
-
-    /**
-     * Load a partner by client + partner number.
-     * POST because the request body carries auth token and multiple filter params.
-     *
-     * GET /partnerWeb/partners/load
-     */
-    @POST
-    @Path("/partners/load")
-    public PartnerTO ladePartner(PartnerLadeDto dto) throws Exception {
-        return partnerWebService.ladePartner(
-                dto.getAuthToken(),
-                dto.isNebendubletteaufloesen(),
-                dto.getKlient(),
-                dto.getPartnernr(),
-                dto.getParameter());
-    }
-
-    /**
-     * Create a new partner.
-     *
-     * POST /partnerWeb/partners
-     */
-    @POST
-    @Path("/partners")
-    public ValidationResult erzeugePartner(ValidatePartnerDto dto) throws Exception {
-        return partnerWebService.erzeugePartner(
-                dto.getAuthToken(),
-                dto.getPartnerTo(),
-                dto.getaParameter());
-    }
-
-    /**
-     * Update an existing partner.
-     *
-     * PUT /partnerWeb/partners
-     */
-    @POST
-    @Path("/partners/update")
-    public void aktualisierePartner(PartnerSaveDto dto) throws Exception {
-        partnerWebService.aktualisierePartner(
-                dto.getAuthToken(),
-                dto.getPartnerTo(),
-                dto.getaParameter());
-    }
-
-    // -------------------------------------------------------------------------
-    // Partner sub-resources
-    // -------------------------------------------------------------------------
-
-    /**
-     * Load the SAP information for a partner.
-     *
-     * POST /partnerWeb/partners/sap
-     */
-    @POST
-    @Path("/partners/sap")
-    public List<String[]> ladeSapPartnerInformation(PartnerLadeDto dto) throws Exception {
-        return partnerWebService.ladeSapPartnerInformation(dto.getPartnernr().toString());
-    }
-
-    /**
-     * Load the postal address of a partner.
-     *
-     * POST /partnerWeb/partners/address/load
-     * (POST because auth token + multiple params are passed in the body)
-     */
-    @POST
-    @Path("/partners/address/load")
-    public PostAdresseTO ladePartnerPostAdresse(LadePartnerPostAdresseDto dto) throws Exception {
-        return partnerWebService.ladePartnerPostAdresse(
-                dto.getAuthToken(),
-                dto.getKlient(),
-                dto.getPartnernr(),
-                dto.getaAnschrnr(),
-                dto.getParameter());
-    }
-
-    /**
-     * Load the bank connection of a partner.
-     *
-     * POST /partnerWeb/partners/bank/load
-     */
-    @POST
-    @Path("/partners/bank/load")
-    public BankVerbindungTO ladePartnerBankverbindung(PartnerbankLade dto) throws Exception {
-        return partnerWebService.ladePartnerBankverbindung(
-                dto.getAuthToken(),
-                dto.getKlient(),
-                dto.getPartnernr(),
-                dto.getBankNr(),
-                dto.getParameter());
-    }
-
-    /**
-     * Load the journal entries for a partner.
-     *
-     * POST /partnerWeb/partners/journal/load
-     */
-    @POST
-    @Path("/partners/journal/load")
-    public List<JournalEintragTO> ladeJournalFuerPartner(PartnerLadeDto dto) throws Exception {
-        return partnerWebService.ladeJournalFuerPartner(
-                dto.getKlient(),
-                dto.getKlient()); // NOTE: verify 2nd arg — likely partnernr in original
-    }
-
-    /**
-     * Load SAP balance sheet data for a partner.
-     *
-     * POST /partnerWeb/partners/balance
-     */
-    @POST
-    @Path("/partners/balance")
-    public PartnerBilanzdaten getbilanzdaten(PartnerLadeDto dto) throws Exception {
-        return partnerWebService.getbilanzdaten(dto.getKlient(), dto.getPartnernr());
-    }
-
-    /**
-     * Get the latest Einzel-VSNR for a partner.
-     *
-     * POST /partnerWeb/partners/vsnr/latest
-     */
-    @POST
-    @Path("/partners/vsnr/latest")
-    public List<EinzelVsnrTO> getNeusteEinzelVsnr(GetNeusteEinzelVsnrDto dto) throws Exception {
-        return partnerWebService.getNeusteEinzelVsnr(
-                dto.getAuthToken(),
-                dto.getMandant(),
-                dto.getOrbart(),
-                dto.getOrb());
-    }
-
-    /**
-     * Create a password for a partner.
-     *
-     * POST /partnerWeb/partners/password
-     */
-    @POST
-    @Path("/partners/password")
-    public List<Object> createPassword(CreatePasswordDto dto) throws Exception {
-        return partnerWebService.createPassword(
-                dto.getAuthToken(),
-                dto.getKlient(),
-                dto.getPartnernr(),
-                dto.getMail());
-    }
-
-    /**
-     * Verify / check a postal address (external address verification service).
-     *
-     * POST /partnerWeb/partners/address/check
-     */
-    @POST
-    @Path("/partners/address/check")
-    public PostPruefAntwortTO pruefePostAdresse(AddressDto dto) throws Exception {
-        return partnerWebService.pruefePostAdresse(
-                (PostAdresseTO) dto.getAdresseTO(),
-                dto.getaParameter());
-    }
-
-    // -------------------------------------------------------------------------
-    // BRS transmission
-    // -------------------------------------------------------------------------
-
-    /**
-     * Update the BRS transmission flag for a partner.
-     *
-     * PUT /partnerWeb/partners/brs
-     */
-    @POST
-    @Path("/partners/brs")
-    public void updateUebertragungBRS(UpdateUebertragungBRSDto dto) throws Exception {
-        partnerWebService.updateUebertragungBRS(
-                dto.getAuthToken(),
-                dto.getKlient(),
-                dto.getPartnernr(),
-                dto.getBrsUebertragung());
-    }
-
-    // -------------------------------------------------------------------------
-    // Duplicate detection
-    // -------------------------------------------------------------------------
-
-    /**
-     * Get the head-duplicate partner number.
-     *
-     * POST /partnerWeb/duplicates/partner
-     */
-    @POST
-    @Path("/duplicates/partner")
-    public long getKopfDublettenPartnerNr(GetKopfDublettenDto dto) throws Exception {
-        return partnerWebService.getKopfDublettenPartnerNr(
-                dto.getKlient(),
-                dto.getPartnernr());
-    }
-
-    /**
-     * Get the head-duplicate address number.
-     *
-     * POST /partnerWeb/duplicates/address
-     */
-    @POST
-    @Path("/duplicates/address")
-    public int getKopfDublettenAdressNr(GetKopfDublettenAdressNrDto dto) throws Exception {
-        return partnerWebService.getKopfDublettenAdressNr(
-                dto.getKlient(),
-                dto.getPartnernr(),
-                dto.getaAdressNr());
-    }
-
-    /**
-     * Get the head-duplicate bank connection number.
-     *
-     * POST /partnerWeb/duplicates/bank
-     */
-    @POST
-    @Path("/duplicates/bank")
-    public int getKopfDublettenBankVerbNr(PartnerbankLade dto) throws Exception {
-        return partnerWebService.getKopfDublettenBankVerbNr(
-                dto.getKlient(),
-                dto.getPartnernr(),
-                dto.getBankNr());
-    }
-
-    // -------------------------------------------------------------------------
-    // Validation
-    // -------------------------------------------------------------------------
-
-    /**
-     * Validate basic partner data (Grunddaten).
-     *
-     * POST /partnerWeb/validate/base-data
-     */
-    @POST
-    @Path("/validate/base-data")
-    public ValidationResult validiereGrunddaten(ValidierePartnerGrunddatenDto dto) throws Exception {
-        return partnerWebService.validiereGrunddaten(
-                dto.getPartnerTo(),
-                dto.getaParameter());
-    }
-
-    /**
-     * Validate cross-cutting partner rules (übergreifend).
-     *
-     * POST /partnerWeb/validate/cross-field
-     */
-    @POST
-    @Path("/validate/cross-field")
-    public ValidationResult validiereUebergreifend(ValidatePartnerDto dto) throws Exception {
-        return partnerWebService.validiereUebergreifend(
-                dto.getPartnerTo(),
-                dto.getaParameter());
-    }
-
-    /**
-     * Validate a partner address.
-     *
-     * POST /partnerWeb/validate/address
-     */
-    @POST
-    @Path("/validate/address")
-    public ValidationResult validiereAdresse(ValidateAddressDto dto) throws Exception {
-        return partnerWebService.validiereAdresse(
-                dto.getPartnerTo(),
-                dto.getAdresseTO(),
-                dto.getaParameter());
-    }
-
-    /**
-     * Validate a partner bank connection.
-     *
-     * POST /partnerWeb/validate/bank
-     */
-    @POST
-    @Path("/validate/bank")
-    public ValidationResult validiereBankverbindung(ValidiereBankverbindungDto dto) throws Exception {
-        return partnerWebService.validiereBankverbindung(
-                dto.getPartnerTo(),
-                dto.getAdresseTO(),
-                dto.getaParameter());
-    }
-
-    // -------------------------------------------------------------------------
-    // Utilities
-    // -------------------------------------------------------------------------
-
-    /**
-     * Reserve a free partner number.
-     *
-     * POST /partnerWeb/partner-numbers/free
-     */
-    @POST
-    @Path("/partner-numbers/free")
-    public long holeFreiePartnerNummer(HoleFreiePartnerNummerDto dto) throws Exception {
-        return partnerWebService.holeFreiePartnerNummer(
-                dto.getAuthToken(),
-                dto.getKlient(),
-                dto.getaParameter());
-    }
-
-    /**
-     * Get the current application release info.
-     *
-     * GET /partnerWeb/system/release
-     */
-    @POST
-    @Path("/system/release")
-    public String getReleaseInfo() {
-        return partnerWebService.getReleaseInfo();
-    }
-
-}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+	xmlns:tr="http://myfaces.apache.org/trinidad"
+	xmlns:trh="http://myfaces.apache.org/trinidad/html">
+	
+	  <af:menuBar>
+        <af:menu text="BQM">
+            <af:commandMenuItem text="Beschwerdebericht anzeigen" 
+                action="${beschwUebersichtVC.beschwerdeAnzeigen}"
+                icon="/resources/images/beschw_anzeigen.gif"/>
+            <af:commandMenuItem text="Beschwerdebericht löschen" 
+            	rendered="#{beschwUebersichtVC.bewerdeManager}"
+            	partialSubmit="true"
+                actionListener="#{beschwUebersichtVC.actionLoeschen}"
+                icon="/resources/images/delete.gif"/>
+    	</af:menu>
+    	<af:menu text="Hilfe">
+			<af:commandMenuItem text="Anzeige Handbuch IMS"
+				windowModalityType="applicationModal" useWindow="true"
+                windowWidth="750" windowHeight="900" partialSubmit="true"
+				action="#{beschwUebersichtVC.openIMSHandbuch}"
+				icon="/resources/images/information.gif" />
+			<af:commandMenuItem text="Anzeige Handbuch KKE"
+				windowModalityType="applicationModal" useWindow="true"
+                windowWidth="750" windowHeight="900" partialSubmit="true"
+				action="#{beschwUebersichtVC.openKKEHandbuch}"
+				icon="/resources/images/information.gif" />
+			<af:commandMenuItem text="Anzeige Handbuch BQM"
+				windowModalityType="applicationModal" useWindow="true"
+                windowWidth="750" windowHeight="900" partialSubmit="true"
+				action="#{beschwUebersichtVC.openBQMHandbuch}"
+				icon="/resources/images/information.gif" />
+			<af:commandMenuItem text="Info"
+				windowModalityType="applicationModal" useWindow="true"
+				windowWidth="200" windowHeight="200" partialSubmit="true"
+				action="#{beschwUebersichtVC.showInfo}"/>
+		</af:menu>
+    </af:menuBar>
+    
+    <ui:remove>Buttons</ui:remove>
+	<af:panelFormLayout id="buttonBarAE" rows="1" fieldWidth="100%">
+		<af:panelGroupLayout layout="horizontal" styleClass="AFStretchWidth">
+			<af:panelGroupLayout layout="horizontal">
+			 <af:commandButton id="cmdAktualisieren"
+                	partialSubmit="true"
+                    inlineStyle="padding-left:2px;padding-right:2px;"
+                    icon="/resources/images/refresh.gif" shortDesc="Aktualisieren"
+                    action="#{beschwUebersichtVC.aktualisieren}">
+                </af:commandButton>
+				<af:commandButton id="cmdBQMAnzeigen"
+					icon="/resources/images/beschw_anzeigen.gif" 
+					shortDesc="Beschwerdebericht anzeigen"
+					inlineStyle="padding-left:2px;padding-right:2px;"
+					action="#{beschwUebersichtVC.beschwerdeAnzeigen}">
+					<f:ajax execute="@this" render="@form" />
+				</af:commandButton>
+				<af:commandButton id="cmdBQMLoeschen"
+					partialSubmit="true"
+					icon="/resources/images/delete.gif" 
+					shortDesc="Beschwerdebericht löschen"
+					inlineStyle="padding-left:2px;padding-right:2px;"
+					rendered="#{beschwUebersichtVC.bewerdeManager}" 
+					actionListener="#{beschwUebersichtVC.actionLoeschen}"/>
+			</af:panelGroupLayout>
+			
+			<af:panelGroupLayout layout="horizontal" halign="right">
+				<af:commandButton icon="/resources/images/akteschliessen.gif" 
+					inlineStyle="padding-left:2px;padding-right:2px;"
+					id="cmdAkteVerlassen" accessKey="V" shortDesc="Beschwerdeübersicht schlie&#223;en"
+					action="#{beschwUebersichtVC.schliessen}">
+				</af:commandButton>
+			</af:panelGroupLayout>
+		</af:panelGroupLayout>
+	</af:panelFormLayout>
+			
+	<tr:panelCaptionGroup captionText="Filter">
+		<af:panelGroupLayout layout="horizontal">
+			<af:outputLabel value="Jahr:"/>
+			<af:selectOneChoice id="selJahr" immediate="true" autoSubmit="true"
+				value="#{beschwUebersichtVC.beschwUebersichtModell.filter.jahr}">
+				<f:selectItems id="jahrItems"
+					value="#{beschwUebersichtVC.beschwUebersichtModell.jahrItems}"/>
+			</af:selectOneChoice>
+			
+			<af:outputLabel value="Status:"/>
+			<af:selectOneChoice id="selStatus" immediate="true" autoSubmit="true"
+				value="#{beschwUebersichtVC.beschwUebersichtModell.filter.status}">
+				<f:selectItems id="statusItems"
+					value="#{beschwUebersichtVC.beschwUebersichtModell.statusItems}"/>
+			</af:selectOneChoice>
+			
+			<af:outputLabel value="Art:"/>
+			<af:selectOneChoice id="selArt" immediate="true" autoSubmit="true"
+				value="#{beschwUebersichtVC.beschwUebersichtModell.filter.art}">
+				<f:selectItems id="artItems"
+					value="#{beschwUebersichtVC.beschwUebersichtModell.artItems}"/>
+			</af:selectOneChoice>
+			
+			<af:outputLabel value="Bereich:"/>
+			<af:selectOneChoice id="selBereich" immediate="true" autoSubmit="true"
+				value="#{beschwUebersichtVC.beschwUebersichtModell.filter.bereich}">
+				<f:selectItems id="bereichItems"
+					value="#{beschwUebersichtVC.beschwUebersichtModell.bereichItems}"/>
+			</af:selectOneChoice>
+		</af:panelGroupLayout>
+	</tr:panelCaptionGroup>
+	
+	 <af:spacer height="10pt"/>
+			
+	<af:panelGroupLayout layout="vertical">
+	<af:table id="tabAlleEintraege" var="eintrag" 
+		rowSelection="single" inlineStyle="height:#{beschwUebersichtVC.beschwUebersichtModell.heightTable}px;"
+		value="#{beschwUebersichtVC.beschwUebersichtModell.beschwerden}"
+		rowBandingInterval="0" emptyText="Keine Eintr&#228;ge vorhanden."
+		selectedRowKeys="#{beschwUebersichtVC.beschwUebersichtModell.eintraegeRowKeySet}"
+		selectionListener="#{beschwUebersichtVC.selectEintraege}"
+		styleClass="AFStretchWidth"
+		binding="#{beschwUebersichtVC.eintraegeTable}"
+		displayRow="selected" contentDelivery="immediate" 
+		fetchSize="#{beschwUebersichtVC.fetchSizeTable}"
+				disableColumnReordering="true">
+				
+		<af:clientListener type="dblClick" method="dblClickBeschwerde" />
+		<af:clientListener type="load" method="rewriteAdfSetFocusOnEditableElementInNode" />
+		<af:column headerText="Jahr" noWrap="true" sortProperty="jahr"
+			sortable="false" width="50px" headerClass="imsTableHeader"
+			styleClass="imsTableData">
+			<af:outputText value="#{eintrag.eingangDat}" converter="JahrConverter"/>
+		</af:column>
+		<af:column headerText="Nummer" noWrap="true" sortProperty="nummer"
+			sortable="false" width="80px" headerClass="imsTableHeader"
+			styleClass="imsTableData">
+			<af:outputText value="#{eintrag.nummer}"/>
+		</af:column>
+		<af:column headerText="Eingang" sortProperty="eingangDat"
+			sortable="false" headerNoWrap="true" noWrap="true" width="105px"
+			headerClass="imsTableHeader" styleClass="imsTableData">
+			<af:outputFormatted value="#{eintrag.eingangDat}" converter="DatumKurz" />
+		</af:column>
+		<af:column headerText="Art" noWrap="true"
+			sortProperty="art" sortable="false"
+			headerClass="imsTableHeader" styleClass="imsTableData" width="155px">
+			<af:outputText value="#{eintrag.beschwArtKurzText}"
+				shortDesc="#{eintrag.beschwArtSchl}: #{eintrag.beschwArtLangText}" />
+		</af:column>
+		<af:column headerText="Status" sortProperty="status"
+			sortable="false" headerNoWrap="true" noWrap="true" width="65px"
+			headerClass="imsTableHeader" styleClass="imsTableData">
+			<af:outputText value="#{eintrag.beschwStatusKurzText}"
+				shortDesc="#{eintrag.beschwStatus}: #{eintrag.beschwStatusLangText}" />
+		</af:column>
+		<af:column headerText="Bearbeiter" noWrap="true" sortProperty="bearbeiter"
+			sortable="false" headerClass="imsTableHeader"
+			styleClass="imsTableData" width="100px">
+			<af:outputText value="#{eintrag.verantwortlKurzText}"
+				shortDesc="#{eintrag.verantwortlUserid}: #{eintrag.verantwortlName}" />
+		</af:column>
+		<af:column headerText="MA" noWrap="true"
+			sortProperty="mandant" sortable="false" width="54px"
+			headerClass="imsTableHeader" styleClass="imsTableData">
+			<af:outputText value="#{eintrag.mandantKurzText}" 
+				shortDesc="#{eintrag.mandant}: #{eintrag.mandantLangText}"/>
+		</af:column>
+		<af:column headerText="ORB-Art" noWrap="true"
+			sortProperty="orbart" sortable="false" width="70px"
+			headerClass="imsTableHeader" styleClass="imsTableData">
+			<af:outputText value="#{eintrag.orbartKurzText}" 
+				shortDesc="#{eintrag.orbart}: #{eintrag.orbartLangText}"/>
+		</af:column>
+		<af:column headerText="ORB" noWrap="true"
+			sortProperty="orb" sortable="false" width="120px"
+			headerClass="imsTableHeader" styleClass="imsTableData">
+			<af:outputText value="#{eintrag.orb}" />
+		</af:column>
+		<af:column headerText="Erfasser" noWrap="true" sortProperty="erfasser"
+			sortable="false" headerClass="imsTableHeader"
+			styleClass="imsTableData" width="100px">
+			<af:outputText value="#{eintrag.erfasserKurzText}" 
+				shortDesc="#{eintrag.erfasserUserid}: #{eintrag.erfasserName}"/>
+		</af:column>
+		<af:column headerText="Bereich" sortProperty="bereich" sortable="false"
+			width="100px" headerClass="imsTableHeader" styleClass="imsTableData">
+			<af:outputText value="#{eintrag.bereichKurzText}" 
+				shortDesc="#{eintrag.bereichSchl}: #{eintrag.bereichLangText}" />
+		</af:column>
+	</af:table>
+	</af:panelGroupLayout>
+	
+	 <af:popup id="sicherheitsabfrage" binding="#{beschwUebersichtVC.sicherheitsabfragePopup}">
+         <af:dialog okVisible="false" cancelVisible="false" modal="true" title="Sind Sie sicher?">
+                <af:panelGroupLayout layout="vertical">
+                 <af:outputFormatted value="Der Beschwerdebericht Nr #{beschwUebersichtVC.beschwUebersichtModell.selBeschwerde.nummer} soll gelöscht werden?"/>
+                 <af:panelGroupLayout layout="horizontal">
+                    <af:commandButton text="Ja" action="#{beschwUebersichtVC.beschwerdeLoeschen}">
+                    	<f:ajax execute="@this" render="@form" />
+                    </af:commandButton>
+                    	<af:commandButton text="Nein" action="#{beschwUebersichtVC.doNothing}">
+                    <f:ajax execute="@this" render="@form" />
+                    </af:commandButton>
+                 </af:panelGroupLayout>
+             </af:panelGroupLayout>
+              
+            </af:dialog>
+        </af:popup>								
+</div>
