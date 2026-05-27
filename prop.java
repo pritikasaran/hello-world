@@ -18,10 +18,10 @@ import de.deltalloyd.partnerdb.core.type.PartnerGemeinschaftGrunddatenTO;
 import de.deltalloyd.partnerdb.core.type.PartnerGemeinschaftTO;
 import de.deltalloyd.partnerdb.orb.impl.OrbServiceEJB;
 import de.deltalloyd.partnerdb.orb.service.type.FunktionServiceTO;
+import de.deltalloyd.partnerdb.orb.service.type.OrdnungsbegriffServiceTO;
 import de.deltalloyd.partnerdb.orb.type.FunktionTO;
 import de.deltalloyd.partnerdb.orb.type.OrdnungsbegriffSuchTO;
 import de.deltalloyd.partnerdb.orb.type.OrdnungsbegriffTO;
-import de.deltalloyd.partnerdb.orb.service.type.OrdnungsbegriffServiceTO;
 import de.deltalloyd.partnerdb.security.profiles.PdbBerechtigungen;
 import de.deltalloyd.partnerdb.webservices.exception.PDBException;
 import de.deltalloyd.partnerdb.webservices.exception.PartnerWebServiceException;
@@ -33,34 +33,71 @@ import de.deltalloyd.partnerdb.webservices.utils.PDBReleaseInfo;
 public class OrbService extends AbstractWebService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrbService.class);
-    private static final String VIPMITARBEITER = "1";
 
     @EJB
     private OrbServiceEJB orbServiceLocal;
 
-    public OrdnungsbegriffTO sucheOrdnungsbegriff(String authToken, String orbArtSchluessel,
+    public OrdnungsbegriffTO sucheOrdnungsbegriffService(String authToken, String orbArtSchluessel,
             String funkArtSchluessel, Integer aMandant, String aParameter) throws PartnerWebServiceException {
         try {
-            LOGGER.debug("sucheOrdnungsbegriffService:Aufruf> orbArtSchluessel: {}, funkArtSchluessel: {}, aMandant: {}",
-                    orbArtSchluessel, funkArtSchluessel, aMandant);
-
+            LOGGER.debug("sucheOrdnungsbegriffService:Aufruf> orbArtSchluessel: " + orbArtSchluessel
+                    + ", funkArtSchluessel: " + funkArtSchluessel + ", aMandant:" + aMandant);
             getSSTSecurityToken().isAllowed(authToken, PdbBerechtigungen.PDB_LESEN);
 
-            OrdnungsbegriffSuchTO suchTO = buildSuchTO(orbArtSchluessel, funkArtSchluessel, aMandant);
-            OrdnungsbegriffTO result = orbServiceLocal.sucheOrdnungsbegriff(suchTO);
+            OrdnungsbegriffSuchTO ordnungsbegriffSuchTO = new OrdnungsbegriffSuchTO();
+            ordnungsbegriffSuchTO.setOrbartSchluessel(orbArtSchluessel);
+            ordnungsbegriffSuchTO.setOrbMandant(aMandant);
+            ordnungsbegriffSuchTO.setOrbSchluessel(funkArtSchluessel);
 
-            if (result == null) {
-                LOGGER.error("sucheOrdnungsbegriffService: {},{},{} :ORB nicht gefunden",
-                        orbArtSchluessel, funkArtSchluessel, aMandant);
+            OrdnungsbegriffTO ordnungsbegriffTO = orbServiceLocal.sucheOrdnungsbegriff(ordnungsbegriffSuchTO);
+
+            if (ordnungsbegriffTO == null) {
+                LOGGER.error("sucheOrdnungsbegriffService:" + orbArtSchluessel + "," + funkArtSchluessel + ","
+                        + aMandant + ":ORB nicht gefunden");
                 throw new PartnerWebServiceException(
                         new PDBException(PDBException.DATENFEHLER, "ORB wurde nicht gefunden.", null));
             }
 
-            if (!hasVipBerechtigung(authToken)) {
-                maskVipPartner(result);
+            boolean bVIPBerechtigung = false;
+            try {
+                bVIPBerechtigung = getSSTSecurityToken().isAllowed(authToken, PdbBerechtigungen.DLD_PDB_MITARB);
+            } catch (Exception e) {
             }
 
-            return result;
+            if (bVIPBerechtigung == false) {
+                final String VIPMITARBEITER = "1";
+                for (FunktionTO funktionTO : ordnungsbegriffTO.getFunktionen()) {
+                    String vipKZ = funktionTO.getPartnerTO().getGrunddaten().getVipKennzeichen();
+                    if ((vipKZ != null) && (vipKZ.trim().equals(VIPMITARBEITER))) {
+                        long partnerNr = funktionTO.getPartnerTO().getGrunddaten().getPartnerNr();
+                        int klient = funktionTO.getPartnerTO().getGrunddaten().getKlient();
+                        if (funktionTO.getPartnerTO() instanceof NatuerlichePersonTO) {
+                            funktionTO.setPartnerTO(new NatuerlichePersonTO());
+                            funktionTO.getPartnerTO().setPartnerTyp("1");
+                            funktionTO.getPartnerTO().setGrunddaten(new NatuerlichePersonGrunddatenTO());
+                            funktionTO.getPartnerTO().getGrunddaten().setPartnerNr(partnerNr);
+                            funktionTO.getPartnerTO().getGrunddaten().setKlient(klient);
+                            funktionTO.getPartnerTO().getGrunddaten().setVipKennzeichen(VIPMITARBEITER);
+                        } else if (funktionTO.getPartnerTO() instanceof NichtNatuerlichePersonTO) {
+                            funktionTO.setPartnerTO(new NichtNatuerlichePersonTO());
+                            funktionTO.getPartnerTO().setPartnerTyp("2");
+                            funktionTO.getPartnerTO().setGrunddaten(new NichtNatuerlichePersonGrunddatenTO());
+                            funktionTO.getPartnerTO().getGrunddaten().setPartnerNr(partnerNr);
+                            funktionTO.getPartnerTO().getGrunddaten().setKlient(klient);
+                            funktionTO.getPartnerTO().getGrunddaten().setVipKennzeichen(VIPMITARBEITER);
+                        } else if (funktionTO.getPartnerTO() instanceof PartnerGemeinschaftTO) {
+                            funktionTO.setPartnerTO(new PartnerGemeinschaftTO());
+                            funktionTO.getPartnerTO().setPartnerTyp("3");
+                            funktionTO.getPartnerTO().setGrunddaten(new PartnerGemeinschaftGrunddatenTO());
+                            funktionTO.getPartnerTO().getGrunddaten().setPartnerNr(partnerNr);
+                            funktionTO.getPartnerTO().getGrunddaten().setKlient(klient);
+                            funktionTO.getPartnerTO().getGrunddaten().setVipKennzeichen(VIPMITARBEITER);
+                        }
+                    }
+                }
+            }
+
+            return ordnungsbegriffTO;
 
         } catch (STSException e) {
             LOGGER.error(e.getMessage(), e);
@@ -73,37 +110,73 @@ public class OrbService extends AbstractWebService {
             LOGGER.error(e.getMessage());
             throw new PartnerWebServiceException(
                     new PDBException(PDBException.AbstractCheckedSystemException, e.getMessage(), e.getUuid()));
-        } catch (PartnerWebServiceException e) {
-            throw e;
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             throw new PartnerWebServiceException(new PDBException(PDBException.SONSTIGEFEHLER, e.getMessage(), null));
         }
     }
 
-    public OrdnungsbegriffServiceTO sucheOrdnungsbegriffFull(String authToken, String orbArtSchluessel,
+    public OrdnungsbegriffServiceTO sucheOrdnungsbegriffServiceFull(String authToken, String orbArtSchluessel,
             String funkArtSchluessel, Integer aMandant, String aParameter) throws PartnerWebServiceException {
         try {
-            LOGGER.debug("sucheOrdnungsbegriffServiceFull:Aufruf> orbArtSchluessel: {}, funkArtSchluessel: {}, aMandant: {}",
-                    orbArtSchluessel, funkArtSchluessel, aMandant);
-
+            LOGGER.debug("sucheOrdnungsbegriffService:Aufruf> orbArtSchluessel: " + orbArtSchluessel
+                    + ", funkArtSchluessel: " + funkArtSchluessel + ", aMandant:" + aMandant);
             getSSTSecurityToken().isAllowed(authToken, PdbBerechtigungen.PDB_LESEN);
 
-            OrdnungsbegriffSuchTO suchTO = buildSuchTO(orbArtSchluessel, funkArtSchluessel, aMandant);
-            OrdnungsbegriffServiceTO result = orbServiceLocal.sucheOrdnungsbegriffFull(suchTO);
+            OrdnungsbegriffSuchTO ordnungsbegriffSuchTO = new OrdnungsbegriffSuchTO();
+            ordnungsbegriffSuchTO.setOrbartSchluessel(orbArtSchluessel);
+            ordnungsbegriffSuchTO.setOrbMandant(aMandant);
+            ordnungsbegriffSuchTO.setOrbSchluessel(funkArtSchluessel);
 
-            if (result == null) {
-                LOGGER.error("sucheOrdnungsbegriffServiceFull: {},{},{} :ORB nicht gefunden",
-                        orbArtSchluessel, funkArtSchluessel, aMandant);
+            OrdnungsbegriffServiceTO ordnungsbegriffTO = orbServiceLocal.sucheOrdnungsbegriffFull(ordnungsbegriffSuchTO);
+
+            if (ordnungsbegriffTO == null) {
+                LOGGER.error("sucheOrdnungsbegriffService:" + orbArtSchluessel + "," + funkArtSchluessel + ","
+                        + aMandant + ":ORB nicht gefunden");
                 throw new PartnerWebServiceException(
                         new PDBException(PDBException.DATENFEHLER, "ORB wurde nicht gefunden.", null));
             }
 
-            if (!hasVipBerechtigung(authToken)) {
-                maskVipPartnerFull(result);
+            boolean bVIPBerechtigung = false;
+            try {
+                bVIPBerechtigung = getSSTSecurityToken().isAllowed(authToken, PdbBerechtigungen.DLD_PDB_MITARB);
+            } catch (Exception e) {
             }
 
-            return result;
+            if (bVIPBerechtigung == false) {
+                final String VIPMITARBEITER = "1";
+                for (FunktionServiceTO funktionTO : ordnungsbegriffTO.getFunktionen()) {
+                    String vipKZ = funktionTO.getPartnerTO().getGrunddaten().getVipKennzeichen();
+                    if ((vipKZ != null) && (vipKZ.trim().equals(VIPMITARBEITER))) {
+                        long partnerNr = funktionTO.getPartnerTO().getGrunddaten().getPartnerNr();
+                        int klient = funktionTO.getPartnerTO().getGrunddaten().getKlient();
+                        if (funktionTO.getPartnerTO() instanceof NatuerlichePersonTO) {
+                            funktionTO.setPartnerTO(new NatuerlichePersonTO());
+                            funktionTO.getPartnerTO().setPartnerTyp("1");
+                            funktionTO.getPartnerTO().setGrunddaten(new NatuerlichePersonGrunddatenTO());
+                            funktionTO.getPartnerTO().getGrunddaten().setPartnerNr(partnerNr);
+                            funktionTO.getPartnerTO().getGrunddaten().setKlient(klient);
+                            funktionTO.getPartnerTO().getGrunddaten().setVipKennzeichen(VIPMITARBEITER);
+                        } else if (funktionTO.getPartnerTO() instanceof NichtNatuerlichePersonTO) {
+                            funktionTO.setPartnerTO(new NichtNatuerlichePersonTO());
+                            funktionTO.getPartnerTO().setPartnerTyp("2");
+                            funktionTO.getPartnerTO().setGrunddaten(new NichtNatuerlichePersonGrunddatenTO());
+                            funktionTO.getPartnerTO().getGrunddaten().setPartnerNr(partnerNr);
+                            funktionTO.getPartnerTO().getGrunddaten().setKlient(klient);
+                            funktionTO.getPartnerTO().getGrunddaten().setVipKennzeichen(VIPMITARBEITER);
+                        } else if (funktionTO.getPartnerTO() instanceof PartnerGemeinschaftTO) {
+                            funktionTO.setPartnerTO(new PartnerGemeinschaftTO());
+                            funktionTO.getPartnerTO().setPartnerTyp("3");
+                            funktionTO.getPartnerTO().setGrunddaten(new PartnerGemeinschaftGrunddatenTO());
+                            funktionTO.getPartnerTO().getGrunddaten().setPartnerNr(partnerNr);
+                            funktionTO.getPartnerTO().getGrunddaten().setKlient(klient);
+                            funktionTO.getPartnerTO().getGrunddaten().setVipKennzeichen(VIPMITARBEITER);
+                        }
+                    }
+                }
+            }
+
+            return ordnungsbegriffTO;
 
         } catch (STSException e) {
             LOGGER.error(e.getMessage(), e);
@@ -116,8 +189,6 @@ public class OrbService extends AbstractWebService {
             LOGGER.error(e.getMessage());
             throw new PartnerWebServiceException(
                     new PDBException(PDBException.AbstractCheckedSystemException, e.getMessage(), e.getUuid()));
-        } catch (PartnerWebServiceException e) {
-            throw e;
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             throw new PartnerWebServiceException(new PDBException(PDBException.SONSTIGEFEHLER, e.getMessage(), null));
@@ -126,64 +197,5 @@ public class OrbService extends AbstractWebService {
 
     public String getReleaseInfo() {
         return PDBReleaseInfo.getReleaseInfo();
-    }
-
-    // ── private helpers ────────────────────────────────────────────────────────
-
-    private OrdnungsbegriffSuchTO buildSuchTO(String orbArtSchluessel, String funkArtSchluessel, Integer aMandant) {
-        OrdnungsbegriffSuchTO suchTO = new OrdnungsbegriffSuchTO();
-        suchTO.setOrbartSchluessel(orbArtSchluessel);
-        suchTO.setOrbMandant(aMandant);
-        suchTO.setOrbSchluessel(funkArtSchluessel);
-        return suchTO;
-    }
-
-    private boolean hasVipBerechtigung(String authToken) {
-        try {
-            return getSSTSecurityToken().isAllowed(authToken, PdbBerechtigungen.DLD_PDB_MITARB);
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private void maskVipPartner(OrdnungsbegriffTO result) {
-        for (FunktionTO funktionTO : result.getFunktionen()) {
-            String vipKZ = funktionTO.getPartnerTO().getGrunddaten().getVipKennzeichen();
-            if (VIPMITARBEITER.equals(vipKZ != null ? vipKZ.trim() : null)) {
-                long partnerNr = funktionTO.getPartnerTO().getGrunddaten().getPartnerNr();
-                int klient = funktionTO.getPartnerTO().getGrunddaten().getKlient();
-                replaceWithMaskedPartner(funktionTO, partnerNr, klient);
-            }
-        }
-    }
-
-    private void maskVipPartnerFull(OrdnungsbegriffServiceTO result) {
-        for (FunktionServiceTO funktionTO : result.getFunktionen()) {
-            String vipKZ = funktionTO.getPartnerTO().getGrunddaten().getVipKennzeichen();
-            if (VIPMITARBEITER.equals(vipKZ != null ? vipKZ.trim() : null)) {
-                long partnerNr = funktionTO.getPartnerTO().getGrunddaten().getPartnerNr();
-                int klient = funktionTO.getPartnerTO().getGrunddaten().getKlient();
-                replaceWithMaskedPartner(funktionTO, partnerNr, klient);
-            }
-        }
-    }
-
-    private void replaceWithMaskedPartner(FunktionTO funktionTO, long partnerNr, int klient) {
-        if (funktionTO.getPartnerTO() instanceof NatuerlichePersonTO) {
-            funktionTO.setPartnerTO(new NatuerlichePersonTO());
-            funktionTO.getPartnerTO().setPartnerTyp("1");
-            funktionTO.getPartnerTO().setGrunddaten(new NatuerlichePersonGrunddatenTO());
-        } else if (funktionTO.getPartnerTO() instanceof NichtNatuerlichePersonTO) {
-            funktionTO.setPartnerTO(new NichtNatuerlichePersonTO());
-            funktionTO.getPartnerTO().setPartnerTyp("2");
-            funktionTO.getPartnerTO().setGrunddaten(new NichtNatuerlichePersonGrunddatenTO());
-        } else if (funktionTO.getPartnerTO() instanceof PartnerGemeinschaftTO) {
-            funktionTO.setPartnerTO(new PartnerGemeinschaftTO());
-            funktionTO.getPartnerTO().setPartnerTyp("3");
-            funktionTO.getPartnerTO().setGrunddaten(new PartnerGemeinschaftGrunddatenTO());
-        }
-        funktionTO.getPartnerTO().getGrunddaten().setPartnerNr(partnerNr);
-        funktionTO.getPartnerTO().getGrunddaten().setKlient(klient);
-        funktionTO.getPartnerTO().getGrunddaten().setVipKennzeichen(VIPMITARBEITER);
     }
 }
