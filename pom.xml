@@ -4,18 +4,18 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "findAxaPartnerByExterneReferenz")
+@XmlRootElement(name = "checkIfADMAOrbFuerAxaMaklerExists")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class FindAxaPartnerRequestDto {
+public class CheckADMAOrbRequestDto {
 
     private String authToken;
-    private String externeReferenz;
+    private String admaSchluessel;
 
-    public FindAxaPartnerRequestDto() {}
+    public CheckADMAOrbRequestDto() {}
 
     public String getAuthToken() { return authToken; }
     public void setAuthToken(String authToken) { this.authToken = authToken; }
 
-    public String getExterneReferenz() { return externeReferenz; }
-    public void setExterneReferenz(String externeReferenz) { this.externeReferenz = externeReferenz; }
+    public String getAdmaSchluessel() { return admaSchluessel; }
+    public void setAdmaSchluessel(String admaSchluessel) { this.admaSchluessel = admaSchluessel; }
 }
