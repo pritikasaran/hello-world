@@ -1,37 +1,69 @@
-package de.deltalloyd.partnerdb.rest.DTO;
+package de.deltalloyd.partnerdb.webservices.impl;
 
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
+import java.util.List;
 
-/**
- * DTO for sucheOrdnungsbegriffService and sucheOrdnungsbegriffServiceFull.
- * Both methods share identical parameters so one DTO covers both endpoints.
- */
-@XmlRootElement(name = "sucheOrdnungsbegriff")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class SucheOrdnungsbegriffDto {
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
 
-    private String authToken;
-    private String orbArtSchluessel;
-    private String funkArtSchluessel;
-    private Integer aMandant;
-    private String aParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    public SucheOrdnungsbegriffDto() {}
+import de.deltalloyd.foundation.exception.AbstractCheckedSystemException;
+import de.deltalloyd.partnerdb.core.service.AxaMaklerService;
+import de.deltalloyd.partnerdb.security.profiles.PdbBerechtigungen;
+import de.deltalloyd.partnerdb.security.services.SecurityTokenSevice;
+import de.deltalloyd.partnerdb.webservices.exception.PDBException;
+import de.deltalloyd.partnerdb.webservices.exception.PartnerWebServiceException;
+import de.deltalloyd.partnerdb.webservices.utils.PDBReleaseInfo;
 
-    public String getAuthToken() { return authToken; }
-    public void setAuthToken(String authToken) { this.authToken = authToken; }
+@Stateless
+public class AxaMaklerWebServiceDelegate {
 
-    public String getOrbArtSchluessel() { return orbArtSchluessel; }
-    public void setOrbArtSchluessel(String orbArtSchluessel) { this.orbArtSchluessel = orbArtSchluessel; }
+    private static final Logger LOGGER = LoggerFactory.getLogger(AxaMaklerWebServiceDelegate.class);
 
-    public String getFunkArtSchluessel() { return funkArtSchluessel; }
-    public void setFunkArtSchluessel(String funkArtSchluessel) { this.funkArtSchluessel = funkArtSchluessel; }
+    @EJB
+    private AxaMaklerService axaMaklerService;
 
-    public Integer getaMandant() { return aMandant; }
-    public void setaMandant(Integer aMandant) { this.aMandant = aMandant; }
+    @EJB
+    private SecurityTokenSevice sts;
 
-    public String getaParameter() { return aParameter; }
-    public void setaParameter(String aParameter) { this.aParameter = aParameter; }
+    public List<Long> findAxaPartnerByExterneReferenz(final String authToken, String externeReferenz)
+            throws PartnerWebServiceException {
+        try {
+            sts.isAllowed(authToken, PdbBerechtigungen.PDB_LESEN);
+        } catch (AbstractCheckedSystemException e) {
+            throw new PartnerWebServiceException(
+                    new PDBException(PDBException.AbstractCheckedSystemException, e.getMessage(), e.getUuid()));
+        }
+        return axaMaklerService.findAxaPartnerByExterneReferenz(externeReferenz);
+    }
+
+    public Boolean checkIfADMAOrbFuerAxaMaklerExists(final String authToken, String admaSchluessel)
+            throws PartnerWebServiceException {
+        try {
+            sts.isAllowed(authToken, PdbBerechtigungen.PDB_LESEN);
+        } catch (AbstractCheckedSystemException e) {
+            throw new PartnerWebServiceException(
+                    new PDBException(PDBException.AbstractCheckedSystemException, e.getMessage(), e.getUuid()));
+        }
+        return axaMaklerService.checkIfADMAOrbFuerAxaMaklerExists(admaSchluessel);
+    }
+
+    public Boolean erzeugeADMAOrbFuerAxaMakler(final String authToken, Long partnerNr)
+            throws PartnerWebServiceException {
+        boolean result = false;
+        try {
+            sts.isAllowed(authToken, PdbBerechtigungen.PDB_LESEN);
+            LOGGER.debug("erzeugeADMAOrbFuerAxaMakler with partnerNr: {}", partnerNr);
+            result = axaMaklerService.erzeugeADMAOrbFuerAxaMakler(partnerNr);
+        } catch (AbstractCheckedSystemException e) {
+            throw new PartnerWebServiceException(
+                    new PDBException(PDBException.AbstractCheckedSystemException, e.getMessage(), e.getUuid()));
+        }
+        return result;
+    }
+
+    public String getReleaseInfo() {
+        return PDBReleaseInfo.getReleaseInfo();
+    }
 }
