@@ -4,18 +4,18 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "checkIfADMAOrbFuerAxaMaklerExists")
+@XmlRootElement(name = "erzeugeADMAOrbFuerAxaMakler")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CheckADMAOrbRequestDto {
+public class ErzeugeADMAOrbRequestDto {
 
     private String authToken;
-    private String admaSchluessel;
+    private Long partnerNr;
 
-    public CheckADMAOrbRequestDto() {}
+    public ErzeugeADMAOrbRequestDto() {}
 
     public String getAuthToken() { return authToken; }
     public void setAuthToken(String authToken) { this.authToken = authToken; }
 
-    public String getAdmaSchluessel() { return admaSchluessel; }
-    public void setAdmaSchluessel(String admaSchluessel) { this.admaSchluessel = admaSchluessel; }
+    public Long getPartnerNr() { return partnerNr; }
+    public void setPartnerNr(Long partnerNr) { this.partnerNr = partnerNr; }
 }
