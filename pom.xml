@@ -1,21 +1,20 @@
-package de.deltalloyd.partnerdb.rest.dto;
+@GET
+@Path("/findByExterneReferenz")
+public List<Long> findAxaPartnerByExterneReferenz(FindAxaPartnerRequestDto dto) 
+        throws PartnerWebServiceException {
+    return axaMaklerService.findAxaPartnerByExterneReferenz(dto.getAuthToken(), dto.getExterneReferenz());
+}
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlRootElement;
+@GET
+@Path("/checkADMAOrb")
+public Boolean checkIfADMAOrbFuerAxaMaklerExists(CheckADMAOrbRequestDto dto) 
+        throws PartnerWebServiceException {
+    return axaMaklerService.checkIfADMAOrbFuerAxaMaklerExists(dto.getAuthToken(), dto.getAdmaSchluessel());
+}
 
-@XmlRootElement(name = "erzeugeADMAOrbFuerAxaMakler")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class ErzeugeADMAOrbRequestDto {
-
-    private String authToken;
-    private Long partnerNr;
-
-    public ErzeugeADMAOrbRequestDto() {}
-
-    public String getAuthToken() { return authToken; }
-    public void setAuthToken(String authToken) { this.authToken = authToken; }
-
-    public Long getPartnerNr() { return partnerNr; }
-    public void setPartnerNr(Long partnerNr) { this.partnerNr = partnerNr; }
+@POST
+@Path("/erzeugeADMAOrb")
+public Boolean erzeugeADMAOrbFuerAxaMakler(ErzeugeADMAOrbRequestDto dto) 
+        throws PartnerWebServiceException {
+    return axaMaklerService.erzeugeADMAOrbFuerAxaMakler(dto.getAuthToken(), dto.getPartnerNr());
 }
