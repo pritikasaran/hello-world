@@ -1,20 +1,176 @@
-@GET
-@Path("/findByExterneReferenz")
-public List<Long> findAxaPartnerByExterneReferenz(FindAxaPartnerRequestDto dto) 
-        throws PartnerWebServiceException {
-    return axaMaklerService.findAxaPartnerByExterneReferenz(dto.getAuthToken(), dto.getExterneReferenz());
-}
+package de.deltalloyd.sst.sts.base;
 
-@GET
-@Path("/checkADMAOrb")
-public Boolean checkIfADMAOrbFuerAxaMaklerExists(CheckADMAOrbRequestDto dto) 
-        throws PartnerWebServiceException {
-    return axaMaklerService.checkIfADMAOrbFuerAxaMaklerExists(dto.getAuthToken(), dto.getAdmaSchluessel());
-}
+import jakarta.jws.WebParam;
+import jakarta.jws.WebService;
 
-@POST
-@Path("/erzeugeADMAOrb")
-public Boolean erzeugeADMAOrbFuerAxaMakler(ErzeugeADMAOrbRequestDto dto) 
-        throws PartnerWebServiceException {
-    return axaMaklerService.erzeugeADMAOrbFuerAxaMakler(dto.getAuthToken(), dto.getPartnerNr());
+/**
+ * Generische Schnittstelle zu einem Authentifizierungs- udn
+ * Authorisiserungs-System. Die Schnittstelel geht davon aus, dass alle Systeme
+ * einen String als eindeutigen Token generieren, der zur User-Idebtifikation
+ * und Zugrifssvalidierung dient.
+ * 
+ * Diese Schicht dient zur Abtraktion von dem derzeit in der DLD verwendeten
+ * System AccessManager / OpenSSO.
+ * 
+ * Um in Zukunft evtl. auch andere Systeme bedienen zu k�nnen wurde die Die
+ * Schnittstelle wurde dabei bewusst schlank gehalten udn nur auf das n�tigste
+ * Minimum reduziert.
+ * 
+ * @author Rene Hoffmann / ITL-CRM
+ * @date 02.09.2010
+ */
+@WebService(name = "SecurityTokenService", serviceName = "SecurityTokenService", targetNamespace = "http://service.sts.sst.deltalloyd.de/")
+public interface SecurityTokenService {
+
+	/**
+	 * definiert die eindeztigen Bezzeichner zum Zugriff auf spezielle
+	 * User-Attribute
+	 */
+	public enum UserAttribute {
+	UID, GIVENNAME, SURNAME, MAIL
+	}
+
+	public static final String PROVIDER = "PROVIDER";
+	public static final String STS_WSDL_URL = "STS_WSDL_URL";
+	public static final String PARAM_AUTH_TOKEN_NAME = "authToken";
+	public static final String PARAM_USER_ID = "user_id";
+	public static final String PARAM_PW = "pw";
+	public static final String PARAM_ATTRIBUTE = "attribute";
+
+	/**
+	 * meldet einen Benutzer an SessionSystem an
+	 * 
+	 * @return eine Zeichenkette als eindeutiges Session-Token, sofern die Anmeldung
+	 *         erfolgreich war
+	 * @throws SecurityTokenServiceException
+	 *             in allen anderen Faellen
+	 */
+	public String login(@WebParam(name = PARAM_USER_ID) String userId, @WebParam(name = PARAM_PW) String pw)
+			throws SecurityTokenServiceException;
+
+	/**
+	 * meldet einen Benutzer an SessionSystem an
+	 * 
+	 * @return eine Zeichenkette als eindeutiges Session-Token, sofern die Anmeldung
+	 *         erfolgreich war
+	 * @throws SecurityTokenServiceException
+	 *             in allen anderen Faellen
+	 */
+	public String loginWithSessionTimeout(@WebParam(name = PARAM_USER_ID) String userId,
+			@WebParam(name = PARAM_PW) String pw,
+			@WebParam(name = "session_timeout_seconds") long sessionTimeoutSeconds)
+			throws SecurityTokenServiceException;
+
+	/**
+	 * meldet einen Benutzer an Session-System ab. In Folge ist das Token nicht mehr
+	 * g�ltig.
+	 * 
+	 * @param authToken
+	 *            g�ltiges Token
+	 * @throws SecurityTokenServiceException
+	 *             falls eine Abmeldung nicht m�glich ist
+	 */
+	public void logout(@WebParam(name = PARAM_AUTH_TOKEN_NAME) String authToken) throws SecurityTokenServiceException;
+
+	/**
+	 * Liefert rest Lebenstadauer von Token in sekunden oder 0 wenn token ist
+	 * invalid. Token Lebensdauer wird nicht verlängert beim aufruf
+	 * 
+	 * @param authToken
+	 *            String
+	 * @return long Lebensdauer in sek.
+	 */
+	public long getRestLifeTimeSeconds(@WebParam(name = PARAM_AUTH_TOKEN_NAME) String authToken);
+
+	/**
+	 * pr�ft ob ein Token nich g�ltig ist
+	 * 
+	 * @param authToken
+	 *            Token
+	 * @return true sofern das Token noch g�ltig ist, false nur je nach
+	 *         Implementierung des jeweilig darunter liegenden Systems. (einige
+	 *         Systeme "verbergen" evtl. auch diese Information aus
+	 *         Sicherheitsgr�nden)
+	 * @throws SecurityTokenServiceException
+	 *             falls eine Abmeldung nicht m�glich ist
+	 */
+	public boolean isValid(@WebParam(name = PARAM_AUTH_TOKEN_NAME) String authToken)
+			throws SecurityTokenServiceException;
+
+	/**
+	 * ermittelt den UserAccount des Benutzers
+	 * 
+	 * @param authToken
+	 *            g�ltiges Token
+	 * @return userID (z.B. "bl10447")
+	 * @throws SecurityTokenServiceException
+	 *             falls der UserAccount nicht ermittelt werrden kann, oder das
+	 *             Token nicht g�ltig ist.
+	 */
+	public String getUserID(@WebParam(name = PARAM_AUTH_TOKEN_NAME) String authToken)
+			throws SecurityTokenServiceException;
+
+	/**
+	 * ermittelt sonstige Attribute des Benutzers
+	 * 
+	 * @param authToken
+	 *            g�ltiges Token
+	 * @param attribute
+	 *            Bezeichnung des gew�nschten Attributs
+	 * @return userID (z.B. "rene.hoffmann@deltalloyd.de")
+	 * @throws SecurityTokenServiceException
+	 *             falls das attribut nicht ermittelt werrden kann, oder das Token
+	 *             nicht g�ltig ist.
+	 */
+	public String getAttribute(@WebParam(name = PARAM_AUTH_TOKEN_NAME) String authToken,
+			@WebParam(name = PARAM_ATTRIBUTE) SecurityTokenService.UserAttribute attribute)
+			throws SecurityTokenServiceException;
+
+	/**
+	 * pr�ft ob der Benutzer eine gewisse Rolle besitzt
+	 * 
+	 * @param authToken
+	 *            g�ltiges Token
+	 * @param roleName
+	 *            Bezeichnung der Rolle (z.B. "dld-pdb-profil6" )
+	 * @return true, sofern der Benutzer diese Rolle besitzt
+	 * @throws SecurityTokenServiceException
+	 *             falls das Token nicht g�ltig ist
+	 */
+	public boolean isUserInRole(@WebParam(name = PARAM_AUTH_TOKEN_NAME) String authToken,
+			@WebParam(name = "rolenName") String roleName) throws SecurityTokenServiceException;
+
+	/**
+	 * pr�ft ob der Benutzer mindestens eine der �bergebenen Rolle besitzt. Diese
+	 * Funktion dient zum optimierten Auswertung und kann anstelle eines mehrmaligen
+	 * Aufrufs von isUserInRole dessen Ergebnisse ver-ODER-t werden, verwendet
+	 * werden. Da einige Systeme ggf. aus Sicherheitsgr�nden keine vollst�ndige
+	 * Traversierung �ber alle Rollen erlauben, wurde hier auf die
+	 * Zurverf�gungstellung einer Funktion getAlLRoles o.�. verzichtet (obwohl SUN
+	 * AM/openSSO dies erm�glichen w�rde)
+	 * 
+	 * @param authToken
+	 *            g�ltiges Token
+	 * @param roleNames
+	 *            Array mit Rollen (z.B. {"dld-pdb-profil6","dld-pdb-profil9")
+	 * @return true, sofern die Mitgliedschaft existiert
+	 * @throws SecurityTokenServiceException
+	 *             falls das Token nicht g�ltig ist
+	 * @see #isUserInRole
+	 */
+	public boolean isUserInARole(@WebParam(name = PARAM_AUTH_TOKEN_NAME) String authToken,
+			@WebParam(name = "roleNames") String[] roleNames) throws SecurityTokenServiceException;
+
+	/**
+	 * Find user attribute by userId
+	 * 
+	 * @param userId
+	 * @param attribute
+	 * @return
+	 * @throws SecurityTokenServiceException
+	 *             if user not found or search failed
+	 */
+	public String getAttributeByUserId(@WebParam(name = PARAM_USER_ID) String userId,
+			@WebParam(name = "attribute") SecurityTokenService.UserAttribute attribute)
+			throws SecurityTokenServiceException;
 }
