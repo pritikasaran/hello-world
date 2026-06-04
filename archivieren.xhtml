@@ -1,1 +1,9 @@
-                 onstart="PrimeFaces.addSubmitParam('YOUR_FORM_ID', {'PAGE_CONTENT': document.documentElement.outerHTML});" />
+<script>
+    function captureAndSave() {
+        // Get the HTML of your specific form/element by its ID
+        var formHtml = document.getElementById('archivForm').innerHTML;
+        
+        // Store it in the hidden field
+        document.getElementById('archivForm:capturedHtml').value = formHtml;
+    }
+</script>
