@@ -1,5 +1,593 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<login>
-    <userId>bl10447</userId>
-    <pw>yourpassword</pw>
-</login>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+	xmlns:tr="http://myfaces.apache.org/trinidad"
+	xmlns:trh="http://myfaces.apache.org/trinidad/html">
+<body>
+	<ui:composition template="/templates/mainTemplateWithoutForm.xhtml">
+		<ui:define name="content">
+			<f:event type="javax.faces.event.PreRenderViewEvent" 
+				listener="#{archivierenVC.preRenderView}" />
+			<af:clientListener method="resizeWindowOnLoad" type="load"/>
+			<af:form id="mainForm" defaultCommand="defaultButton" usesUpload="#{archivierenVC.archivierenModell.upload}">
+				<af:resource type="javascript">
+					function resizeWindowOnLoad(){
+						if(#{!archivierenVC.archivierenModell.upload}){ 
+							resizeArchivierenWindow();
+						}
+					}
+				</af:resource>
+				<af:popup id="archivierungausgefuehrt"
+					binding="#{archivierenVC.schliesseFensterPopup}">
+					<af:dialog closeIconVisible="false" okVisible="false" cancelVisible="false" modal="true"
+						inlineStyle="width:280px;" title="IMS:Hinweis">
+						<af:panelGroupLayout layout="vertical" halign="center">
+							<af:outputFormatted value="Das Dokument wurde archiviert." />
+							<af:spacer height="20" />
+							<af:commandButton text="OK"
+								action="#{archivierenVC.beendenFenster}" />
+						</af:panelGroupLayout>
+					</af:dialog>
+				</af:popup>
+				
+				<af:popup id="orbexistiertnicht"
+					binding="#{archivierenVC.orbExistiertNichtFensterPopup}">
+					<af:dialog okVisible="false" cancelVisible="false" modal="true"
+						inlineStyle="width:280px;" title="IMS">
+						<af:panelGroupLayout layout="vertical" halign="center">
+							<af:outputFormatted  value="#{archivierenVC.archivierenModell.errorORBMessage}" />
+							<af:spacer height="20" />
+							<af:panelGroupLayout layout="horizontal" halign="center">
+								<af:commandButton text="OK" inlineStyle="width:100px;"
+									action="#{archivierenVC.errorORBAnlegen}" />
+									<af:spacer width="15px" />
+								<af:commandButton text="Abbrechen" inlineStyle="width:100px;"
+									action="#{archivierenVC.errorORBAbrechen}" />
+							</af:panelGroupLayout>
+						</af:panelGroupLayout>
+					</af:dialog>
+				</af:popup>
+	
+				<h:panelGroup rendered="#{archivierenVC.fensterSchliessen}">
+					<af:panelGroupLayout layout="horizontal">
+						<af:outputLabel inlineStyle="font-weight:bold;"
+							value="Hinweis: Das Fenster konnte nicht automatisch geschlossen werden. Bitte schliessen Sie es manuell." />
+					</af:panelGroupLayout>
+				</h:panelGroup>
+				<h:panelGroup
+					rendered="#{archivierenVC.invalidMailParams and !archivierenVC.fensterSchliessen}">
+					<trh:script>function fensterSchliessen() {window.close();}</trh:script>
+					<af:panelGroupLayout layout="horizontal">
+						<af:outputLabel inlineStyle="font-weight:bold;"
+							value="Beim Aufbau der Seite ist ein Fehler aufgetreten." />
+					</af:panelGroupLayout>
+					<af:spacer height="25px" />
+					<af:panelGroupLayout layout="horizontal">
+						<af:outputLabel inlineStyle="font-weight:bold;larger;width:100%"
+							value="Beschreibung:" />
+						<af:spacer width="15px" />
+						<af:outputLabel
+							value="#{archivierenVC.archivierenModell.errorMessage}" />
+					</af:panelGroupLayout>
+					<af:spacer height="25px" />
+					<af:commandButton text="ok">
+						<af:clientListener method="fensterSchliessen" type="click" />
+					</af:commandButton>
+				</h:panelGroup>
+	
+				<ui:remove>Nur fuer die Archivierung von Emails</ui:remove>
+				<h:panelGroup
+					rendered="#{!archivierenVC.fensterSchliessen and not archivierenVC.invalidMailParams}">
+	
+					<div id="page">
+						<af:spacer height="10px" />
+						<div id="main">
+						
+						<trh:tableLayout cellSpacing="7">
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="6">
+									<af:panelGroupLayout layout="horizontal" visible="#{!archivierenVC.archivierenModell.upload}">
+										<af:selectOneChoice id="selMandant" label="Mandant:" styleClass="imsfieldsmall" 
+											immediate="true" autoSubmit="true"
+											value="#{archivierenVC.archivierenModell.mandant}"
+											valueChangeListener="#{archivierenVC.mandantValueChangeListener}">
+											<f:selectItems
+												value="#{archivierenVC.archivierenModell.mandantItems}" />
+										</af:selectOneChoice>
+										<af:spacer width="15px" />
+										<af:selectOneChoice id="selOrbart" label="ORB-Art:" 
+											styleClass="imsfieldsmall" immediate="true" autoSubmit="true"
+											value="#{archivierenVC.archivierenModell.orbArt}"	
+											partialTriggers="selMandant"							
+											valueChangeListener="#{archivierenVC.orbArtValueChangeListener}">
+											<f:selectItems
+												value="#{archivierenVC.archivierenModell.orbartItems}" />
+										</af:selectOneChoice>
+										<af:spacer width="15px" />
+										<af:inputText label="ORB:" columns="20" maximumLength="24" id="inpOrb" 
+											autoSubmit="true" contentStyle="width:120px;"
+											value="#{archivierenVC.archivierenModell.orb}" />
+									</af:panelGroupLayout>
+								</trh:cellFormat>
+								<trh:cellFormat>
+									<!-- 
+									<af:panelGroupLayout layout="horizontal" visible="#{!archivierenVC.archivierenModell.upload}">
+										<af:selectBooleanCheckbox id="selNurAnhaenge"
+											value="#{archivierenVC.archivierenModell.nurAnhaenge}"/>
+										<af:spacer width="15px" />
+										<af:outputLabel value="Nur Anhänge"/>
+									</af:panelGroupLayout>
+									 -->
+								</trh:cellFormat>
+							</trh:rowLayout>
+
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="7">
+									<af:panelGroupLayout layout="horizontal" 
+											rendered="#{archivierenVC.archivierenModell.upload}">
+										<af:outputLabel value="Dokument:" />
+										<h:inputFile id="file" size="75" rendered="#{archivierenVC.renderInputFile}"
+											value="#{archivierenVC.archivierenModell.file}" />
+										<af:outputText value="#{archivierenVC.archivierenModell.fileName}" />
+										<af:spacer width="5" />
+										<af:commandButton text="Datei löschen" id="cmdDateiLoeschen" 
+											rendered="#{!archivierenVC.renderInputFile}"
+											action="#{archivierenVC.dateiLoeschen}">
+										</af:commandButton>
+									</af:panelGroupLayout>
+								</trh:cellFormat>
+							</trh:rowLayout>
+							
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="7">
+									<af:separator />
+								</trh:cellFormat>
+							</trh:rowLayout>
+	
+	
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="2">
+									<af:inputText id="mailVgNrAnzeigeId" contentStyle="width:58px;" label="VgNr:"
+										maximumLength="4" columns="2" immediate="true" autoSubmit="true"
+										disabled="#{archivierenVC.archivierenModell.neuenVorgangAnlegen}"
+										validator="#{archivierenVC.validateVgNr}"
+										valueChangeListener="#{archivierenVC.vgNrValueChangeListener}"	
+										partialTriggers="selectVorgangAnlegen"							
+										value="#{archivierenVC.archivierenModell.vgNummer}">
+									</af:inputText>
+								</trh:cellFormat>
+	
+								<trh:cellFormat>
+									<af:selectBooleanCheckbox id="selectVorgangAnlegen"
+										immediate="true" autoSubmit="true"
+										valueChangeListener="#{archivierenVC.neueVorgangValueChangeListener}"
+										value="#{archivierenVC.archivierenModell.neuenVorgangAnlegen}">
+									</af:selectBooleanCheckbox>
+								</trh:cellFormat>
+								<trh:cellFormat halign="left">
+									<af:outputLabel value="Neuen Vorgang anlegen:" for="mailNeuVgId" />
+								</trh:cellFormat>
+								
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Vorgangsart:" for="mailVgArtId" />
+								</trh:cellFormat>
+								<trh:cellFormat>
+									<af:selectOneChoice id="mailVgArtId"
+										styleClass="imsfieldlarge" immediate="true" autoSubmit="true"
+										disabled="#{!archivierenVC.archivierenModell.neuenVorgangAnlegen}"
+										value="#{archivierenVC.archivierenModell.vgArt}"
+										partialTriggers="selectVorgangAnlegen mailVgNrAnzeigeId selMandant selOrbart"
+										valueChangeListener="#{archivierenVC.vgArtValueChangeListener}">
+										<f:selectItems
+											value="#{archivierenVC.archivierenModell.vgArtItems}" />
+									</af:selectOneChoice>
+								</trh:cellFormat>
+							</trh:rowLayout>
+	
+	
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="7">
+									<af:separator />
+								</trh:cellFormat>
+							</trh:rowLayout>
+							
+							
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Eingangsdatum:" for="eingangsDat" />
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="2">
+									<af:inputDate id="inpEingangsDatum" styleClass="datumfeld"
+										value="#{archivierenVC.archivierenModell.eintragDatum}"> 
+										<af:validateDateTimeRange messageDetailMaximum="Das Eingangsdatum darf nicht in der Zukunft liegen."
+											maximum="#{archivierenVC.eingangsdatumMaxDate}" />
+									</af:inputDate>
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Dokumentenklasse:" />
+								</trh:cellFormat>
+								<trh:cellFormat>
+									<af:selectOneChoice id="selDokukl"
+										styleClass="imsfieldlarge" immediate="true" autoSubmit="true"
+										value="#{archivierenVC.archivierenModell.eintragDokuKl}"
+										valueChangeListener="#{archivierenVC.dokuKlValueChangeMethod}">
+										<f:selectItems
+											value="#{archivierenVC.archivierenModell.eintragDokuKlItems}" />
+									</af:selectOneChoice>
+								</trh:cellFormat>
+							</trh:rowLayout>
+	
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Textkurzverweis:" id="textkvKurzBez" />
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="2">
+									<af:selectOneChoice id="selTkv" styleClass="imsfieldmedium"
+										immediate="true" autoSubmit="true"
+										value="#{archivierenVC.archivierenModell.eintragTextkurzverweis}"
+										partialTriggers="selectVorgangAnlegen mailVgNrAnzeigeId mailVgArtId selDokukl selMandant selOrbart"
+										valueChangeListener="#{archivierenVC.eintragTextkurzverweisChangeMethod}">
+										<f:selectItems
+											value="#{archivierenVC.archivierenModell.eintragTextkvItems}" />
+									</af:selectOneChoice>
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Anlassgeber/Empfänger:" />
+								</trh:cellFormat>
+								<trh:cellFormat>
+									<af:selectOneChoice id="selAnlassgeber" styleClass="imsfieldlarge"
+										immediate="true" autoSubmit="true"
+										value="#{archivierenVC.archivierenModell.eintragAnlassgeber}"
+										partialTriggers="selMandant selOrbart"
+										valueChangeListener="#{archivierenVC.eintragAnlassgeberChangeMethod}">
+										<f:selectItems
+											value="#{archivierenVC.archivierenModell.eintragAnlassgeberItems}" />
+									</af:selectOneChoice>
+								</trh:cellFormat>
+							</trh:rowLayout>
+	
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Medium:" />
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="2">
+									<af:selectOneChoice id="selMedium"
+										styleClass="imsfieldmedium" immediate="true" autoSubmit="true"
+										value="#{archivierenVC.archivierenModell.eintragMedium}"
+										valueChangeListener="#{archivierenVC.eintragMediumChangeMethod}">
+										<f:selectItems
+											value="#{archivierenVC.archivierenModell.mediumItems}" />
+									</af:selectOneChoice>
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Berechtigung Dokument:" />
+								</trh:cellFormat>
+								<trh:cellFormat>
+									<af:selectOneChoice id="selBerechtigungDok"
+										styleClass="imsfieldlarge" immediate="true" autoSubmit="true"
+										value="#{archivierenVC.archivierenModell.eintragBerechtigungDok}"
+										partialTriggers="selMandant selOrbart"
+										valueChangeListener="#{archivierenVC.eintragBerechtigungDokChangeMethod}">
+										<f:selectItems
+											value="#{archivierenVC.archivierenModell.eintragBerechtigungItems}" />
+									</af:selectOneChoice>
+								</trh:cellFormat>
+							</trh:rowLayout>
+							
+
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="IndividuellerText:" />
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="5" rowSpan="2">
+									<af:inputText id="txtIndivText" 
+										columns="85" rows="3" maximumLength="200" 
+										styleClass="imsfieldlarge" 
+										value="#{archivierenVC.archivierenModell.indivText}"/>
+								</trh:cellFormat>
+							</trh:rowLayout>
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="(max. 200 Zeichen)" />
+								</trh:cellFormat>
+							</trh:rowLayout>
+								
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="7">
+									<af:separator />
+								</trh:cellFormat>
+							</trh:rowLayout>
+							
+							<trh:rowLayout>
+								<trh:cellFormat >
+									<af:selectBooleanCheckbox id="selectTerminErzeugen"
+										immediate="true" autoSubmit="true"
+										value="#{archivierenVC.archivierenModell.terminErzeugen}">
+									</af:selectBooleanCheckbox>
+								</trh:cellFormat>
+								<trh:cellFormat halign="left" wrappingDisabled="true">
+									<af:outputLabel value="Termin erzeugen:"
+										for="selectTerminErzeugen" />
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="2">
+									<af:inputDate id="inpTerminDatum" styleClass="datumfeld"
+										label="Termindatum:"
+										value="#{archivierenVC.archivierenModell.terminDatum}"
+										partialTriggers="selectTerminErzeugen"
+										disabled="#{!archivierenVC.archivierenModell.terminErzeugen}">
+										<af:validateDateTimeRange messageDetailMinimum="Das Termindatum darf nicht in der Vergangenheit liegen!"
+											minimum="#{archivierenVC.minimumDate}" />
+									</af:inputDate>
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Abteilung:" for="inpAbtlg" />
+								</trh:cellFormat>
+								<trh:cellFormat>
+									<af:inputText id="inpAbtlg" styleClass="imsfieldsmall"
+										value="#{archivierenVC.archivierenModell.terminAbteilung}"
+										partialTriggers="selectTerminErzeugen"
+										disabled="#{!archivierenVC.archivierenModell.terminErzeugen}" />
+								</trh:cellFormat>
+							</trh:rowLayout>
+							
+						
+	
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Terminart:" for="selTerminArt" />
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="2">
+									<af:selectOneChoice id="selTerminArt"
+										styleClass="imsfieldmedium" immediate="true" autoSubmit="true"
+										disabled="#{!archivierenVC.archivierenModell.terminErzeugen}"
+										valueChangeListener="#{archivierenVC.terminartValueChangeMethod}"
+										partialTriggers="selectTerminErzeugen"
+										value="#{archivierenVC.archivierenModell.terminArt}">
+										<f:selectItems
+											value="#{archivierenVC.archivierenModell.terminArtItems}" />
+									</af:selectOneChoice>
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Gruppe:" for="inpGrp" />
+								</trh:cellFormat>
+								<trh:cellFormat>
+									<af:inputText id="inpGrp"
+										styleClass="imsfieldsmall"
+										value="#{archivierenVC.archivierenModell.terminGruppe}"
+										partialTriggers="selectTerminErzeugen"
+										disabled="#{!archivierenVC.archivierenModell.terminErzeugen}" />
+								</trh:cellFormat>
+							</trh:rowLayout>
+							
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Termingrund:" for="selTermingrund" />
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="2">
+									<af:selectOneChoice id="selTermingrund"
+										styleClass="imsfieldmedium" immediate="true" autoSubmit="true"
+										disabled="#{!archivierenVC.archivierenModell.terminErzeugen}"
+										value="#{archivierenVC.archivierenModell.termingrund}"
+										partialTriggers="selectVorgangAnlegen mailVgNrAnzeigeId selectTerminErzeugen selTerminArt selMandant"
+										valueChangeListener="#{archivierenVC.termingrundValueChangeMethod}">
+										<f:selectItems
+											value="#{archivierenVC.archivierenModell.terminGrundItems}" />
+									</af:selectOneChoice>
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Diktat-Kz:" for="inpDikKz" />
+								</trh:cellFormat>
+								<trh:cellFormat>
+									<af:inputText id="inpDikKz" 
+										styleClass="imsfieldsmall"
+										value="#{archivierenVC.archivierenModell.terminDiktatKz}"
+										partialTriggers="selectTerminErzeugen"
+										disabled="#{!archivierenVC.archivierenModell.terminErzeugen}" />
+								</trh:cellFormat>
+							</trh:rowLayout>
+							
+							
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="7">
+									<af:separator />
+								</trh:cellFormat>
+							</trh:rowLayout>
+							
+							
+	
+							<trh:rowLayout>
+								<trh:cellFormat >
+									<af:selectBooleanCheckbox id="selectKopiereZuOrb"
+										immediate="true" autoSubmit="true"
+										value="#{archivierenVC.archivierenModell.kopiereZuOrb}"
+										partialTriggers="selSerienbrief"
+										valueChangeListener="#{archivierenVC.kopierenZuWeiterenORB}"
+										disabled="#{archivierenVC.archivierenModell.serienBrief}">
+									</af:selectBooleanCheckbox>
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="3" halign="left">
+									<af:outputLabel value="Kopieren zu weiteren Ordnungsbegriffen" />
+								</trh:cellFormat>
+								<trh:cellFormat columnSpan="3">
+									<af:panelGroupLayout layout="horizontal">
+										<af:selectBooleanCheckbox id="selectTermineErzeugen"
+											value="#{archivierenVC.archivierenModell.termineErzeugen}"
+											partialTriggers="selectTerminErzeugen selectKopiereZuOrb selSerienbrief"
+											disabled="#{(!archivierenVC.archivierenModell.terminErzeugen) || (!archivierenVC.archivierenModell.kopiereZuOrb) || (archivierenVC.archivierenModell.serienBrief)}">
+										</af:selectBooleanCheckbox>
+										<af:spacer width="15px" />
+										<af:outputLabel value="Termine erzeugen" />
+									</af:panelGroupLayout>
+								</trh:cellFormat>
+							</trh:rowLayout>
+								
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="4" rowSpan="7">
+									<af:table rowBandingInterval="0"
+										styleClass="imsORBTable"
+										value="#{archivierenVC.archivierenModell.zielList}"
+										rowSelection="single"
+										selectedRowKeys="#{archivierenVC.archivierenModell.zielRowKeySet}"
+										var="zielItem" contentDelivery="immediate"
+										emptyText="Keine Dokumente ausgewählt.">
+										<af:column width="45px" headerText="MA" noWrap="true"
+											headerClass="imsTableHeader" styleClass="imsTableData">
+											<af:outputFormatted value="#{zielItem.mandant}" />
+										</af:column>
+										<af:column width="140px" headerText="ORB-Art" noWrap="true"
+											headerClass="imsTableHeader" styleClass="imsTableData">
+											<af:outputFormatted value="#{zielItem.orbArt}" />
+										</af:column>
+										<af:column width="140px" headerText="ORB" noWrap="true"
+											headerClass="imsTableHeader" styleClass="imsTableData">
+											<af:outputFormatted value="#{zielItem.orb}" />
+										</af:column>
+										<af:column width="65px" headerText="VG-Nr" noWrap="true"
+											headerClass="imsTableHeader" styleClass="imsTableData">
+											<af:outputFormatted value="#{zielItem.vgNr}" />
+										</af:column>
+									</af:table>
+								</trh:cellFormat>
+							</trh:rowLayout>
+						
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="Mandant:" for="selMandantUmb" />
+								</trh:cellFormat>
+								<trh:cellFormat>
+									<af:selectOneChoice id="selMandantUmb"
+										styleClass="imsfieldsmall" immediate="true" autoSubmit="true"
+										disabled="#{(!archivierenVC.archivierenModell.kopiereZuOrb)}"
+										value="#{archivierenVC.archivierenModell.umbAktuellerEintrag.mandant}"
+										partialTriggers="selectKopiereZuOrb"
+										valueChangeListener="#{archivierenVC.mandantUmbChangeMethod}">
+										<f:selectItems
+											value="#{archivierenVC.archivierenModell.umbMandantItems}" />
+									</af:selectOneChoice>
+								</trh:cellFormat>
+							</trh:rowLayout>
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="ORB-Art:" for="selOrbartUmb" />
+								</trh:cellFormat>	
+								<trh:cellFormat>
+									<af:selectOneChoice id="selOrbartUmb"
+										styleClass="imsfieldsmall" immediate="true" autoSubmit="true"
+										value="#{archivierenVC.archivierenModell.umbAktuellerEintrag.orbArt}"
+										partialTriggers="selectKopiereZuOrb selMandantUmb"
+										disabled="#{(!archivierenVC.archivierenModell.kopiereZuOrb)}"
+										valueChangeListener="#{archivierenVC.orbartUmbChangeMethod}">
+										<f:selectItems
+											value="#{archivierenVC.archivierenModell.umbOrbartItems}" />
+									</af:selectOneChoice>
+								</trh:cellFormat>
+							</trh:rowLayout>
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="ORB:" />
+								</trh:cellFormat>
+								<trh:cellFormat>
+									<af:inputText contentStyle="width:125px" id="selOrbUmb" 
+										disabled="#{(!archivierenVC.archivierenModell.kopiereZuOrb)}"
+										partialTriggers="selectKopiereZuOrb"
+										value="#{archivierenVC.archivierenModell.umbAktuellerEintrag.orb}" />
+								</trh:cellFormat>
+							</trh:rowLayout>
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="2">
+									<af:outputLabel value="VG-Nr.:" />
+								</trh:cellFormat>
+								<trh:cellFormat>
+									<af:inputText contentStyle="width:55px" id="selVgNrUmb"
+										disabled="#{(!archivierenVC.archivierenModell.kopiereZuOrb)}"
+										partialTriggers="selectKopiereZuOrb"
+										value="#{archivierenVC.archivierenModell.umbAktuellerEintrag.vgNr}" />
+								</trh:cellFormat>
+							</trh:rowLayout>
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="3" halign="center">
+									<af:commandButton id="cmdHinzufuegen"
+										disabled="#{(!archivierenVC.archivierenModell.kopiereZuOrb)}"
+										partialTriggers="selectKopiereZuOrb"
+										shortDesc="Ziel hinzufügen" text="Hinzufügen"
+										actionListener="#{archivierenVC.actionHinzufuegen}">
+									</af:commandButton>
+									<af:spacer width="10" />
+									<af:commandButton id="cmdLoeschen" shortDesc="Ziel entfernen"
+										disabled="#{(!archivierenVC.archivierenModell.kopiereZuOrb)}"
+										partialTriggers="selectKopiereZuOrb"
+										text="Löschen" action="#{archivierenVC.removeRow}">
+									</af:commandButton>
+								</trh:cellFormat>
+							</trh:rowLayout>
+							<trh:rowLayout rendered="#{archivierenVC.archivierenModell.upload}">
+								<trh:cellFormat>
+									<af:selectBooleanCheckbox id="selSerienbrief"
+										immediate="true" autoSubmit="true"
+										disabled="#{archivierenVC.archivierenModell.kopiereZuOrb}"
+										partialTriggers="selectKopiereZuOrb"
+										value="#{archivierenVC.archivierenModell.serienBrief}">
+									</af:selectBooleanCheckbox>
+								</trh:cellFormat>
+								<trh:cellFormat halign="left">
+									<af:outputLabel value="Serienbrief"/>
+								</trh:cellFormat>
+							</trh:rowLayout>
+							 
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="7">
+									<af:inputText contentStyle="width:750px;color:black;" 
+										disabled="true" id="statusText"
+										partialTriggers="mailVgNrAnzeigeId selDokukl selTkv selTerminArt selTermingrund selAnlassgeber selMedium selBerechtigungDok selMandantUmb selOrbartUmb selMandant selOrbart"
+										value="#{archivierenVC.archivierenModell.statustext}" />
+								</trh:cellFormat>
+							</trh:rowLayout>
+	
+							<trh:rowLayout>
+								<trh:cellFormat columnSpan="6" halign="center">
+									<af:commandButton id="cmdArchivieren" shortDesc="Ausführen"
+										text="Ausführen"
+										actionListener="#{archivierenVC.archivierungAusfuehren}" />
+									<af:spacer width="10" />
+									<af:commandButton id="cmdAbbrechen" shortDesc="Abbrechen"
+										text="Abbrechen"
+										actionListener="#{archivierenVC.archivierungAbbrechen}" />
+								</trh:cellFormat>
+							</trh:rowLayout>
+						</trh:tableLayout>
+
+						<af:popup id="sicherheitsabfrage"
+							binding="#{archivierenVC.sicherheitsabfragePopup}">
+							<af:dialog okVisible="false" cancelVisible="false" modal="true"
+								title="Sind Sie sicher?">
+								<af:panelGroupLayout layout="vertical">
+									<af:outputFormatted
+										value="Der Ordnungsbegriff '#{archivierenVC.archivierenModell.umbAktuellerEintrag.orb}' existiert nicht! Soll er angelegt werden?" />
+									<af:spacer height="10" />
+									<af:panelGroupLayout layout="horizontal" halign="center">
+										<af:commandButton id="cmdOk" text="OK" inlineStyle="width:100px;" 
+											action="#{archivierenVC.fuegeZielHinzu}" />
+										<af:spacer width="15px" />
+										<af:commandButton id="cmdCancel" text="Abbrechen" inlineStyle="width:100px;" 
+											action="#{archivierenVC.doNothing}" />
+									</af:panelGroupLayout>
+								</af:panelGroupLayout>
+
+							</af:dialog>
+						</af:popup>
+						</div>
+					</div>
+					<af:messages />
+				</h:panelGroup>
+			</af:form>
+		</ui:define>
+		<ui:define name="footer">
+		</ui:define>
+	</ui:composition>
+</body>
+</html>
