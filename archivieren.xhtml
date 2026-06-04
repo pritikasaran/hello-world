@@ -9,3 +9,10 @@
 </script>
 <h:inputHidden id="capturedHtml" 
                value="#{formsVC.capturedHtml}"/>
+
+FacesContext.getCurrentInstance()
+        .getExternalContext()
+        .getSessionMap()
+        .put(IWebConstants.PAGE_CONTENT, capturedHtml);
+
+private String capturedHtml; 
