@@ -1,10 +1,17 @@
-Host gitlab.a1-core.athora.net
-    Hostname gitlab.a1-core.athora.net
-    User git
-    Port 443
-    PreferredAuthentications publickey
-    IdentityFile ~/.ssh/id_rsa
+public void onRadioChange(String jaKey) {
+    // Extract row number from jaKey e.g. "checked11" -> "1"
+    String rowNum = jaKey.replace("checked1", "");
+    String neinKey = "checked2" + rowNum;
+    
+    boolean isJa = (boolean) formsModell.getValueMap().get(jaKey).getValue();
+    formsModell.getValueMap().get(neinKey).setValue(!isJa);
+}
 
-
-
-git fetch --prune origin +refs/heads/*:refs/remotes/origin/*
+<p:selectOneRadio
+    value="#{formsVC.formsModell.valueMap.checked11.value}"
+    disabled="#{formsVC.formsModell.valueMap.checked11.locked}">
+    <f:selectItem itemValue="true"  itemLabel="Ja" />
+    <f:selectItem itemValue="false" itemLabel="Nein" />
+    <p:ajax process="@this" 
+            listener="#{formsVC.onRadioChange('checked11')}" />
+</p:selectOneRadio>
