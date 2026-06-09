@@ -1,17 +1,19 @@
-public void onRadioChange(String jaKey) {
-    // Extract row number from jaKey e.g. "checked11" -> "1"
-    String rowNum = jaKey.replace("checked1", "");
-    String neinKey = "checked2" + rowNum;
-    
-    boolean isJa = (boolean) formsModell.getValueMap().get(jaKey).getValue();
-    formsModell.getValueMap().get(neinKey).setValue(!isJa);
-}
+com.sun.security.jgss.krb5.initiate {
+    com.sun.security.auth.module.Krb5LoginModule required
+    doNotPrompt=true
+    useKeyTab=true
+    keyTab="C:/kerberos/payara.keytab"
+    principal="HTTP/your-payara-host.a1-core.athora.net@A1-CORE.ATHORA.NET"
+    storeKey=true
+    debug=true;
+};
 
-<p:selectOneRadio
-    value="#{formsVC.formsModell.valueMap.checked11.value}"
-    disabled="#{formsVC.formsModell.valueMap.checked11.locked}">
-    <f:selectItem itemValue="true"  itemLabel="Ja" />
-    <f:selectItem itemValue="false" itemLabel="Nein" />
-    <p:ajax process="@this" 
-            listener="#{formsVC.onRadioChange('checked11')}" />
-</p:selectOneRadio>
+com.sun.security.jgss.krb5.accept {
+    com.sun.security.auth.module.Krb5LoginModule required
+    doNotPrompt=true
+    useKeyTab=true
+    keyTab="C:/kerberos/payara.keytab"
+    principal="HTTP/your-payara-host.a1-core.athora.net@A1-CORE.ATHORA.NET"
+    storeKey=true
+    debug=true;
+};
