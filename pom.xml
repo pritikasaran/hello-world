@@ -1,11 +1,7 @@
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Produces;
-
-@ApplicationScoped
-public class IndiziererWSProducer {
-    @Produces
-    public IndiziererWS client() {
-        return new IndiziererWSService().getIndiziererWSPort();
-    }
-}
+<beans xmlns="https://jakarta.ee/xml/ns/jakartaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd"
+       bean-discovery-mode="all"
+       version="4.0">
+</beans>
 
