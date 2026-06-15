@@ -1,147 +1,242 @@
-package de.deltalloyd.partnerdb.rest.restWrapper;
+package net.java.spnego;
 
-import java.util.List;
+import com.sun.security.jgss.GSSUtil;
+import java.security.Principal;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.security.auth.Subject;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.message.AuthException;
+import javax.security.auth.message.AuthStatus;
+import javax.security.auth.message.MessageInfo;
+import javax.security.auth.message.MessagePolicy;
+import javax.security.auth.message.callback.CallerPrincipalCallback;
+import javax.security.auth.message.callback.GroupPrincipalCallback;
+import javax.security.auth.message.module.ServerAuthModule;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.codec.binary.Base64;
+import org.ietf.jgss.GSSContext;
+import org.ietf.jgss.GSSCredential;
+import org.ietf.jgss.GSSException;
+import org.ietf.jgss.GSSManager;
+import org.ietf.jgss.GSSName;
+import org.ietf.jgss.Oid;
 
-import de.deltalloyd.partnerdb.core.type.AdresseTO;
-import de.deltalloyd.partnerdb.core.type.BankVerbindungTO;
-import de.deltalloyd.partnerdb.core.type.EinzelVsnrTO;
-import de.deltalloyd.partnerdb.core.type.JournalEintragTO;
-import de.deltalloyd.partnerdb.core.type.util.PartnerBilanzdaten;
-import de.deltalloyd.partnerdb.rest.DTO.AddressDto;
-import de.deltalloyd.partnerdb.rest.DTO.CreatePasswordDto;
-import de.deltalloyd.partnerdb.rest.DTO.GetKopfDublettenAdressNrDto;
-import de.deltalloyd.partnerdb.rest.DTO.GetKopfDublettenDto;
-import de.deltalloyd.partnerdb.rest.DTO.GetNeusteEinzelVsnrDto;
-import de.deltalloyd.partnerdb.rest.DTO.HoleFreiePartnerNummerDto;
-import de.deltalloyd.partnerdb.rest.DTO.LadePartnerPostAdresseDto;
-import de.deltalloyd.partnerdb.rest.DTO.PartnerLadeDto;
-import de.deltalloyd.partnerdb.rest.DTO.PartnerSaveDto;
-import de.deltalloyd.partnerdb.rest.DTO.PartnerbankLade;
-import de.deltalloyd.partnerdb.rest.DTO.UpdateUebertragungBRSDto;
-import de.deltalloyd.partnerdb.rest.DTO.ValidateAddressDto;
-import de.deltalloyd.partnerdb.rest.DTO.ValidatePartnerDto;
-import de.deltalloyd.partnerdb.rest.DTO.ValidiereBankverbindungDto;
-import de.deltalloyd.partnerdb.rest.DTO.ValidierePartnerGrunddatenDto;
-import de.deltalloyd.partnerdb.core.type.PartnerGrunddatenTO;
-import de.deltalloyd.partnerdb.core.type.PartnerTO;
-import de.deltalloyd.partnerdb.core.type.PostAdresseTO;
-import de.deltalloyd.partnerdb.core.type.PostPruefAntwortTO;
-import de.deltalloyd.partnerdb.core.type.ValidationResult;
-import de.deltalloyd.partnerdb.webservices.impl.KksnWSImpl;
-import de.deltalloyd.partnerdb.webservices.interfaces.IPartnerWebService;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.Path;
-import jakarta.xml.ws.BindingProvider;
-
-@ApplicationScoped
-@Path("/partnerWeb")
-public class RestApplication3 {
-	
-	
-	@Inject
-	IPartnerWebService partnerWebService;
-	
-
-	public List<String[]> ladeSapPartnerInformation(String aPID) throws Exception {
-		return partnerWebService.ladeSapPartnerInformation(aPID);
-	}
-
-	public void aktualisierePartner(PartnerSaveDto dto) throws Exception {
-		partnerWebService.aktualisierePartner(dto.getAuthToken(),  dto.getPartnerTo(), dto.getaParameter());
-	}
-
-	public ValidationResult erzeugePartner(ValidatePartnerDto dto) throws Exception {
-		return partnerWebService.erzeugePartner(dto.getAuthToken(), dto.getPartnerTo(), dto.getaParameter());
-	}
-
-	public ValidationResult validiereGrunddaten(ValidierePartnerGrunddatenDto dto)
-			throws Exception {
-		return partnerWebService.validiereGrunddaten( dto.getPartnerTo(), dto.getaParameter());
-	}
-
-	public ValidationResult validiereUebergreifend(ValidatePartnerDto dto)
-			throws Exception {
-		return partnerWebService.validiereUebergreifend( dto.getPartnerTo(), dto.getaParameter());
-	}
-
-	public PartnerTO ladePartner(PartnerLadeDto dto)
-			throws Exception {
-		return partnerWebService.ladePartner(dto.getAuthToken(), dto.isNebendubletteaufloesen(), dto.getKlient(), dto.getPartnernr(), dto.getParameter());
-	}
-
-	public List<EinzelVsnrTO> getNeusteEinzelVsnr(GetNeusteEinzelVsnrDto dto)
-			throws Exception {
-		return partnerWebService.getNeusteEinzelVsnr(dto.getAuthToken(), dto.getMandant(), dto.getOrbart(), dto.getOrb());
-	}
-
-	public int getKopfDublettenBankVerbNr(PartnerbankLade dto)
-			throws Exception {
-		return partnerWebService.getKopfDublettenBankVerbNr(dto.getKlient(), dto.getPartnernr(), dto.getBankNr());
-	}
-
-	public PostPruefAntwortTO pruefePostAdresse(AddressDto dto)
-			throws Exception {
-		return partnerWebService.pruefePostAdresse((PostAdresseTO) dto.getAdresseTO(), dto.getaParameter());
-	}
-
-	public BankVerbindungTO ladePartnerBankverbindung(PartnerbankLade dto) throws Exception {
-		return partnerWebService.ladePartnerBankverbindung(dto.getAuthToken(), dto.getKlient(), dto.getPartnernr(), dto.getBankNr(), dto.getParameter());
-	}
-
-	public ValidationResult validiereAdresse(ValidateAddressDto dto)
-			throws Exception {
-		return partnerWebService.validiereAdresse(dto.getPartnerTo(), dto.getAdresseTO(), dto.getaParameter());
-	}
-
-	public ValidationResult validiereBankverbindung(ValidiereBankverbindungDto dto) throws Exception {
-		return partnerWebService.validiereBankverbindung(dto.getPartnerTo(), dto.getAdresseTO(), dto.getaParameter());
-	}
-
-	public PostAdresseTO ladePartnerPostAdresse(LadePartnerPostAdresseDto dto)
-			throws Exception {
-		return partnerWebService.ladePartnerPostAdresse(dto.getAuthToken(), dto.getKlient(), dto.getPartnernr(), dto.getaAnschrnr(), dto.getParameter());
-	}
-
-	public long getKopfDublettenPartnerNr(GetKopfDublettenDto dto) throws Exception {
-		return partnerWebService.getKopfDublettenPartnerNr(dto.getKlient(), dto.getPartnernr());
-	}
-
-	public int getKopfDublettenAdressNr(GetKopfDublettenAdressNrDto dto) throws Exception {
-		return partnerWebService.getKopfDublettenAdressNr(dto.getKlient(), dto.getPartnernr(), dto.getaAdressNr());
-	}
-
-	public long holeFreiePartnerNummer(HoleFreiePartnerNummerDto dto) throws Exception {
-		return partnerWebService.holeFreiePartnerNummer(dto.getAuthToken(), dto.getKlient(), dto.getaParameter());
-	}
-
-	public void updateUebertragungBRS(UpdateUebertragungBRSDto dto )
-			throws Exception {
-		partnerWebService.updateUebertragungBRS(dto.getAuthToken(), dto.getKlient(), dto.getPartnernr(), dto.getBrsUebertragung());
-
-	}
-
-	public PartnerBilanzdaten getbilanzdaten(Integer klient, Long partnernr) throws Exception {
-		return partnerWebService.getbilanzdaten(klient, partnernr);
-	}
-
-	public String getReleaseInfo() {
-		return partnerWebService.getReleaseInfo();
-	}
-
-	public List<JournalEintragTO> ladeJournalFuerPartner(PartnerLadeDto dto)
-			throws Exception {
-		return partnerWebService.ladeJournalFuerPartner(dto.getKlient(), dto.getKlient());
-	}
-	
-	public List<Object> CreatePassword(CreatePasswordDto dto)
-			throws Exception {
-		List<Object> list = partnerWebService.createPassword(dto.getAuthToken(), dto.getKlient(), dto.getPartnernr(), dto.getMail());
-		return 	list;
-
-	}
-
+public abstract class SpnegoServerAuthModule implements ServerAuthModule {
+  public static final String AUTH_TYPE_INFO_KEY = "javax.servlet.http.authType";
+  
+  private static final Logger LOG = Logger.getLogger(SpnegoServerAuthModule.class.getName());
+  
+  private static final String DEBUG_OPTIONS_KEY = "debug";
+  
+  private static final String POLICY_CONTEXT_OPTIONS_KEY = "javax.security.jacc.PolicyContext";
+  
+  private static final String IS_MANDATORY_INFO_KEY = "javax.security.auth.message.MessagePolicy.isMandatory";
+  
+  private static final String AUTHORIZATION_HEADER = "authorization";
+  
+  private static final String AUTHENTICATION_HEADER = "WWW-Authenticate";
+  
+  private static final String NEGOTIATE = "Negotiate";
+  
+  private static final String NTLM_INITIAL_TOKEN = "NTLMSSP";
+  
+  private static Class[] supportedMessageTypes = new Class[] { HttpServletRequest.class, HttpServletResponse.class };
+  
+  private MessagePolicy requestPolicy;
+  
+  private MessagePolicy responsePolicy;
+  
+  private CallbackHandler handler;
+  
+  private Map options;
+  
+  private boolean debug;
+  
+  private Level debugLevel;
+  
+  private String policyContextID;
+  
+  private boolean mandatory;
+  
+  private GSSManager gssManager;
+  
+  public void initialize(MessagePolicy requestPolicy, MessagePolicy responsePolicy, CallbackHandler handler, Map options) throws AuthException {
+    this.requestPolicy = requestPolicy;
+    this.responsePolicy = responsePolicy;
+    this.mandatory = requestPolicy.isMandatory();
+    this.handler = handler;
+    this.options = options;
+    if (options != null) {
+      this.debug = options.containsKey("debug");
+      this.policyContextID = (String)options.get("javax.security.jacc.PolicyContext");
+    } else {
+      this.debug = false;
+      this.policyContextID = null;
+    } 
+    this.debugLevel = (LOG.isLoggable(Level.FINE) && !this.debug) ? Level.FINE : Level.INFO;
+    this.gssManager = GSSManager.getInstance();
+  }
+  
+  public Class[] getSupportedMessageTypes() {
+    return supportedMessageTypes;
+  }
+  
+  public AuthStatus validateRequest(MessageInfo messageInfo, Subject clientSubject, Subject serviceSubject) throws AuthException {
+    assert messageInfo.getMap().containsKey("javax.security.auth.message.MessagePolicy.isMandatory") == this.mandatory;
+    HttpServletRequest request = (HttpServletRequest)messageInfo.getRequestMessage();
+    HttpServletResponse response = (HttpServletResponse)messageInfo.getResponseMessage();
+    debugRequest(request);
+    String authorization = request.getHeader("authorization");
+    if (authorization != null && authorization.startsWith("Negotiate")) {
+      authorization = authorization.substring("Negotiate".length() + 1);
+      byte[] requestToken = Base64.decodeBase64(authorization.getBytes());
+      try {
+        String str;
+        GSSContext gssContext = this.gssManager.createContext((GSSCredential)null);
+        byte[] gssToken = gssContext.acceptSecContext(requestToken, 0, requestToken.length);
+        if (gssToken != null) {
+          byte[] responseToken = Base64.encodeBase64(gssToken);
+          response.setHeader("WWW-Authenticate", "Negotiate" + responseToken);
+          debugToken("jmac.servlet.authentication.token", responseToken);
+        } 
+        if (!gssContext.isEstablished()) {
+          if (this.debug || LOG.isLoggable(Level.FINE))
+            LOG.log(this.debugLevel, "jmac.gss_dialog_continued"); 
+          response.setStatus(401);
+          return AuthStatus.SEND_CONTINUE;
+        } 
+        try {
+          Oid oid = gssContext.getMech();
+          str = oid.toString();
+        } catch (GSSException gsse) {
+          str = "Undefined GSS Mechanism";
+          if (this.debug || LOG.isLoggable(Level.FINE))
+            LOG.log(this.debugLevel, "jmac.gss_mechanism_undefined", gsse); 
+        } 
+        GSSName name = gssContext.getSrcName();
+        if (!setCallerPrincipal(name, clientSubject))
+          return sendFailureMessage(response, "Failed setting caller principal"); 
+        messageInfo.getMap().put("javax.servlet.http.authType", str);
+        if (this.debug || LOG.isLoggable(Level.FINE))
+          LOG.log(this.debugLevel, "jmac.gss_dialog_complete"); 
+      } catch (GSSException gsse) {
+        LOG.severe("GSSException occurred. Major Error: " + gsse.getMajorString() + ". Minor Error: " + gsse.getMinorString());
+        if (requestToken != null) {
+          debugToken("jmac.servlet.authorization.token", requestToken);
+          if (isNTLMToken(requestToken))
+            return sendFailureMessage(response, "No support for NTLM"); 
+        } 
+        if (this.debug || LOG.isLoggable(Level.FINE))
+          LOG.log(this.debugLevel, "jmac.gss_dialog_failed", gsse); 
+        AuthException ae = new AuthException();
+        ae.initCause(gsse);
+        throw ae;
+      } 
+    } else {
+      if (this.mandatory) {
+        response.setHeader("WWW-Authenticate", "Negotiate");
+        response.setStatus(401);
+        if (this.debug || LOG.isLoggable(Level.FINE))
+          LOG.log(this.debugLevel, "jmac.sevlet_header_added_to_response", "Negotiate"); 
+        return AuthStatus.SEND_CONTINUE;
+      } 
+      if (authorization != null)
+        LOG.warning("jmac.servlet_authorization_header_ignored"); 
+    } 
+    return AuthStatus.SUCCESS;
+  }
+  
+  public AuthStatus secureResponse(MessageInfo messageInfo, Subject serviceSubject) throws AuthException {
+    LOG.fine("secureResponse called");
+    return AuthStatus.SEND_SUCCESS;
+  }
+  
+  public void cleanSubject(MessageInfo messageInfo, Subject subject) throws AuthException {
+    LOG.fine("cleanSubject called");
+  }
+  
+  AuthStatus sendFailureMessage(HttpServletResponse response, String message) {
+    try {
+      response.setStatus(403);
+      return AuthStatus.SEND_FAILURE;
+    } catch (Throwable t) {
+      return AuthStatus.SEND_FAILURE;
+    } finally {
+      Exception exception = null;
+    } 
+  }
+  
+  private boolean setCallerPrincipal(GSSName name, Subject clientSubject) {
+    Subject s = GSSUtil.createSubject(name, null);
+    Set<Principal> principals = s.getPrincipals();
+    if (principals.size() > 0) {
+      clientSubject.getPrincipals().addAll(principals);
+      Principal caller = principals.iterator().next();
+      CallerPrincipalCallback callerPrincipalCallback = new CallerPrincipalCallback(clientSubject, caller);
+      GroupPrincipalCallback groupPrincipalCallback = new GroupPrincipalCallback(clientSubject, (caller == null) ? null : getGroupsForCaller(caller));
+      try {
+        this.handler.handle(new Callback[] { (Callback)callerPrincipalCallback, (Callback)groupPrincipalCallback });
+        if (this.debug || LOG.isLoggable(Level.FINE))
+          LOG.log(this.debugLevel, "jmac.caller_principal", new Object[] { caller }); 
+        return true;
+      } catch (Exception e) {
+        LOG.log(Level.WARNING, "jmac.failed_to_set_caller", e);
+      } 
+    } 
+    return false;
+  }
+  
+  public abstract String[] getGroupsForCaller(Principal paramPrincipal);
+  
+  boolean isNTLMToken(byte[] bytes) {
+    String s = new String(bytes);
+    return s.startsWith("NTLMSSP");
+  }
+  
+  private void debugToken(String message, byte[] bytes) {
+    if (this.debug || LOG.isLoggable(Level.FINE)) {
+      StringBuffer sb = new StringBuffer();
+      sb.append("\n");
+      sb.append("Token " + (Base64.isArrayByteBase64(bytes) ? "is" : "is Not") + " Base64 encoded" + "\n");
+      sb.append("bytes: ");
+      boolean first = true;
+      for (byte b : bytes) {
+        int i = b;
+        if (first) {
+          sb.append(i);
+          first = false;
+        } else {
+          sb.append(", " + i);
+        } 
+      } 
+      LOG.log(this.debugLevel, message, sb);
+    } 
+  }
+  
+  private void debugRequest(HttpServletRequest request) {
+    if (this.debug || LOG.isLoggable(Level.FINE)) {
+      StringBuffer sb = new StringBuffer();
+      sb.append("\n");
+      try {
+        sb.append("Request: " + request.getRequestURL() + "\n");
+        sb.append("UserPrincipal: " + request.getUserPrincipal() + "\n");
+        sb.append("AuthType: " + request.getAuthType() + "\n");
+        sb.append("Headers:\n");
+        Enumeration<String> names = request.getHeaderNames();
+        while (names.hasMoreElements()) {
+          String name = names.nextElement();
+          sb.append("\t" + name + "\t" + request.getHeader(name) + "\n");
+        } 
+        LOG.log(this.debugLevel, "jmac.servlet_request", sb);
+      } catch (Throwable t) {
+        LOG.log(Level.WARNING, "jmac.servlet_debug_request", t);
+      } 
+    } 
+  }
 }
-
-
-
