@@ -32,7 +32,18 @@ import org.ietf.jgss.GSSName;
 import org.ietf.jgss.Oid;
 
 
-public abstract class SpnegoServerAuthModule implements ServerAuthModule {
+/**
+ * Concrete SPNEGO ServerAuthModule for Payara 6 / Jakarta EE 10.
+ *
+ * Changes from original:
+ *  1. Class is no longer abstract — Payara JASPIC requires a concrete class
+ *     with a public no-arg constructor for reflective instantiation.
+ *  2. getGroupsForCaller() is now overridable (not abstract) with a default
+ *     implementation. Extend this class to provide custom group/role lookup.
+ *  3. All jakarta.* imports retained; javax.security.auth.* kept as-is
+ *     (JDK-level, not Jakarta EE — correct for both Payara 5 and 6).
+ */
+public class SpnegoServerAuthModule implements ServerAuthModule {
 
     public static final String AUTH_TYPE_INFO_KEY = "jakarta.servlet.http.authType";
 
@@ -59,6 +70,14 @@ public abstract class SpnegoServerAuthModule implements ServerAuthModule {
     private String  policyContextID;
     private boolean mandatory;
     private GSSManager gssManager;
+
+    // -------------------------------------------------------------------------
+    // Required public no-arg constructor for JASPIC reflective instantiation
+    // GFServerConfigProvider.newInstance() requires this — was failing before
+    // because the class was abstract.
+    // -------------------------------------------------------------------------
+    public SpnegoServerAuthModule() {
+    }
 
     // -------------------------------------------------------------------------
     // ServerAuthModule lifecycle
@@ -227,7 +246,25 @@ public abstract class SpnegoServerAuthModule implements ServerAuthModule {
         }
     }
 
-    public abstract String[] getGroupsForCaller(Principal principal);
+    /**
+     * Returns the groups/roles for the authenticated caller.
+     *
+     * Default implementation returns an empty array (no groups).
+     * Override this method in a subclass to provide custom group lookup
+     * e.g. from LDAP, database, or a properties file.
+     *
+     * Example subclass:
+     *
+     *   public class MyKerberosSAM extends SpnegoServerAuthModule {
+     *       {@literal @}Override
+     *       public String[] getGroupsForCaller(Principal principal) {
+     *           return ldapService.getGroups(principal.getName());
+     *       }
+     *   }
+     */
+    public String[] getGroupsForCaller(Principal principal) {
+        return new String[]{};
+    }
 
     boolean isNTLMToken(byte[] bytes) {
         return new String(bytes).startsWith(NTLM_INITIAL_TOKEN);
