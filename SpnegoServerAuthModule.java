@@ -31,6 +31,7 @@ import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.GSSName;
 import org.ietf.jgss.Oid;
 
+
 public abstract class SpnegoServerAuthModule implements ServerAuthModule {
 
     public static final String AUTH_TYPE_INFO_KEY = "jakarta.servlet.http.authType";
@@ -220,7 +221,7 @@ public abstract class SpnegoServerAuthModule implements ServerAuthModule {
 
             return true;
 
-        } catch (GSSException | IOException | UnsupportedCallbackException e) {
+        } catch (IOException | UnsupportedCallbackException e) {
             LOG.log(Level.WARNING, "jmac.failed_to_set_caller", e);
             return false;
         }
