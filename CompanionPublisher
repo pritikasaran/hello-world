@@ -1,11 +1,19 @@
 <h:outputScript target="body">
+    function scrollToSelected() {
+        var selected = document.querySelector('#panelTabbs\\:aktenansichtSubForm\\:tabVorgaenge .ui-state-highlight');
+        var scrollBody = document.querySelector('#panelTabbs\\:aktenansichtSubForm\\:tabVorgaenge .ui-datatable-scrollable-body');
+        if (selected && scrollBody) {
+            scrollBody.scrollTop = selected.getBoundingClientRect().top - scrollBody.getBoundingClientRect().top + scrollBody.scrollTop;
+        }
+    }
+
     window.addEventListener('load', function() {
-        setTimeout(function() {
-            var selected = document.querySelector('#panelTabbs\\:aktenansichtSubForm\\:tabVorgaenge .ui-state-highlight');
-            var scrollBody = document.querySelector('#panelTabbs\\:aktenansichtSubForm\\:tabVorgaenge .ui-datatable-scrollable-body');
-            if (selected && scrollBody) {
-                scrollBody.scrollTop = selected.getBoundingClientRect().top - scrollBody.getBoundingClientRect().top + scrollBody.scrollTop;
-            }
-        }, 500);
+        setTimeout(scrollToSelected, 500);
+    });
+
+    // runs after every ajax update
+    $(document).on('pfAjaxComplete', function() {
+        setTimeout(scrollToSelected, 500);
     });
 </h:outputScript>
+
