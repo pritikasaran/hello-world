@@ -9,8 +9,10 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-
- <link id="favicon" rel="shortcut icon" href="#{resource['images/favicon.ico']}" type="image/x-icon" />
-       onstart="document.getElementById('favicon').href = '#{resource['images/loading.gif']}';" 
+<h:head>
+    <link id="favicon" rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+</h:head>
+     
+     onstart="document.getElementById('favicon').href = '#{resource['images/loading.gif']}';" 
                  oncomplete="document.getElementById('favicon').href = '#{resource['images/favicon.ico']}';" />
 
