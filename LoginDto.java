@@ -8,3 +8,9 @@ document.addEventListener('keydown', function(e) {
         scrollBody.scrollTop -= 30;
     }
 });
+
+
+ <link id="favicon" rel="shortcut icon" href="#{resource['images/favicon.ico']}" type="image/x-icon" />
+       onstart="document.getElementById('favicon').href = '#{resource['images/loading.gif']}';" 
+                 oncomplete="document.getElementById('favicon').href = '#{resource['images/favicon.ico']}';" />
+
