@@ -55,5 +55,27 @@ document.addEventListener('keydown', function(e) {
 }
 
 
+var lastReturnValue = null;
+
+window.addEventListener('message', function(event) {
+    if (event.data && event.data.value !== undefined) {
+        lastReturnValue = event.data.value;
+    }
+});
+
+function pollWindowClose(win, actionName) {
+    var timer = setInterval(function() {
+        if (win.closed) {
+            clearInterval(timer);
+            returnListenerCommand([
+                { name: 'actionName', value: actionName },
+                { name: 'returnValue', value: lastReturnValue || '' }
+            ]);
+            lastReturnValue = null; // reset for next use
+        }
+    }, 500);
+}
+
+
 
     
