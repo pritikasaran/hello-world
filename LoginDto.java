@@ -80,5 +80,14 @@ private String escapeJs(String value) {
     return value.replace("\\", "\\\\").replace("'", "\\'");
 }
 
+function closeAndReturn(value) {
+    if (window.opener) {
+        window.opener.postMessage({ value: value }, '*');
+    }
+    window.close();
+}
+
+
+
 
     
