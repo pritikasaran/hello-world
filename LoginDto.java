@@ -75,7 +75,10 @@ function pollWindowClose(win, actionName) {
         }
     }, 500);
 }
-
+private String escapeJs(String value) {
+    if (value == null) return "";
+    return value.replace("\\", "\\\\").replace("'", "\\'");
+}
 
 
     
