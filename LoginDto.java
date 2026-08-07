@@ -23,4 +23,16 @@ document.addEventListener('keydown', function(e) {
                 returnListenerCommand();
             }
         }, 500);
+
+    public void returnDialogDispatcher(ActionEvent event) {
+    String actionName = FacesContext.getCurrentInstance()
+            .getExternalContext().getRequestParameterMap().get("actionName");
+
+    switch (actionName) {
+        case "weiterleitung": returnWeiterleitenDialog(); break;
+        case "andere":        returnAndereDialog(); break;
+        case "dritt":         returnDrittDialog(); break;
+        default: LOG.warn("Unknown return action: " + actionName);
+    }
+}
     }
