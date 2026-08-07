@@ -38,4 +38,22 @@ document.addEventListener('keydown', function(e) {
     }
 <p:remoteCommand name="returnListenerCommand"
     actionListener="#{aktenansichtVC.returnDialogDispatcher}" />
+
+
+    public void returnDialogDispatcher(ActionEvent event) {
+    Map<String, String> params = FacesContext.getCurrentInstance()
+            .getExternalContext().getRequestParameterMap();
+
+    String actionName = params.get("actionName");
+    String returnValue = params.get("returnValue");
+
+    switch (actionName) {
+        case "weiterleitung": returnWeiterleitenDialog(returnValue); break;
+        case "andere":        returnAndereDialog(returnValue); break;
+        default: LOG.warn("Unknown return action: " + actionName);
+    }
+}
+
+
+
     
