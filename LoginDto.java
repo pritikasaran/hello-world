@@ -16,3 +16,11 @@ document.addEventListener('keydown', function(e) {
      onstart="document.getElementById('favicon').href = '#{resource['images/loading.gif']}';" 
                  oncomplete="document.getElementById('favicon').href = '#{resource['images/favicon.ico']}';" />
 
+ function pollWindowClose(win) {
+        var timer = setInterval(function() {
+            if (win.closed) {
+                clearInterval(timer);
+                returnListenerCommand();
+            }
+        }, 500);
+    }
