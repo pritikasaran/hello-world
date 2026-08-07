@@ -36,3 +36,6 @@ document.addEventListener('keydown', function(e) {
     }
 }
     }
+<p:remoteCommand name="returnListenerCommand"
+    actionListener="#{aktenansichtVC.returnDialogDispatcher}" />
+    
