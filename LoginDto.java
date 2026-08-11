@@ -1,11 +1,16 @@
 document.addEventListener('keydown', function(e) {
-    var scrollBody = document.querySelector('.ui-datatable-scrollable-body');
-    if (!scrollBody) return;
-    
-    if (e.key === 'ArrowDown') {
-        scrollBody.scrollTop += 30;
-    } else if (e.key === 'ArrowUp') {
-        scrollBody.scrollTop -= 30;
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    var table = document.activeElement.closest('.ui-datatable');
+    if (!table) return;
+
+    e.preventDefault();
+    var rows = [...table.querySelectorAll('tbody tr')];
+    var current = table.querySelector('tr.ui-state-highlight');
+    var idx = rows.indexOf(current) + (e.key === 'ArrowDown' ? 1 : -1);
+
+    if (rows[idx]) {
+        rows[idx].click();
+        rows[idx].focus();
     }
 });
 
