@@ -1,17 +1,17 @@
+document.addEventListener('click', function(e) {
+    var t = e.target.closest('.ui-datatable');
+    if (t) activeTable = t;
+});
+
 document.addEventListener('keydown', function(e) {
-    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-    var table = document.activeElement.closest('.ui-datatable');
-    if (!table) return;
-
+    if (!activeTable || (e.key !== 'ArrowDown' && e.key !== 'ArrowUp')) return;
     e.preventDefault();
-    var rows = [...table.querySelectorAll('tbody tr')];
-    var current = table.querySelector('tr.ui-state-highlight');
-    var idx = rows.indexOf(current) + (e.key === 'ArrowDown' ? 1 : -1);
 
-    if (rows[idx]) {
-        rows[idx].click();
-        rows[idx].focus();
-    }
+    var widget = PF(activeTable.id.split(':').pop() + 'Widget'); // adjust if widgetVar naming differs
+    var rows = [...activeTable.querySelectorAll('tbody tr')];
+    var idx = rows.indexOf(activeTable.querySelector('tr.ui-state-highlight')) + (e.key === 'ArrowDown' ? 1 : -1);
+
+    if (rows[idx]) widget.selectRow(idx, e);
 });
 
 <h:head>
