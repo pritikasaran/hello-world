@@ -1,3 +1,17 @@
+function syncValuesToHtml(container) {
+    container.querySelectorAll('input, textarea, select').forEach(function(el) {
+        if (el.tagName === 'SELECT') {
+            [...el.options].forEach(o => o.selected ? o.setAttribute('selected','selected') : o.removeAttribute('selected'));
+        } else if (el.type === 'checkbox' || el.type === 'radio') {
+            el.checked ? el.setAttribute('checked','checked') : el.removeAttribute('checked');
+        } else if (el.tagName === 'TEXTAREA') {
+            el.textContent = el.value;
+        } else {
+            el.setAttribute('value', el.value);
+        }
+    });
+}
+
 document.addEventListener('click', function(e) {
     var t = e.target.closest('.ui-datatable');
     if (t) activeTable = t;
