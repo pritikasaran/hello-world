@@ -8,7 +8,14 @@ element.addEventListener('click', function(e) {
     console.log('Normal Click detected.');
   }
 });
+const element = document.getElementById('myElement');
 
+element.addEventListener('dblclick', function(e) {
+  if (e.ctrlKey || e.metaKey) {
+    console.log('Control / Command + Double-Click detected!');
+    e.preventDefault(); // Optional: stops default browser text selection
+  }
+});
 
 function syncValuesToHtml(container) {
     container.querySelectorAll('input, textarea, select').forEach(function(el) {
