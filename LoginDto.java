@@ -1,3 +1,15 @@
+const element = document.getElementById('myElement');
+
+element.addEventListener('click', function(e) {
+  if (e.ctrlKey) {
+    console.log('Control + Click detected!');
+    // Insert your Control+Click specific logic here
+  } else {
+    console.log('Normal Click detected.');
+  }
+});
+
+
 function syncValuesToHtml(container) {
     container.querySelectorAll('input, textarea, select').forEach(function(el) {
         if (el.tagName === 'SELECT') {
