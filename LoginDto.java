@@ -1,26 +1,9 @@
-public String buildRowKey(AkteEintrag e) {
-    if (e == null || e.getId() == null) return null;
-
-    TbpvarEintraegePK pk = e.getId();
-    TbpvorgangPK vorgangPk = pk.getTbpvorgangPK();
-
-    StringBuilder sb = new StringBuilder();
-    sb.append(pk.getMandant())
-      .append("|").append(pk.getOrb1())
-      .append("|").append(pk.getOrbart())
-      .append("|").append(pk.getAnlageDatZeit())
-      .append("|").append(pk.getVglnr())
-      .append("|").append(pk.getVgnr());
-
-    if (vorgangPk != null) {
-        sb.append("|").append(vorgangPk.getMandant())
-          .append("|").append(vorgangPk.getOrb1())
-          .append("|").append(vorgangPk.getOrbart())
-          .append("|").append(vorgangPk.getVglnr())
-          .append("|").append(vorgangPk.getVgnr());
-    }
-
-    return sb.toString();
+function forceViewOneRedraw() {
+    var obj = document.querySelector('object[class="com.ibm.dv.client.Viewer"]');
+    if (!obj) return;
+    obj.style.display = 'none';
+    void obj.offsetHeight; // force reflow
+    obj.style.display = '';
 }
 
 
