@@ -6,7 +6,17 @@ function forceViewOneRedraw() {
     obj.style.display = '';
 }
 
+function scrollRowIntoTableView(rowElement) {
+    var scrollBody = rowElement.closest('.ui-datatable-scrollable-body');
+    if (!scrollBody) return;
 
+    var rowTop = rowElement.offsetTop;
+    var rowHeight = rowElement.offsetHeight;
+    var containerHeight = scrollBody.clientHeight;
+
+    // center the row within the scrollable container
+    scrollBody.scrollTop = rowTop - (containerHeight / 2) + (rowHeight / 2);
+}
 
 const element = document.getElementById('myElement');
 
