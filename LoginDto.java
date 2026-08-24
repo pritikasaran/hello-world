@@ -1,22 +1,44 @@
+var lastClickTime = 0;
+var lastClickedRow = null;
+var DBLCLICK_THRESHOLD = 400; // ms
+
+document.addEventListener('click', function(e) {
+    var table = e.target.closest('.ui-datatable');
+    if (!table) return;
+
+    var row = e.target.closest('tbody tr');
+    if (!row) return;
+
+    var now = Date.now();
+    var isDblClick = (row === lastClickedRow) && ((now - lastClickTime) < DBLCLICK_THRESHOLD);
+
+    if (isDblClick) {
+        dblClickHandler(row, table);
+        lastClickTime = 0;
+        lastClickedRow = null;
+    } else {
+        lastClickTime = now;
+        lastClickedRow = row;
+    }
+});
+
 document.addEventListener('dblclick', function(e) {
     var table = e.target.closest('.ui-datatable');
     if (!table) return;
 
-    var row = e.target.closest('tr[data-rk]');
+    var row = e.target.closest('tbody tr');
     if (!row) return;
 
-    var widgetVar = table.id.split(':').pop() + 'Widget'; // adjust if your widgetVar naming differs
-    var widget = PF(widgetVar);
-    if (!widget) return;
-
-    var rowKey = row.getAttribute('data-rk');
-
-    // route to a generic remoteCommand, passing which table it came from
-    handleRowDblClick([
-        { name: 'rowKey', value: rowKey },
-        { name: 'sourceTable', value: table.id }
-    ]);
+    dblClickHandler(row, table);
 });
+
+function dblClickHandler(row, table) {
+    var element = document.getElementById('mainForm:cmdTerminBearbeiten');
+    // adjust the form/naming-container prefix to match your actual rendered id
+    if (element != null) {
+        element.click();
+    }
+}
 
 <p:remoteCommand name="handleRowDblClick"
                   actionListener="#{bean.onRowDoubleClick}"
