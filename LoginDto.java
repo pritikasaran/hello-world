@@ -40,6 +40,14 @@ function dblClickHandler(row, table) {
     }
 }
 
+function dblClickHandler(row, table) {
+    if (table.id.endsWith('tabA1')) {
+        dblClickA1(row, table);
+    } else if (table.id.endsWith('tabA2')) {
+        dblClickA2(row, table);
+    }
+}
+
 <p:remoteCommand name="handleRowDblClick"
                   actionListener="#{bean.onRowDoubleClick}"
                   update="@none" />
