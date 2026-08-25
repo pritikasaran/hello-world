@@ -1,3 +1,6 @@
+var activeHeader = document.querySelector('.ui-tabs-nav li.ui-state-active a');
+var tabTitle = activeHeader ? activeHeader.textContent.trim() :
+    
 var lastClickTime = 0;
 var lastClickedRow = null;
 var DBLCLICK_THRESHOLD = 400; // ms
