@@ -1,3 +1,18 @@
+        if (e.key === 'PageDown') {
+            e.preventDefault();
+            window.scrollBy({
+                top: window.innerHeight,
+                behavior: 'smooth'
+            });
+        }
+        if (e.key === 'PageUp') {
+            e.preventDefault();
+            window.scrollBy({
+                top: -window.innerHeight,
+                behavior: 'smooth'
+            });
+        }
+
 var activeHeader = document.querySelector('.ui-tabs-nav li.ui-state-active a');
 var tabTitle = activeHeader ? activeHeader.textContent.trim() :
     
