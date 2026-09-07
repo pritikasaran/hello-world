@@ -1,4 +1,9 @@
-        if (e.key === 'PageDown') {
+-Duser.language=de -Duser.country=DE
+
+
+
+
+if (e.key === 'PageDown') {
             e.preventDefault();
             window.scrollBy({
                 top: window.innerHeight,
